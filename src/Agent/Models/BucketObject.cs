@@ -33,17 +33,17 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// User-defined information to be stored with the bucket.
         /// </summary>
-        public Dictionary<string,string> BucketInfo { get; set; }
+        public BucketInfo BucketInfo { get; set; }
 
         /// <summary>
         /// Cors rules for this bucket. 
         /// </summary>
-        public List<CorsRule> CorsRules { get; set; }
+        public CorsRules CorsRules { get; set; }
 
         /// <summary>
         /// Lifecycle rules for this bucket. 
         /// </summary>
-        public List<LifecycleRule> LifecycleRules { get; set; }
+        public LifecycleRules LifecycleRules { get; set; }
 
         /// <summary>
         /// A counter that is updated every time the bucket is modified and can be used with 

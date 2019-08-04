@@ -89,19 +89,19 @@ namespace Bytewizer.Backblaze.Models
         }
 
         /// <summary>
-        /// User defined information to be stored with the bucket.
+        /// User defined information stored with the bucket limted to 10 items.
         /// </summary>
-        public Dictionary<string, string> BucketInfo { get; set; } = new Dictionary<string, string>();
+        public BucketInfo BucketInfo { get; set; } = new BucketInfo();
 
         /// <summary>
-        /// Cors rules for this bucket. 
+        /// Cors rules for this bucket limited to 100 rules. 
         /// </summary>
-        public List<CorsRule> CorsRules { get; set; } = new List<CorsRule>();
+        public CorsRules CorsRules { get; set; } = new CorsRules();
 
         /// <summary>
-        /// Lifecycle rules for this bucket. 
+        /// Lifecycle rules for this bucket limited to 100 rules. 
         /// </summary>
-        public List<LifecycleRule> LifecycleRules { get; set; } = new List<LifecycleRule>();
+        public LifecycleRules LifecycleRules { get; set; } = new LifecycleRules();
 
         ///	<summary>
         ///	Debugger display for this object.

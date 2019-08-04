@@ -24,7 +24,7 @@ namespace Bytewizer.Backblaze.Agent
         {
             using (var content = File.Create(localFilePath))
             {
-                var results = await AuthRetryPolicyAsync(() => DownloadAsync(fileId, localFilePath, content, progress, cancel));
+                var results = await DownloadAsync(fileId, localFilePath, content, progress, cancel);
                 if (results.IsSuccessStatusCode)
                 {
                     if (results.Response.FileInfo.TryGetValue("src_last_modified_millis", out string lastModified))
@@ -48,7 +48,7 @@ namespace Bytewizer.Backblaze.Agent
         {
             using (var content = File.Create(localFilePath))
             {
-                var results = await AuthRetryPolicyAsync(() => DownloadAsync(bucketName, fileName, content, progress, cancel));
+                var results = await DownloadAsync(bucketName, fileName, content, progress, cancel);
                 if (results.IsSuccessStatusCode)
                 {
                     if (results.Response.FileInfo.TryGetValue("src_last_modified_millis", out string lastModified))
@@ -72,7 +72,7 @@ namespace Bytewizer.Backblaze.Agent
         {
             using (var content = File.OpenRead(localFilePath))
             {
-                var fileInfo = new Dictionary<string, string>();
+                var fileInfo = new Models.FileInfo();
 
                 // get last modified date
                 DateTime lastModified = File.GetLastWriteTime(localFilePath);
@@ -110,7 +110,7 @@ namespace Bytewizer.Backblaze.Agent
                 MaxFileCount = maxFileCount
             };
 
-            return await AuthRetryPolicyAsync(() => _client.ListFileNamesAsync(request, cancellationToken));
+            return await _client.ListFileNamesAsync(request, cancellationToken);
         }
 
         async Task<IApiResults<ListFileVersionResponse>> IBackblazeFilesAgent.GetVersionsAsync
@@ -124,7 +124,7 @@ namespace Bytewizer.Backblaze.Agent
                 MaxFileCount = maxFileCount
             };
 
-            return await AuthRetryPolicyAsync(() => _client.ListFileVersionsAsync(request, cancellationToken));
+            return await _client.ListFileVersionsAsync(request, cancellationToken);
         }
 
         async Task<IApiResults<GetFileInfoResponse>> IBackblazeFilesAgent.GetInfoAsync
@@ -132,14 +132,14 @@ namespace Bytewizer.Backblaze.Agent
         {
             var request = new GetFileInfoRequest(fileId);
 
-            return await AuthRetryPolicyAsync(() => _client.GetFileInfoAsync(request, cancellationToken));
+            return await _client.GetFileInfoAsync(request, cancellationToken);
         }
 
         async Task<IApiResults<HideFileResponse>> IBackblazeFilesAgent.HideAsync
             (string bucketId, string fileName)
         {
             var request = new HideFileRequest(bucketId, fileName);
-            return await AuthRetryPolicyAsync(() => _client.HideFileAsync(request, cancellationToken));
+            return await _client.HideFileAsync(request, cancellationToken);
         }
 
         async Task<IApiResults<DeleteFileVersionResponse>> IBackblazeFilesAgent.DeleteAsync
@@ -147,13 +147,13 @@ namespace Bytewizer.Backblaze.Agent
         {
             var request = new DeleteFileVersionRequest(fileId, fileName);
 
-            return await AuthRetryPolicyAsync(() => _client.DeleteFileVersionAsync(request, cancellationToken));
+            return await _client.DeleteFileVersionAsync(request, cancellationToken);
         }
 
         async Task<IApiResults<DeleteFileVersionResponse>> IBackblazeFilesAgent.DeleteAllAsync
             (string bucketId)
         {
-            var results = await AuthRetryPolicyAsync(() => Files.GetVersionsAsync(bucketId));
+            var results = await Files.GetVersionsAsync(bucketId);
             if (results.IsSuccessStatusCode)
             {
                 foreach (var file in results.Response.Files)

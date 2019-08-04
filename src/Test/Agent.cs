@@ -31,7 +31,6 @@ namespace Backblaze.Test
         /// </summary>
         public const string ApplicationKey = "[application_key]";
 
-
         /// <summary>
         /// The default test bucket created to run test methods.
         /// </summary>
@@ -230,7 +229,12 @@ namespace Backblaze.Test
             // Create bucket
             var bucketName = $"{Guid.NewGuid().ToString()}";
             var request = new CreateBucketRequest(_accountId, bucketName, BucketType.AllPrivate);
-            request.LifecycleRules = new List<LifecycleRule>
+            request.BucketInfo = new BucketInfo
+                {
+                    { "key1", "value1" },
+                    { "key2", "value2" }
+                };
+            request.LifecycleRules = new LifecycleRules()
                 {   new LifecycleRule()
                     {
                         DaysFromHidingToDeleting = 6,
@@ -244,7 +248,7 @@ namespace Backblaze.Test
                         FileNamePrefix = "files/",
                     },
                 };
-            request.CorsRules = new List<CorsRule>
+            request.CorsRules = new CorsRules
                 { new CorsRule()
                     {
                         CorsRuleName = "downloadFromAnyOrigin",
@@ -258,10 +262,14 @@ namespace Backblaze.Test
             var createResults = await _storage.Agent.Buckets.CreateAsync(request);
             Assert.AreEqual(typeof(CreateBucketResponse), createResults.Response.GetType());
             Assert.AreEqual(bucketName, createResults.Response.BucketName);
+            Assert.AreEqual(request.BucketInfo.Count, createResults.Response.BucketInfo.Count);
+            Assert.AreEqual(request.LifecycleRules.Count, createResults.Response.LifecycleRules.Count);
+            Assert.AreEqual(request.CorsRules.Count, createResults.Response.CorsRules.Count);
 
             // Delete bucket
             var deleteResults = await _storage.Agent.Buckets.DeleteAsync(createResults.Response.BucketId);
             Assert.AreEqual(typeof(DeleteBucketResponse), deleteResults.Response.GetType());
+
             Assert.AreEqual(bucketName, deleteResults.Response.BucketName);
         }
 

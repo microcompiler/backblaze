@@ -31,9 +31,6 @@ namespace Bytewizer.Backblaze.Models
             AccountId = accountId;
             BucketId = bucketId;
             BucketType = bucketType;
-            BucketInfo = new Dictionary<string, string>();
-            CorsRules = new List<CorsRule>();
-            LifecycleRules = new List<LifecycleRule>();
         }
 
         /// <summary>
@@ -56,19 +53,19 @@ namespace Bytewizer.Backblaze.Models
         public BucketType BucketType { get; private set; }
 
         /// <summary>
-        /// User defined information to be stored with the bucket.
+        /// User defined information stored with the bucket limited to 10 items.
         /// </summary>
-        public Dictionary<string, string> BucketInfo { get; set; }
+        public BucketInfo BucketInfo { get; set; } = new BucketInfo();
 
         /// <summary>
-        /// Cors rules for this bucket. 
+        /// Cors rules for this bucket limited to 100 rules. 
         /// </summary>
-        public List<CorsRule> CorsRules { get; set; }
+        public LifecycleRules CorsRules { get; set; } = new LifecycleRules();
 
         /// <summary>
-        /// Lifecycle rules for this bucket. 
+        /// Lifecycle rules for this bucket limited to 100 rules. 
         /// </summary>
-        public List<LifecycleRule> LifecycleRules { get; set; }
+        public LifecycleRules LifecycleRules { get; set; } = new LifecycleRules();
 
         /// <summary>
         /// When set the update will only happen if the revision number stored in the B2 service matches the one passed in. This can be used

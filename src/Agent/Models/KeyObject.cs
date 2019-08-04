@@ -38,8 +38,7 @@ namespace Bytewizer.Backblaze.Models
 
         /// <summary>
         /// When present indicates when this key will expire.
-        /// </summary>
-        
+        /// </summary>  
         public DateTime ExpirationTimestamp { get; internal set; }
 
         /// <summary>
@@ -52,9 +51,9 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public string NamePrefix { get; internal set; }
 
-        ///	<summary>
-        ///	Debugger display for this object.
-        ///	</summary>
+        /// <summary>
+        /// Debugger display for this object.
+        /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay
         {

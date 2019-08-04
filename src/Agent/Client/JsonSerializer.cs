@@ -22,6 +22,7 @@ namespace Bytewizer.Backblaze.Client
             JsonSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             JsonSettings.NullValueHandling = NullValueHandling.Ignore;
             JsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+            JsonSettings.Formatting = Formatting.Indented;
         }
 
         /// <summary>

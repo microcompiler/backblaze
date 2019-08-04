@@ -56,20 +56,21 @@ namespace Microsoft.Extensions.DependencyInjection
                 client.Timeout = TimeSpan.FromSeconds(options.AgentTimeout);
             })
             .AddHttpMessageHandler<UserAgentHandler>()
-            .SetHandlerLifetime(TimeSpan.FromMinutes(10))
+            .SetHandlerLifetime(TimeSpan.FromSeconds(options.HandlerLifetime))
             .AddPolicyHandler(RetryPolicy(options.AgentRetryCount));
+
             services.AddSingleton<IBackblazeAgent, BackblazeAgent>();
 
             return new BackblazeAgentBuilder(services);
         }
 
-        static IAsyncPolicy<HttpResponseMessage> RetryPolicy(int retryCount)
+        private static IAsyncPolicy<HttpResponseMessage> RetryPolicy(int retryCount)
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .Or<IOException>()
                 .WaitAndRetryAsync(retryCount,
-                    retryAttempt => BackblazeAgent.GetSleepDuration(retryAttempt));
+                    retryAttempt => ApiClient.GetSleepDuration(retryAttempt));
         }
     }
 }

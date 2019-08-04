@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Bytewizer.Backblaze.Client;
+using System;
+using System.Net.Http;
 
 namespace Bytewizer.Backblaze.Agent
 {
@@ -6,14 +8,14 @@ namespace Bytewizer.Backblaze.Agent
     /// Options for the Backblaze B2 Cloud Storage service.
     /// </summary>
     public class AgentOptions : IAgentOptions
-    {  
+    {
         /// <summary>
-        /// The key identifier used to log in to the Backblaze B2 Cloud Storage service.
+        /// The key identifier used to authenticate to the Backblaze B2 Cloud Storage service. 
         /// </summary>
         public string KeyId { get; set; }
 
         /// <summary>
-        /// The secret part of the key used to log in to the Backblaze B2 Cloud Storage service.
+        /// The secret part of the key used to authenticate.
         /// </summary>
         public string ApplicationKey { get; set; }
 
@@ -67,6 +69,11 @@ namespace Bytewizer.Backblaze.Agent
         public double AgentTimeout { get; set; }
 
         /// <summary>
+        /// The time in seconds that the message handler instance can be reused.
+        /// </summary>
+        public double HandlerLifetime { get; set; }
+        
+        /// <summary>
         /// The number of times the client will retry failed requests before timing out.
         /// </summary>
         public int AgentRetryCount { get; set; }
@@ -75,25 +82,26 @@ namespace Bytewizer.Backblaze.Agent
         /// Validate the required values
         /// </summary>
         public void Validate()
-
         {
             if (string.IsNullOrWhiteSpace(KeyId))
-                throw new ConfigurationException("Application key id is not defined.", nameof(KeyId));
+                throw new ConfigurationException("Configuration error: Key id is not defined.", nameof(KeyId));
 
             if (string.IsNullOrWhiteSpace(ApplicationKey))
-                throw new ConfigurationException("Application key is not defined.", nameof(ApplicationKey));
+                throw new ConfigurationException("Configuration error: Application key is not defined.", nameof(ApplicationKey));
 
             if (UploadCutoffSize < UploadPartSize)
-                throw new ConfigurationException("Upload cutoff size must be greater the part size.", nameof(UploadCutoffSize));
+                throw new ConfigurationException("Configuration error: Upload cutoff size must be greater then part size.", nameof(UploadCutoffSize));
 
             if (DownloadCutoffSize < DownloadPartSize)
-                throw new ConfigurationException("Download cutoff size must be greater the part size.", nameof(UploadCutoffSize));
+                throw new ConfigurationException("Configuration error: Download cutoff size must be greater then part size.", nameof(UploadCutoffSize));
 
-            if (AgentTimeout == 0)
-                AgentTimeout = 600; // 10 minutes
-
-            if (AgentRetryCount == 0)
-                AgentRetryCount = 3; // Retry three times before failing
+            if (UploadCutoffSize <= 0) UploadCutoffSize = ApiClient.DefaultUploadCutoffSize;
+            if (UploadPartSize <= 0) UploadPartSize = ApiClient.DefaultUploadPartSize;
+            if (DownloadCutoffSize <= 0) DownloadCutoffSize = ApiClient.DefaultDownloadCutoffSize;
+            if (DownloadPartSize <= 0) DownloadPartSize = ApiClient.DefaultUploadPartSize;
+            if (AgentTimeout <= 0) AgentTimeout = 600; // 10 minutes
+            if (HandlerLifetime <= 0) HandlerLifetime = 600; // 10 minutes
+            if (AgentRetryCount <= 0) AgentRetryCount = 3; // Retry three times before failing
         }
     }
 }

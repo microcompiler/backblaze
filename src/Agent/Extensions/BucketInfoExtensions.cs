@@ -1,10 +1,11 @@
 ﻿using System.Net.Http.Headers;
-using System.Collections.Generic;
+
+using Bytewizer.Backblaze.Models;
 
 namespace Bytewizer.Backblaze.Extensions
 {
     /// <summary>
-    /// Extensions methods for BucketInfo object.
+    /// Extensions methods for <see cref="BucketInfo"/> object.
     /// </summary>
     public static class BucketInfoExtensions
     {
@@ -13,7 +14,7 @@ namespace Bytewizer.Backblaze.Extensions
         /// </summary>
         /// <param name="bucketInfo">The bucket info dictionary.</param>
         /// <param name="value">The cache control values.</param>
-        public static void SetCacheControl(this Dictionary<string, string> bucketInfo, CacheControlHeaderValue value)
+        public static void SetCacheControl(this BucketInfo bucketInfo, CacheControlHeaderValue value)
         {
             if (value != null)
                 bucketInfo.Add("Cache-Control", value.ToString());
@@ -23,7 +24,7 @@ namespace Bytewizer.Backblaze.Extensions
         /// Gets the Cache-Control header.
         /// </summary>
         /// <param name="bucketInfo">The bucket info dictionary.</param>
-        public static CacheControlHeaderValue GetCacheControl(this Dictionary<string, string> bucketInfo)
+        public static CacheControlHeaderValue GetCacheControl(this BucketInfo bucketInfo)
         {
             bucketInfo.TryGetValue("Cache-Control", out string value);
             return CacheControlHeaderValue.Parse(value);

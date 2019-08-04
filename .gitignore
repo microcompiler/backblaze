@@ -20,6 +20,9 @@ bld/
 [Oo]bj/
 [Ll]og/
 
+# Build packages
+.builds
+
 # Visual Studio cache/options directory
 .vs/
 
@@ -53,10 +56,10 @@ artifacts/
 *.log
 *.vspscc
 *.vssscc
-.builds
 *.pidb
 *.svclog
 *.scc
+.build
 
 # Visual Studio profiler
 *.psess

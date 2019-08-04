@@ -43,7 +43,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// The custom information that was uploaded with the file. 
         /// </summary>
-        public Dictionary<string, string> FileInfo { get; internal set; } = new Dictionary<string, string>();
+        public FileInfo FileInfo { get; internal set; } = new FileInfo();
 
         /// <summary>
         /// The UTC time when this file was uploaded.

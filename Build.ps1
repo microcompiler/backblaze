@@ -1,5 +1,5 @@
 param(
-  [string]$version = '0.8.0',
+  [string]$version = '0.8.1',
   [string]$configuration = 'Release',
   [string]$path = $PSScriptRoot,
   [string[]]$targets = 'default'
@@ -12,7 +12,7 @@ if (! (Test-Path (Join-Path $build_dir "Posh-Build.ps1"))) { Write-Host "Install
 
 # Set these variables as desired
 $packages_dir = Join-Path $build_dir "packages"
-$solution_file = Join-Path $path "\src\Backblaze B2.sln";
+$solution_file = Join-Path $path "\Backblaze B2.sln";
 $nuget_key = Join-Path $path "\nuget-key.txt" -ErrorAction Ignore
 
 target default -depends compile, test, deploy
@@ -60,7 +60,7 @@ target deploy {
     $packages | ForEach-Object {
       $package = $_.FullName
       Write-Host "Uploading $package"
-      Invoke-Dotnet nuget push $package --api-key $key
+      Invoke-Dotnet nuget push $package --api-key $key --source "https://www.nuget.org/api/v2/package"
       Write-Host
     }
   }

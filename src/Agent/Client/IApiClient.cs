@@ -12,6 +12,7 @@ namespace Bytewizer.Backblaze.Client
         AccountInfo AccountInfo { get; }
         AuthToken AuthToken { get;}
         string TestMode { get; set; }
+        int RetryCount { get; set; }
         long UploadCutoffSize { get; set; }
         long UploadPartSize { get; set; }
         long DownloadCutoffSize { get; set; }

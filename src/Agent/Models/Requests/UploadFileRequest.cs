@@ -128,7 +128,7 @@ namespace Bytewizer.Backblaze.Models
         /// and the value is an arbitrary UTF-8 string, percent-encoded. The same info headers sent with the upload will be returned
         /// with the download. The header name is case insensitive.
         /// </remarks>
-        public Dictionary<string, string> FileInfo { get; set; } = new Dictionary<string, string>();
+        public FileInfo FileInfo { get; set; } = new FileInfo();
 
         ///	<summary>
         ///	Debugger display for this object.

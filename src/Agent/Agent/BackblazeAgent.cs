@@ -9,7 +9,6 @@ using Polly;
 
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
-using Bytewizer.Backblaze.Extensions;
 
 namespace Bytewizer.Backblaze.Agent
 {
@@ -25,13 +24,13 @@ namespace Bytewizer.Backblaze.Agent
         /// </summary>
         public BackblazeAgent(IAgentOptions options, IApiClient client, ILogger<BackblazeAgent> logger)
         {
-            // Initialize components
-            _options = options ?? throw new ArgumentNullException(nameof(options));
-            _client = client ?? throw new ArgumentNullException(nameof(client));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
             try
             {
+                // Initialize components
+                _options = options ?? throw new ArgumentNullException(nameof(options));
+                _client = client ?? throw new ArgumentNullException(nameof(client));
+                _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
                 // Sets client options 
                 _client.TestMode = _options.TestMode;
                 _client.UploadCutoffSize = _options.UploadCutoffSize;
@@ -39,20 +38,17 @@ namespace Bytewizer.Backblaze.Agent
                 _client.DownloadCutoffSize = _options.DownloadCutoffSize;
                 _client.DownloadPartSize = _options.DownloadPartSize;
                 _client.AccountInfo.AuthUrl = _options.AuthUrl;
+                _client.RetryCount = _options.AgentRetryCount;
 
                 // Connect to the Backblaze B2 API server
                 _client.Connect(_options.KeyId, _options.ApplicationKey);
             }
-
             catch (Exception ex)
             {
-                // Close client in case partially initialized
-                _client?.Dispose();
-
-                // Log exception error
+                //Log exception error
                 _logger.LogError(ex, "fatal error");
 
-                // Continue error
+                //Continue error
                 throw;
             }
         }
@@ -189,7 +185,7 @@ namespace Bytewizer.Backblaze.Agent
         public async Task<IApiResults<UploadFileResponse>> UploadAsync
             (UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await AuthRetryPolicyAsync(() => _client.UploadAsync(request, content, progress, cancel));
+            return await _client.UploadAsync(request, content, progress, cancel);
         }
 
         #endregion
@@ -246,7 +242,7 @@ namespace Bytewizer.Backblaze.Agent
         public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
             (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await AuthRetryPolicyAsync(() => _client.DownloadAsync(request, content, progress, cancel));
+            return await _client.DownloadAsync(request, content, progress, cancel);
         }
 
         // Download by bucket name and file name
@@ -299,7 +295,7 @@ namespace Bytewizer.Backblaze.Agent
         public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
             (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await AuthRetryPolicyAsync(() => _client.DownloadAsync(request, content, progress, cancel));
+            return await _client.DownloadAsync(request, content, progress, cancel);
         }
 
         #endregion
@@ -307,33 +303,6 @@ namespace Bytewizer.Backblaze.Agent
         #endregion
 
         #region Private Methods
-
-        private async Task<IApiResults<T>> AuthRetryPolicyAsync<T>(Func<Task<IApiResults<T>>> action)
-            where T : IResponse
-        {
-            var results = await Policy
-                            .Handle<AuthException>(ex => ex.Error.Code == "bad_auth_token" || ex.Error.Code == "expired_auth_token")
-                            .WaitAndRetryAsync(_options.AgentRetryCount,
-                                retryAttempt => GetSleepDuration(retryAttempt),
-                                (exception, retryCount) => RetryClientConnectAsync(_options.KeyId, _options.ApplicationKey))
-                            .ExecuteAsync(async () => await action());
-
-            return HandleResults(results);
-        }
-
-        public static TimeSpan GetSleepDuration(int retryAttempt)
-        {
-            Random jitterer = new Random();
-
-            return TimeSpan.FromSeconds(Math.Pow(1, retryAttempt))
-                    + TimeSpan.FromMilliseconds(jitterer.Next(0, 100));
-        }
-
-        private async void RetryClientConnectAsync(string applicationKeyId, string applicationKey)
-        {
-            _logger.LogInformation("Hit Retry Client Connect");
-            await _client.ConnectAsync(_options.KeyId, _options.ApplicationKey);
-        }
 
         private IApiResults<T> HandleResults<T>(IApiResults<T> results)
             where T : IResponse
@@ -383,7 +352,7 @@ namespace Bytewizer.Backblaze.Agent
 //{
 
 //    var results = await Policy
-//                    .Handle<AuthException>(ex => ex.Error.Code == "bad_auth_token" || ex.Error.Code == "expired_auth_token")
+//                    .Handle<AuthenticationException>(ex => ex.Error.Code == "bad_auth_token" || ex.Error.Code == "expired_auth_token")
 //                    .WaitAndRetryAsync(3,
 //                        retryAttempt => GetSleepDuration(retryAttempt),
 //                        async (exception, retryCount) => await _client.ConnectAsync(_options.ApplicationKeyId, _options.ApplicationKey))

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bytewizer.Backblaze.Client;
+using System;
 
 namespace Bytewizer.Backblaze.Agent
 {
@@ -33,7 +34,12 @@ namespace Bytewizer.Backblaze.Agent
         /// The time in seconds to wait before the client request times out.
         /// </summary>
         double AgentTimeout { get; set; }
-        
+
+        /// <summary>
+        /// The time in seconds that the message handler instance can be reused.
+        /// </summary>
+        double HandlerLifetime { get; set; }
+
         /// <summary>
         /// The number of times the client will retry failed requests before timing out.
         /// </summary>
@@ -60,7 +66,7 @@ namespace Bytewizer.Backblaze.Agent
         long DownloadPartSize { get; set; }
 
         /// <summary>
-        /// Validate the required values
+        /// Validate the required values.
         /// </summary>
         void Validate();
     }

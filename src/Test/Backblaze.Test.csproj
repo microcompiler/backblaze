@@ -8,10 +8,10 @@
     <Product>Backblaze B2 Client</Product>
     <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage API.</Description>
     <Copyright>2019 Bytewizer</Copyright>
-    <PackageLicenseUrl>https://github.com/microcompiler/backblaze.agent/blob/master/LICENSE.md</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/microcompiler/backblaze.agent</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/microcompiler/backblaze.agent</RepositoryUrl>
-    <Version>0.8.0</Version>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageProjectUrl></PackageProjectUrl>
+    <RepositoryUrl></RepositoryUrl>
+    <Version>0.8.1</Version>
     <PackageTags>backblaze, b2, cloud-storage, api, csharp</PackageTags>
     <RootNamespace>Bytewizer.Backblaze</RootNamespace>
   </PropertyGroup>

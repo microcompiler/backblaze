@@ -82,7 +82,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// The name/value pairs for the custom file info.
         /// </summary>
-        public Dictionary<string,string> FileInfo { get; set; }
+        public FileInfo FileInfo { get; set; }
 
         ///	<summary>
         ///	Debugger display for this object.

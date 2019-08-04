@@ -1,24 +1,25 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Net.Http;
 
 namespace Bytewizer.Backblaze.Client
 {
     /// <summary>
-    /// Represents a default implementation of the <see cref="StorageClient"/> which uses <see cref="HttpClient"/> for making HTTP requests.
+    /// Represents a default implementation of the <see cref="Storage"/> which uses <see cref="HttpClient"/> for making HTTP requests.
     /// </summary>
-    public class ApiClient : StorageClient, IApiClient
+    public class ApiClient : Storage, IApiClient
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiClient"/> class.
         /// </summary>
-        public ApiClient() : base(null) { }
+        public ApiClient() : base(null, null) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StorageClient"/> class.
+        /// Initializes a new instance of the <see cref="Storage"/> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient"/> used for making requests.</param>
-        public ApiClient(HttpClient httpClient)
-            : base(httpClient)
+        public ApiClient(HttpClient httpClient, ILogger<Storage> logger)
+            : base(httpClient, logger)
         { }
 
         /// <summary>

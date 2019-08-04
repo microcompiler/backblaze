@@ -1,6 +1,6 @@
 # Backblaze Agent for .NET Core
 
-The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaze B2 Cloud Storage API](https://www.backblaze.com/b2/cloud-storage.html). Backblaze B2 Cloud Storage provides the cheapest cloud object storage and transfer available on the internet. Backblaze B2 Cloud Storage is ¼ of the price of Amazon S3. Give it a try as the first 10 GB of storage is free. 
+The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaze B2 Cloud Storage API](https://www.backblaze.com/b2/cloud-storage.html). Backblaze B2 Cloud Storage provides the cheapest cloud storage available on the internet. Backblaze B2 Cloud Storage is ¼ of the price of other storage providers. Give it a try as the first 10 GB of storage is free. 
 
 ## Features
 - Full support for Backblaze B2 Cloud Storage API v2 including accounts, keys, buckets and files.
@@ -8,6 +8,8 @@ The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaz
 - Seamlessly intergrates with .NET Core Dependency Injection and HttpClientFactory to implement resilient requests.
 - Large file support with low memory allocation.
 - Native support of task based programming model (async/await).
+
+For feature requests and bug reports, please [open an issue on GitHub](https://github.com/microcompiler/backblaze/issues/new).
 
 ## Installation
 
@@ -26,7 +28,7 @@ PM> Install-Package Backblaze.Agent
 ```
 
 ## Getting Started
-You will need an key_id and an application_key to run Backblaze.Agent. You can obtain these in the Backblaze B2 portal.
+You will need an <strong>key_id</strong> and an <strong>application_key</strong> to configure Backblaze Agent. You can obtain these from the [Backblaze B2 Cloud Storage](https://www.backblaze.com/b2/cloud-storage.html) portal. See the [Sample Project](https://github.com/microcompiler/backblaze/tree/master/sample) for an example of how to use this packages.
 
 ### Adding Backblaze Agent to Services ###
 
@@ -36,8 +38,8 @@ public void ConfigureServices(IServiceCollection services)
     // Register Backblaze Agent Service
     services.AddBackblazeAgent(options =>
     {
-        options.KeyId = "[key_id]"
-        options.ApplicationKey = "[application_key]"
+		options.KeyId = "[key_id]";
+		options.ApplicationKey = "[application_key]";
     });
 }
 ```
@@ -84,6 +86,64 @@ await Agent.Files.UploadAsync(
     @"c:\test\file.zip",
     null,
     TokenSource.Token);
+```
+## Microsoft Logging Integration
+
+Install the Microsoft.Extensions.Logging packages:
+```bash
+> dotnet add package Microsoft.Extensions.Logging
+> dotnet add package Microsoft.Extensions.Logging.Debug
+```
+Tracing to the Debug window can be enabled with the following code:
+```CSharp
+var services = new ServiceCollection();
+services.AddLogging(builder =>
+{
+    builder.AddDebug();
+})
+.Configure<LoggerFilterOptions>(options =>
+    options.MinLevel = LogLevel.Trace
+);
+```
+## Agent Options
+
+```CSharp
+var services = new ServiceCollection();
+services.AddBackblazeAgent(options =>
+{
+	options.KeyId = "[key_id]";
+	options.ApplicationKey = "[application_key]";
+});
+```
+The following table describes the [Agent Options](https://github.com/microcompiler/backblaze/blob/master/src/Agent/Agent/AgentOptions.cs) available:
+| Option Name | Default | Description | 
+| ------------ | ---------------- |  ------------------------------------------------------------------------------- |
+| KeyId  | --- | <strong>Required - </strong> The key identifier used to authenticate. |
+| ApplicationKey | --- | <strong>Required - </strong> The secret part of the key used to authenticate. |
+| AgentTimeout  | 600 | The time in seconds to wait before the client request times out. |
+| AgentRetryCount | 3 | The number of times the client will retry failed requests before timing out.  |
+| UploadCutoffSize | 200MB | File upload cutoff size for switching to chunked parts in bits. |
+| UploadPartSize | 200MB | File upload part size in bits of chunked parts. |
+| DownloadCutoffSize | 200MB | File download cutoff size for switching to chunked parts in bits. |
+| DownloadPartSize  | 200MB | File download part size in bits of chunked parts. |
+| HandlerLifetime | 600 | The time in seconds that the message handler instance can be reused. |
+| TestMode | --- | This is for testing use only and not recomended for production environments. |
+
+### Test Mode Options
+The following test mode options are available to verify that your code correctly handles error conditions.
+
+| Option String | Description | 
+| ------------ | -------------------------------------------------------------------- |
+| fail_some_uploads| Random uploads fail or become rejected by the service. |
+| expire_some_account_authorization_tokens | Random account authorization tokens expire. |
+| force_cap_exceeded |Cap exceeded conditions are forced. |
+
+```CSharp
+services.AddBackblazeAgent(options =>
+{
+	// This is for testing use only and not recomended for production environments. 
+	options.TestMode = "fail_some_uploads";  
+});
 ```
 
 ## Contributions

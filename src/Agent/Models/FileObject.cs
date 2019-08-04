@@ -60,7 +60,7 @@ namespace Bytewizer.Backblaze.Models
         /// The custom information that was uploaded with the file. 
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public Dictionary<string, string> FileInfo { get; internal set; }
+        public FileInfo FileInfo { get; internal set; }
 
         /// <summary>
         /// The name of this file.
