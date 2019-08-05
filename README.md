@@ -10,24 +10,18 @@ The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaz
 
 For feature requests and bug reports, please [open an issue on GitHub](https://github.com/microcompiler/backblaze/issues/new).
 
-## Installation
+## Installation via .NET CLI
 
 To install Backblaze.Agent run the following command:
-
-### Install via .NET CLI
 
 ```bash
 > dotnet add package Backblaze.Agent
 ```
 
-### Install via NuGet
-
-```bash
-PM> Install-Package Backblaze.Agent
-```
-
 ## Getting Started
 You will need an <strong>key_id</strong> and an <strong>application_key</strong> to configure Backblaze Agent. You can obtain these from the [Backblaze B2 Cloud Storage](https://www.backblaze.com/b2/cloud-storage.html) portal. See the [Sample Project](https://github.com/microcompiler/backblaze/tree/master/sample) for an example of how to use this packages.
+
+*Work in Progress!* Whilst we encourage users to play with the samples and test programs, this project has not yet reached a stable state.
 
 ### Adding Backblaze Agent to Services ###
 
@@ -42,7 +36,6 @@ public void ConfigureServices(IServiceCollection services)
     });
 }
 ```
-
 ### Injecting Backblaze Client Agent ###
 
 To get a list of backblaze buckets simply inject `IBackblazeAgent` into your class and call the async client.  
@@ -76,7 +69,6 @@ To get a list of backblaze buckets simply inject `IBackblazeAgent` into your cla
     }
 }
 ```
-
 ## Basic Usage
 
 ```CSharp
@@ -95,7 +87,6 @@ Install the Microsoft.Extensions.Logging packages:
 ```
 Tracing to the Debug window can be enabled with the following code:
 ```CSharp
-var services = new ServiceCollection();
 services.AddLogging(builder =>
 {
     builder.AddDebug();
@@ -107,7 +98,6 @@ services.AddLogging(builder =>
 ## Agent Options
 
 ```CSharp
-var services = new ServiceCollection();
 services.AddBackblazeAgent(options =>
 {
 	options.KeyId = "[key_id]";
@@ -130,13 +120,6 @@ The following table describes the [Agent Options](https://github.com/microcompil
 | TestMode | --- | This is for testing use only and not recomended for production environments. |
 
 ### Test Mode Options
-The following test mode options are available to verify that your code correctly handles error conditions.
-
-| Option String | Description | 
-| ------------ | -------------------------------------------------------------------- |
-| fail_some_uploads| Random uploads fail or become rejected by the service. |
-| expire_some_account_authorization_tokens | Random account authorization tokens expire. |
-| force_cap_exceeded |Cap exceeded conditions are forced. |
 
 ```CSharp
 services.AddBackblazeAgent(options =>
@@ -145,6 +128,17 @@ services.AddBackblazeAgent(options =>
 	options.TestMode = "fail_some_uploads";  
 });
 ```
+The following test mode options are available to verify that your code correctly handles error conditions.
+
+| Option String | Description | 
+| ------------ | -------------------------------------------------------------------- |
+| fail_some_uploads| Random uploads fail or become rejected by the service. |
+| expire_some_account_authorization_tokens | Random account authorization tokens expire. |
+| force_cap_exceeded |Cap exceeded conditions are forced. |
+
+
+## Disclaimer
+All source, documentation, instructions and products of this project are provided as-is without warranty. No liability is accepted for any damage, data loss or costs incurred by its use. 
 
 ## Contributions
 Contributions to this project are always welcome. Please consider forking this project on GitHub and sending a pull request to get your improvements added to the original project.

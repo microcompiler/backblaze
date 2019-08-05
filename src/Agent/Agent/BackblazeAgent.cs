@@ -46,7 +46,7 @@ namespace Bytewizer.Backblaze.Agent
             catch (Exception ex)
             {
                 //Log exception error
-                _logger.LogError(ex, "fatal error");
+                _logger.LogError(ex, ex.Message);
 
                 //Continue error
                 throw;
@@ -316,45 +316,3 @@ namespace Bytewizer.Backblaze.Agent
         #endregion
     }
 }
-
-
-
-
-
-
-//private async Task<IApiResults<TResponse>> HandleResultsAsync(IApiResults<T> T)
-//    where 
-//{
-//    if (response == null)
-//        throw new ArgumentNullException(nameof(response));
-
-//    if (!response.IsSuccessStatusCode)
-//    {
-//        var error = await ReadAsJsonAsync<ErrorResponse>(response);
-//        return new ApiResults<TResponse>(response, error);
-//    }
-//    var results = await ReadAsJsonAsync<TResponse>(response);
-//    return new ApiResults<TResponse>(response, results);
-//}
-
-
-//static async Task RetryAsync(Func<CancellationToken, Task> func, int retryCount, TimeSpan timeout)
-//{
-//    using (var cts = new CancellationTokenSource(timeout))
-//    {
-//        var policy = Policy.Handle<Exception>(ex => !(ex is OperationCanceledException))
-//            .RetryAsync(retryCount);
-//        await policy.ExecuteAsync(() => func(cts.Token)).ConfigureAwait(false);
-//    }
-//}
-
-//private async Task<IApiClient> InvokeClientAsync (IApiClient client)
-//{
-
-//    var results = await Policy
-//                    .Handle<AuthenticationException>(ex => ex.Error.Code == "bad_auth_token" || ex.Error.Code == "expired_auth_token")
-//                    .WaitAndRetryAsync(3,
-//                        retryAttempt => GetSleepDuration(retryAttempt),
-//                        async (exception, retryCount) => await _client.ConnectAsync(_options.ApplicationKeyId, _options.ApplicationKey))
-//                    .ExecuteAsync(async () => await _client.ListFileNamesAsync(request, cancellationToken));
-//}
