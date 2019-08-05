@@ -1,5 +1,4 @@
 # Backblaze Agent for .NET Core
-
 The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaze B2 Cloud Storage API](https://www.backblaze.com/b2/cloud-storage.html). Backblaze B2 Cloud Storage provides the cheapest cloud storage available on the internet. Backblaze B2 Cloud Storage is ¼ of the price of other storage providers. Give it a try as the first 10 GB of storage is free. 
 
 ## Features
@@ -116,16 +115,17 @@ services.AddBackblazeAgent(options =>
 });
 ```
 The following table describes the [Agent Options](https://github.com/microcompiler/backblaze/blob/master/src/Agent/Agent/AgentOptions.cs) available:
+
 | Option Name | Default | Description | 
-| ------------ | ---------------- |  ------------------------------------------------------------------------------- |
+| ----------- | ------- | ----------- |
 | KeyId  | --- | <strong>Required - </strong> The key identifier used to authenticate. |
 | ApplicationKey | --- | <strong>Required - </strong> The secret part of the key used to authenticate. |
-| AgentTimeout  | 600 | The time in seconds to wait before the client request times out. |
+| AgentTimeout | 600 | The time in seconds to wait before the client request times out. |
 | AgentRetryCount | 3 | The number of times the client will retry failed requests before timing out.  |
 | UploadCutoffSize | 200MB | File upload cutoff size for switching to chunked parts in bits. |
 | UploadPartSize | 200MB | File upload part size in bits of chunked parts. |
 | DownloadCutoffSize | 200MB | File download cutoff size for switching to chunked parts in bits. |
-| DownloadPartSize  | 200MB | File download part size in bits of chunked parts. |
+| DownloadPartSize | 200MB | File download part size in bits of chunked parts. |
 | HandlerLifetime | 600 | The time in seconds that the message handler instance can be reused. |
 | TestMode | --- | This is for testing use only and not recomended for production environments. |
 
