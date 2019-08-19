@@ -36,5 +36,10 @@ namespace Bytewizer.Backblaze.Models
         /// A value that indicates if the HTTP response was successful.
         /// </summary>
         bool IsSuccessStatusCode { get; }
+
+        /// <summary>
+        /// Throws an exception if the <see cref="IsSuccessStatusCode"/> property for the HTTP response is <see cref="false"/>.
+        /// </summary>
+        IApiResults<T> EnsureSuccessStatusCode();
     }
 }

@@ -13,14 +13,16 @@ namespace Bytewizer.Backblaze.Client
         AuthToken AuthToken { get;}
         string TestMode { get; set; }
         int RetryCount { get; set; }
-        long UploadCutoffSize { get; set; }
-        long UploadPartSize { get; set; }
-        long DownloadCutoffSize { get; set; }
-        long DownloadPartSize { get; set; }
+        int UploadConnections { get; set; }
+        FileSize UploadCutoffSize { get; set; }
+        FileSize UploadPartSize { get; set; }
+        int DownloadConnections { get; set; }
+        FileSize DownloadCutoffSize { get; set; }
+        FileSize DownloadPartSize { get; set; }
         void Connect(string accountId, string applicationKey);
         Task ConnectAsync(string applicationKeyId, string applicationKey);
-        Task<IApiResults<UploadFileResponse>> UploadAsync(UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
-        Task<IApiResults<DownloadFileResponse>> DownloadAsync(DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
+        Task<IApiResults<UploadFileResponse>> UploadByIdAsync(UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
+        Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
         Task<IApiResults<DownloadFileResponse>> DownloadAsync(DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
         Task<IApiResults<AuthorizeAccountResponse>> AuthorizeAccountAync(string accountId, string applicationKey, CancellationToken cancellationToken);
         Task<IApiResults<CancelLargeFileResponse>> CancelLargeFileAsync(CancelLargeFileRequest request, CancellationToken cancellationToken);
@@ -47,8 +49,8 @@ namespace Bytewizer.Backblaze.Client
         Task<IApiResults<ListUnfinishedLargeFilesResponse>> ListUnfinishedLargeFilesAsync(ListUnfinishedLargeFilesRequest request, CancellationToken cancellationToken);
         Task<IApiResults<StartLargeFileResponse>> StartLargeFileAsync(StartLargeFileRequest request, CancellationToken cancellationToken);
         Task<IApiResults<UpdateBucketResponse>> UpdateBucketAsync(UpdateBucketRequest request, CancellationToken cancellationToken);
-        Task<IApiResults<UploadFileResponse>> UploadFileAsync(UploadFileRequest request, IProgress<ICopyProgress> progress, CancellationToken cancellationToken);
-        Task<IApiResults<UploadPartResponse>> UploadPartAsync(UploadPartRequest request, IProgress<ICopyProgress> progress, CancellationToken cancellationToken);
+        Task<IApiResults<UploadFileResponse>> UploadFileAsync(UploadFileRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken);
+        Task<IApiResults<UploadPartResponse>> UploadPartAsync(UploadPartRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken);
         bool IsDisposed { get; }
         void Dispose();
     }

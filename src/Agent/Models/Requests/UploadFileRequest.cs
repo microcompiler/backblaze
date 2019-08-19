@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Diagnostics;
-using System.Collections.Generic;
 
 using Bytewizer.Backblaze.Extensions;
 using System.Net.Http.Headers;
@@ -11,6 +9,7 @@ namespace Bytewizer.Backblaze.Models
     /// <summary>
     /// Contains information to create a upload file request.
     /// </summary>
+    [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public class UploadFileRequest : IRequest
     {
         /// <summary>
@@ -19,14 +18,11 @@ namespace Bytewizer.Backblaze.Models
         /// <param name="uploadUrl">The url used to upload this file.</param>
         /// <param name="fileName">The name of the file.</param>
         /// <param name="authorizationToken">The authorization token that must be used when uploading files.</param>
-        public UploadFileRequest(Uri uploadUrl, Stream content, string fileName, string authorizationToken)
+        public UploadFileRequest(Uri uploadUrl, string fileName, string authorizationToken)
         {
             // Validate required arguments
             if (uploadUrl == null)
                 throw new ArgumentNullException("Argument can not be null", nameof(uploadUrl));
-
-            if (content == null)
-                throw new ArgumentNullException("Argument can not be null", nameof(content));
 
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentException("Argument can not be null, empty, or consist only of white-space characters.", nameof(fileName));
@@ -36,7 +32,6 @@ namespace Bytewizer.Backblaze.Models
 
             // Initialize and set required properties
             UploadUrl = uploadUrl;
-            ContentStream = content;
             FileName = fileName;
             AuthorizationToken = authorizationToken;
         }
@@ -55,33 +50,6 @@ namespace Bytewizer.Backblaze.Models
             private set { _FileName = new Uri(value); }
         }
         private Uri _FileName;
-
-        /// <summary>
-        /// The content stream of the file payload.
-        /// </summary>
-        public Stream ContentStream { get; private set; }
-
-        /// <summary>
-        /// The number of bytes in the file being uploaded.
-        /// </summary>
-        public long ContentLength
-        {
-            get { return ContentStream.Length; }
-        }
-
-        /// <summary>
-        /// The SHA1 checksum of the content of the file. B2 will check this when the file is uploaded to make sure
-        /// that the file arrived correctly.  
-        /// </summary>
-        public string ContentSha1
-        {
-            get
-            {
-                var hash = ContentStream.ToSha1();
-                ContentStream.Position = 0;
-                return hash;
-            }
-        }
 
         /// <summary>
         /// The authorizationToken that must be used when uploading files with this URL. This token is

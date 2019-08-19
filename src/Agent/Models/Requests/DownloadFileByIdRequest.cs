@@ -42,7 +42,7 @@ namespace Bytewizer.Backblaze.Models
 
             // Initialize and set required properties
             FileId = fileId;
-            Authorization = authorizationToken;
+            AuthorizationToken = authorizationToken;
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Bytewizer.Backblaze.Models
         /// The authorization token that must be used when uploading files.  
         /// </summary>
         [JsonIgnore]
-        public string Authorization { get; set; }
+        public string AuthorizationToken { get; set; }
 
         ///	<summary>
         ///	Debugger display for this object.
@@ -81,7 +81,7 @@ namespace Bytewizer.Backblaze.Models
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay
         {
-            get { return $"{{{nameof(FileId)}: {FileId}, {nameof(Authorization)}: {Authorization}}}"; }
+            get { return $"{{{nameof(FileId)}: {FileId}, {nameof(AuthorizationToken)}: {AuthorizationToken}}}"; }
         }
     }
 }

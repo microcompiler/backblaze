@@ -15,41 +15,41 @@ namespace Bytewizer.Backblaze.Models
         /// The name assigned when the key was created.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string KeyName { get; internal set; }
+        public string KeyName { get; set; }
 
         /// <summary>
         /// The application key id.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string ApplicationKeyId { get; internal set; }
+        public string ApplicationKeyId { get; set; }
 
         /// <summary>
         /// A list of strings, each one naming a capability the key has. Possibilities are: listKeys, writeKeys, 
         /// deleteKeys, listBuckets, writeBuckets, deleteBuckets, listFiles, readFiles, shareFiles, writeFiles, and deleteFiles. 
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string[] Capabilities { get; internal set; }
+        public string[] Capabilities { get; set; }
 
         /// <summary>
         /// The account id that this application key is for.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string AccountId { get; internal set; }
+        public string AccountId { get; set; }
 
         /// <summary>
         /// When present indicates when this key will expire.
         /// </summary>  
-        public DateTime ExpirationTimestamp { get; internal set; }
+        public DateTime ExpirationTimestamp { get; set; }
 
         /// <summary>
         /// Restricts access to this bucket.
         /// </summary>
-        public string BucketId { get; internal set; }
+        public string BucketId { get; set; }
 
         /// <summary>
         /// Restricts access to files whose names start with the prefix.
         /// </summary>
-        public string NamePrefix { get; internal set; }
+        public string NamePrefix { get; set; }
 
         /// <summary>
         /// Debugger display for this object.

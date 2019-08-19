@@ -110,6 +110,17 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public bool IsSuccessStatusCode { get { return HttpResponse.IsSuccessStatusCode; } }
 
+        /// <summary>
+        /// Throws an exception if the <see cref="IsSuccessStatusCode"/> property for the HTTP response is <see cref="false"/>.
+        /// </summary>
+        public IApiResults<T> EnsureSuccessStatusCode()
+        {
+            if (IsSuccessStatusCode)
+                return this;
+
+            throw new ApiException(StatusCode, Error);
+        }
+
         ///	<summary>
         ///	Debugger display for this object.
         ///	</summary>

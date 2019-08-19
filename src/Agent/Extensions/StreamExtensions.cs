@@ -57,6 +57,36 @@ namespace Bytewizer.Backblaze.Extensions
         /// Compute the SHA1 hash of a stream.
         /// </summary>
         /// <param name="source"></param>
-        public static string ToSha1(this Stream source) => SHA1.Create().ComputeHash(source).ToHex();
+        public static string ToSha1(this Stream source)
+        {
+            if (source == null)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                using (var sha1 = SHA1.Create())
+                {
+                    source.Position = 0;
+                    var hash = sha1.ComputeHash(source).ToHex();
+                    source.Position = 0;
+                    return hash;
+                }
+            }  
+        }
+
+        /// <summary>
+        /// Compares this instance with a specified hash returns an <see cref="bool"/> that indicates whether this instance compares to specified hash.
+        /// </summary>
+        /// <param name="source"></param>
+        /// /// <param name="hash"></param>
+        public static bool CompareTo(this Stream source, string hash)
+        {
+            var streamHash = source.ToSha1();
+            if (string.Equals(streamHash, hash)) 
+                return true;
+
+            return false;
+        }
     }
 }

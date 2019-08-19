@@ -33,8 +33,10 @@ namespace Bytewizer.Backblaze.Agent
 
                 // Sets client options 
                 _client.TestMode = _options.TestMode;
+                _client.UploadConnections = _options.UploadConnections;
                 _client.UploadCutoffSize = _options.UploadCutoffSize;
                 _client.UploadPartSize = _options.UploadPartSize;
+                _client.DownloadConnections = _options.DownloadConnections;
                 _client.DownloadCutoffSize = _options.DownloadCutoffSize;
                 _client.DownloadPartSize = _options.DownloadPartSize;
                 _client.AccountInfo.AuthUrl = _options.AuthUrl;
@@ -185,7 +187,7 @@ namespace Bytewizer.Backblaze.Agent
         public async Task<IApiResults<UploadFileResponse>> UploadAsync
             (UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await _client.UploadAsync(request, content, progress, cancel);
+            return await _client.UploadByIdAsync(request, content, progress, cancel);
         }
 
         #endregion
@@ -193,56 +195,56 @@ namespace Bytewizer.Backblaze.Agent
         #region DownloadAsync
 
         // Download by file id
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
+        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (string fileId, Stream content)
         {
             var request = new DownloadFileByIdRequest(fileId);
-            return await DownloadAsync(request, content, null, cancellationToken);
+            return await DownloadByIdAsync(request, content, null, cancellationToken);
         }
 
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
+        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (string fileId, Stream content, IProgress<ICopyProgress> progress)
         {
             var request = new DownloadFileByIdRequest(fileId);
-            return await DownloadAsync(request, content, progress, cancellationToken);
+            return await DownloadByIdAsync(request, content, progress, cancellationToken);
         }
 
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
+        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (string fileId, Stream content, CancellationToken cancel)
         {
             var request = new DownloadFileByIdRequest(fileId);
-            return await DownloadAsync(request, content, null, cancel);
+            return await DownloadByIdAsync(request, content, null, cancel);
         }
 
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
+        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (string fileId, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
             var request = new DownloadFileByIdRequest(fileId);
-            return await DownloadAsync(request, content, progress, cancel);
+            return await DownloadByIdAsync(request, content, progress, cancel);
         }
 
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
+        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (DownloadFileByIdRequest request, Stream content)
         {
-            return await DownloadAsync(request, content, null, cancellationToken);
+            return await DownloadByIdAsync(request, content, null, cancellationToken);
         }
 
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
+        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress)
         {
-            return await DownloadAsync(request, content, progress, cancellationToken);
+            return await DownloadByIdAsync(request, content, progress, cancellationToken);
         }
 
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
+        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (DownloadFileByIdRequest request, Stream content, CancellationToken cancel)
         {
-            return await DownloadAsync(request, content, null, cancel);
+            return await DownloadByIdAsync(request, content, null, cancel);
         }
 
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
+        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await _client.DownloadAsync(request, content, progress, cancel);
+            return await _client.DownloadByIdAsync(request, content, progress, cancel);
         }
 
         // Download by bucket name and file name
@@ -304,14 +306,7 @@ namespace Bytewizer.Backblaze.Agent
 
         #region Private Methods
 
-        private IApiResults<T> HandleResults<T>(IApiResults<T> results)
-            where T : IResponse
-        {
-            if (!results.IsSuccessStatusCode)
-                _logger.LogError(results.Error?.Message);
 
-            return results;
-        }
 
         #endregion
     }

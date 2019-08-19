@@ -23,6 +23,24 @@ namespace Bytewizer.Backblaze.Extensions
         }
 
         /// <summary>
+        /// Sets authorization header. 
+        /// </summary>
+        /// <param name="headers">The http request header.</param>
+        /// <param name="value1">The header value.</param>
+        /// <param name="value2">The header value.</param>
+        public static void SetAuthorization(this HttpRequestHeaders headers, string value1, string value2)
+        {
+            if (string.IsNullOrWhiteSpace(value1))
+            {
+                headers.SetAuthorization(value2);
+            }
+            else
+            {
+                headers.SetAuthorization(value1);
+            }
+        }
+
+        /// <summary>
         /// Sets range header.
         /// </summary>
         /// <param name="headers">The http request header.</param>

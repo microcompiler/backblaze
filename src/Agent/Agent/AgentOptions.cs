@@ -1,6 +1,7 @@
-﻿using Bytewizer.Backblaze.Client;
-using System;
-using System.Net.Http;
+﻿using System;
+
+using Bytewizer.Backblaze.Client;
+using Bytewizer.Backblaze.Models;
 
 namespace Bytewizer.Backblaze.Agent
 {
@@ -27,24 +28,34 @@ namespace Bytewizer.Backblaze.Agent
         public string TestMode { get; set; }
 
         /// <summary>
+        /// The maxium number of parallel upload connections established.
+        /// </summary>
+        public int UploadConnections { get; set; }
+
+        /// <summary>
         /// Upload cutoff size for switching to chunked parts in bits.
         /// </summary>
-        public long UploadCutoffSize { get; set; }
+        public FileSize UploadCutoffSize { get; set; }
 
         /// <summary>
         /// Upload part size in bits of chunked parts.
         /// </summary>
-        public long UploadPartSize { get; set; }
+        public FileSize UploadPartSize { get; set; }
+
+        /// <summary>
+        /// The maxium number of parallel download connections established.
+        /// </summary>
+        public int DownloadConnections { get; set; }
 
         /// <summary>
         /// Download cutoff size for switching to chunked parts in bits.
         /// </summary>
-        public long DownloadCutoffSize { get; set; }
+        public FileSize DownloadCutoffSize { get; set; }
 
         /// <summary>
         /// Download part size in bits of chunked parts.
         /// </summary>
-        public long DownloadPartSize { get; set; }
+        public FileSize DownloadPartSize { get; set; }
 
         /// <summary>
         /// This is for testing use only and not recomended for production environments. 
@@ -95,13 +106,15 @@ namespace Bytewizer.Backblaze.Agent
             if (DownloadCutoffSize < DownloadPartSize)
                 throw new ConfigurationException("Configuration error: Download cutoff size must be greater then part size.", nameof(UploadCutoffSize));
 
-            if (UploadCutoffSize <= 0) UploadCutoffSize = ApiClient.DefaultUploadCutoffSize;
-            if (UploadPartSize <= 0) UploadPartSize = ApiClient.DefaultUploadPartSize;
-            if (DownloadCutoffSize <= 0) DownloadCutoffSize = ApiClient.DefaultDownloadCutoffSize;
-            if (DownloadPartSize <= 0) DownloadPartSize = ApiClient.DefaultUploadPartSize;
+            if (UploadConnections <= 0) UploadConnections = ApiClient.DefaultUploadConnections;
+            if (UploadCutoffSize <= 0) UploadCutoffSize = FileSize.DefaultUploadCutoffSize;
+            if (UploadPartSize <= 0) UploadPartSize = FileSize.DefaultUploadPartSize;
+            if (DownloadConnections <= 0) DownloadConnections = ApiClient.DefaultDownloadConnections;
+            if (DownloadCutoffSize <= 0) DownloadCutoffSize = FileSize.DefaultDownloadCutoffSize;
+            if (DownloadPartSize <= 0) DownloadPartSize = FileSize.DefaultUploadPartSize;
             if (AgentTimeout <= 0) AgentTimeout = 600; // 10 minutes
             if (HandlerLifetime <= 0) HandlerLifetime = 600; // 10 minutes
-            if (AgentRetryCount <= 0) AgentRetryCount = 3; // Retry three times before failing
+            if (AgentRetryCount <= 0) AgentRetryCount = ApiClient.DefaultRetryCount; // Retry three times before failing
         }
     }
 }

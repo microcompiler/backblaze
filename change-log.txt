@@ -1,8 +1,14 @@
+0.8.2 - August 18 2019
+* General code cleanup and documentation
+* Added caching for upload_url and upload_part_url
+* Added option configuration support using setting.json
+* Fixed several know issues
+
 0.8.1 - August 3 2019
-* Add additional error checking and trace logging
-* Add http retry for expired tokens
-* Add BucketInfo, Fileinfo, CorsRules and LifecycleRules validation objects
-* Add console progress bar for Iprogress<> upload/download status
+* Added additional error checking and trace logging
+* Added http retry for expired tokens
+* Added BucketInfo, Fileinfo, CorsRules and LifecycleRules validation objects
+* Added console progress bar for Iprogress<> upload/download status
 * Fixed several know issues
 
 0.8.0 - Jul 31 2019

@@ -10,6 +10,7 @@ namespace Bytewizer.Backblaze.Agent
     public interface IBackblazeAgent
     {
         IBackblazeFilesAgent Files { get; }
+        IBackblazeDirectoriesAgent Directories { get; }
         IBackblazeBucketsAgent Buckets { get; }
         IBackblazeKeysAgent Keys { get; }
         IBackblazePartsAgent Parts { get; }
@@ -27,14 +28,16 @@ namespace Bytewizer.Backblaze.Agent
         Task<IApiResults<UploadFileResponse>> UploadAsync(UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress);
         Task<IApiResults<UploadFileResponse>> UploadAsync(UploadFileByBucketIdRequest request, Stream content, CancellationToken cancel);
         Task<IApiResults<UploadFileResponse>> UploadAsync(UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
-        Task<IApiResults<DownloadFileResponse>> DownloadAsync(string fileId, Stream content);
-        Task<IApiResults<DownloadFileResponse>> DownloadAsync(string fileId, Stream content, IProgress<ICopyProgress> progress);
-        Task<IApiResults<DownloadFileResponse>> DownloadAsync(string fileId, Stream content, CancellationToken cancel);
-        Task<IApiResults<DownloadFileResponse>> DownloadAsync(string fileId, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
-        Task<IApiResults<DownloadFileResponse>> DownloadAsync(DownloadFileByIdRequest request, Stream content);
-        Task<IApiResults<DownloadFileResponse>> DownloadAsync(DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress);
-        Task<IApiResults<DownloadFileResponse>> DownloadAsync(DownloadFileByIdRequest request, Stream content, CancellationToken cancel);
-        Task<IApiResults<DownloadFileResponse>> DownloadAsync(DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
+
+        Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(string fileId, Stream content);
+        Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(string fileId, Stream content, IProgress<ICopyProgress> progress);
+        Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(string fileId, Stream content, CancellationToken cancel);
+        Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(string fileId, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
+        Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(DownloadFileByIdRequest request, Stream content);
+        Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress);
+        Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(DownloadFileByIdRequest request, Stream content, CancellationToken cancel);
+        Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
+
         Task<IApiResults<DownloadFileResponse>> DownloadAsync(string bucketName, string fileName, Stream content);
         Task<IApiResults<DownloadFileResponse>> DownloadAsync(string bucketName, string fileName, Stream content, IProgress<ICopyProgress> progress);
         Task<IApiResults<DownloadFileResponse>> DownloadAsync(string bucketName, string fileName, Stream content, CancellationToken cancel);

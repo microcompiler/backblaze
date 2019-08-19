@@ -15,31 +15,31 @@ namespace Bytewizer.Backblaze.Models
         /// The unique identifier for this file. 
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string FileId { get; internal set; }
+        public string FileId { get; set; }
 
         /// <summary>
         /// The part number it is.  
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string PartNumber { get; internal set; }
+        public string PartNumber { get; set; }
 
         /// <summary>
         /// The number of bytes stored in the part.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public long ContentLength { get; internal set; }
+        public long ContentLength { get; set; }
 
         /// <summary>
         /// The SHA1 of the bytes stored in the part.  
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string ContentSha1 { get; internal set; }
+        public string ContentSha1 { get; set; }
 
         /// <summary>
         /// This is a UTC time when this part was uploaded.
         /// </summary>
         [JsonProperty(Required = Required.Always)]      
-        public DateTime UploadTimestamp { get; internal set; }
+        public DateTime UploadTimestamp { get; set; }
 
         ///	<summary>
         ///	Debugger display for this object.

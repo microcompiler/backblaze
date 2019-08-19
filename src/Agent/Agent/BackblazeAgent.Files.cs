@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -107,7 +106,7 @@ namespace Bytewizer.Backblaze.Agent
                 Prefix = prefix,
                 Delimiter = delimiter,
                 StartFileName = startFileName,
-                MaxFileCount = maxFileCount
+                MaxFileCount = 10000
             };
 
             return await _client.ListFileNamesAsync(request, cancellationToken);

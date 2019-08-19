@@ -26,17 +26,13 @@ namespace Bytewizer.Backblaze.Models
         /// Initializes a new instance of the <see cref="UploadPartRequest"/> class.
         /// </summary>
         /// <param name="uploadUrl">The url used to upload this file.</param>
-        /// <param name="bytes">The part payload.</param>
         /// <param name="partNumber">The part number of the file.</param>
         /// <param name="authorizationToken">The authorization token that must be used when uploading files.</param>
-        public UploadPartRequest(Uri uploadUrl, Stream content, int partNumber, string authorizationToken)
+        public UploadPartRequest(Uri uploadUrl, int partNumber, string authorizationToken)
         {
             // Validate required arguments
             if (uploadUrl == null)
                 throw new ArgumentNullException("Argument can not be null", nameof(uploadUrl));
-
-            if (content == null)
-                throw new ArgumentNullException("Argument can not be null", nameof(content));
 
             if (partNumber < MinimumPartNumber || partNumber > MaximumPartNumber)
                 throw new ArgumentOutOfRangeException($"Argument must be a minimum of {MinimumPartNumber} and a maximum of {MaximumPartNumber}.", nameof(partNumber));
@@ -46,7 +42,6 @@ namespace Bytewizer.Backblaze.Models
             
             // Initialize and set required properties
             UploadUrl = uploadUrl;
-            ContentStream = content;
             PartNumber = partNumber;
             AuthorizationToken = authorizationToken;
         }
@@ -55,11 +50,6 @@ namespace Bytewizer.Backblaze.Models
         /// The url used to upload this file.  
         /// </summary>
         public Uri UploadUrl { get; private set; }
-
-        /// <summary>
-        /// The content stream payload.
-        /// </summary>
-        public Stream ContentStream { get; private set; }
 
         /// <summary>
         /// A number from 1 to 10000. The parts uploaded for one file must have contiguous numbers starting with 1.
@@ -71,28 +61,6 @@ namespace Bytewizer.Backblaze.Models
         /// valid for 24 hours or until the uploadUrl endpoint rejects an upload, see b2_upload_part. 
         /// </summary>
         public string AuthorizationToken { get; private set; }
-
-        /// <summary>
-        /// The number of bytes in the file being uploaded.
-        /// </summary>
-        public long ContentLength
-        {
-            get { return ContentStream.Length; }
-        }
-
-        /// <summary>
-        /// The SHA1 checksum of the content of the file. B2 will check this when the file is uploaded to make sure
-        /// that the file arrived correctly.  
-        /// </summary>
-        public string ContentSha1
-        {
-            get
-            {
-                var hash = ContentStream.ToSha1();
-                ContentStream.Position = 0;
-                return hash;
-            }
-        }
 
         ///	<summary>
         ///	Debugger display for this object.

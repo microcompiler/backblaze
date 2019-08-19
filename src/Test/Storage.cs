@@ -1,5 +1,5 @@
 ﻿using Bytewizer.Backblaze.Agent;
-
+using Bytewizer.Backblaze.Client;
 using Microsoft.Extensions.Logging;
 
 namespace Backblaze.Test
@@ -8,7 +8,7 @@ namespace Backblaze.Test
     {
         public readonly IBackblazeAgent Agent;
         public readonly ILogger Logger;
-        
+
         public Storage(IBackblazeAgent agent, ILogger<Storage> logger)
         {
             Agent = agent;

@@ -2,11 +2,14 @@
 using System.IO;
 using System.Net.Http;
 
+using Microsoft.Extensions.Configuration;
+
 using Polly;
 using Polly.Extensions.Http;
 
 using Bytewizer.Backblaze.Agent;
 using Bytewizer.Backblaze.Client;
+
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -15,6 +18,24 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds the repository agent services to the collection.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <param name="configuration">Delegate to define the configuration.</param>
+        public static IBackblazeAgentBuilder AddBackblazeAgent(this IServiceCollection services, IConfiguration configuration)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+
+            var options = configuration.Get<AgentOptions>();
+
+            return AddBackblazeAgent(services, options);
+        }
+
         /// <summary>
         /// Adds the repository agent services to the collection.
         /// </summary>
@@ -48,9 +69,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(options));
 
             options.Validate();
+
             services.AddSingleton(options);
 
+            services.AddMemoryCache();
+
             services.AddTransient<UserAgentHandler>();
+
             services.AddHttpClient<IApiClient, ApiClient>(client =>
             {
                 client.Timeout = TimeSpan.FromSeconds(options.AgentTimeout);
@@ -59,6 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .SetHandlerLifetime(TimeSpan.FromSeconds(options.HandlerLifetime))
             .AddPolicyHandler(RetryPolicy(options.AgentRetryCount));
 
+            
             services.AddSingleton<IBackblazeAgent, BackblazeAgent>();
 
             return new BackblazeAgentBuilder(services);

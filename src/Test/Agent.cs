@@ -1,18 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Bytewizer.Backblaze.Agent;
 using Bytewizer.Backblaze.Models;
-using Bytewizer.Backblaze.Extensions;
+
 
 namespace Backblaze.Test
 {
@@ -24,12 +23,12 @@ namespace Backblaze.Test
         /// <summary>
         /// The key identifier used to log in to the Backblaze B2 Cloud Storage service.
         /// </summary>
-        public const string KeyId = "[key_id]";
+        public const string KeyId = "e14ecff4c2db";
 
         /// <summary>
         /// The secret part of the key used to log in to the Backblaze B2 Cloud Storage service.
         /// </summary>
-        public const string ApplicationKey = "[application_key]";
+        public const string ApplicationKey = "0007eb0f509d3f8d7b40f8594b10ea501dd48303e8";
 
         /// <summary>
         /// The default test bucket created to run test methods.
@@ -161,18 +160,21 @@ namespace Backblaze.Test
 
         private static void ConfigureServices(IServiceCollection services)
         {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("settings.json", optional: true, reloadOnChange: true)
+                .Build();
+
             // Add logging
             services.AddLogging(builder =>
             {
+                builder.AddConfiguration(config.GetSection("Logging"));
                 builder.AddDebug();
             }).Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Debug);
 
             // Add services
-            services.AddBackblazeAgent(options =>
-            {
-                options.KeyId = KeyId;
-                options.ApplicationKey = ApplicationKey;
-            });
+            services.AddBackblazeAgent(config.GetSection("Agent"));
+
             services.AddSingleton<Storage>();
         }
 
@@ -185,18 +187,77 @@ namespace Backblaze.Test
         }
 
         [TestMethod]
+        public async Task Parallel_Uploads()
+        {
+            var parallelTasks = new List<Task>();
+            var source = new DirectoryInfo("C:/TestSrc");
+            var files = source.EnumerateFiles("*.*", SearchOption.AllDirectories);
+
+            foreach (var file in files)
+            {
+                parallelTasks.Add(Task.Run(async () =>
+                {
+                    await _storage.Agent.Files.UploadAsync(_bucketId, file.FullName, file.FullName, null);
+                }));
+            }
+            await Task.WhenAll(parallelTasks);
+        }
+
+        [TestMethod]
+        public async Task Parallel_Downloads()
+        {
+            var parallelTasks = new List<Task>();
+
+            var results = await _storage.Agent.Files.GetNamesAsync(_bucketId, "C:/TestSrc", null, null, 10000);
+
+            foreach (var file in results.Response.Files)
+            {
+                parallelTasks.Add(Task.Run(async () =>
+                {
+                    await _storage.Agent.Files.DownloadAsync(BucketName, file.FileName, file.FileName, null);
+                }));
+            }
+            await Task.WhenAll(parallelTasks);
+        }
+
+        [TestMethod]
+        public async Task Get_First_Bucket()
+        {
+            var bucket = await _storage.Agent.Buckets.FirstAsync(x => x.BucketName == BucketName);
+            Assert.AreEqual(BucketName, bucket.BucketName);
+
+            bucket = await _storage.Agent.Buckets.FirstAsync();
+            Assert.AreEqual(BucketName, bucket.BucketName);
+        }
+
+        [TestMethod]
         public async Task Upload_And_Download_Stream()
         {
             // Upload stream
             var uploadResults = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
             Assert.AreEqual(typeof(UploadFileResponse), uploadResults.Response.GetType());
 
+            var uploadResults2 = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
+            Assert.AreEqual(typeof(UploadFileResponse), uploadResults2.Response.GetType());
+
+            var uploadResults3 = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
+            Assert.AreEqual(typeof(UploadFileResponse), uploadResults3.Response.GetType());
+
+            var uploadResults4 = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
+            Assert.AreEqual(typeof(UploadFileResponse), uploadResults4.Response.GetType());
+
+            var uploadResults5 = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
+            Assert.AreEqual(typeof(UploadFileResponse), uploadResults5.Response.GetType());
+
+            var uploadResults6 = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
+            Assert.AreEqual(typeof(UploadFileResponse), uploadResults6.Response.GetType());
+
             // Download stream
-            var download = new MemoryStream();
-            var downloadResults = await _storage.Agent.DownloadAsync(_fileId, download);
-            Assert.AreEqual(typeof(DownloadFileResponse), downloadResults.Response.GetType());
-            Assert.AreEqual(SmallStream.Length, download.Length);
-            Assert.AreEqual(SmallStream.ToSha1(), download.ToSha1());
+            //var download = new MemoryStream();
+            //var downloadResults = await _storage.Agent.DownloadByIdAsync(_fileId, download);
+            //Assert.AreEqual(typeof(DownloadFileResponse), downloadResults.Response.GetType());
+            //Assert.AreEqual(SmallStream.Length, download.Length);
+            ////Assert.AreEqual(SmallStream.ToSha1(), download.ToSha1());
         }
 
         [TestMethod]
@@ -269,7 +330,6 @@ namespace Backblaze.Test
             // Delete bucket
             var deleteResults = await _storage.Agent.Buckets.DeleteAsync(createResults.Response.BucketId);
             Assert.AreEqual(typeof(DeleteBucketResponse), deleteResults.Response.GetType());
-
             Assert.AreEqual(bucketName, deleteResults.Response.BucketName);
         }
 
@@ -353,6 +413,14 @@ namespace Backblaze.Test
             Assert.AreEqual(typeof(GetFileInfoResponse), results.Response.GetType());
             Assert.AreEqual(SmallStreamSize, results.Response.ContentLength, "The file size did not match");
             Assert.AreEqual(SmallStreamName, results.Response.FileName, "The file name did not match");
+        }
+    }
+
+    public static class AgentExtensions
+    {
+        public static Task ForEachAsync<T>(this IEnumerable<T> sequence, Func<T, Task> action)
+        {
+            return Task.WhenAll(sequence.Select(action));
         }
     }
 }

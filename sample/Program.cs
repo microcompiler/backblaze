@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Backblaze.Sample
@@ -22,28 +24,37 @@ namespace Backblaze.Sample
             try
             {
                 var services = new ServiceCollection();
+                ConfigureServices(services);
+                var serviceProvider = services.BuildServiceProvider(); 
+                var logger = serviceProvider.GetService<ILogger<Program>>();
 
-                services.AddLogging(builder =>
-                {
-                    builder.AddDebug();
-                })
-               .Configure<LoggerFilterOptions>(options =>
-                    options.MinLevel = LogLevel.Debug
-                );
+                logger.LogDebug("Woo Hooo");
 
-                services.AddBackblazeAgent(options =>
-                {
-                    options.KeyId = "[key_id]";
-                    options.ApplicationKey = "[application_key]";
-                });
-                services.AddSingleton<Application>();
-                var serviceProvider = services.BuildServiceProvider();
-                await serviceProvider.GetService<Application>().MainAsync(args, cts.Token);
+                await serviceProvider.GetService<Storage>().MainAsync(args, cts.Token);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Message);
             }
+        }
+
+        internal static void ConfigureServices(IServiceCollection services)
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("settings.json", optional: true, reloadOnChange: true)
+                .Build();
+
+            services.AddLogging(builder =>
+            {
+                builder.AddConfiguration(config.GetSection("Logging"));
+                builder.AddDebug();
+                //builder.AddConsole();
+            });
+            
+            services.AddBackblazeAgent(config.GetSection("Agent"));
+
+            services.AddSingleton<Storage>();
         }
     }
 }

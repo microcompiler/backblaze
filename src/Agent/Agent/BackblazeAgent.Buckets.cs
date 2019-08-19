@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 using Bytewizer.Backblaze.Models;
 
@@ -7,6 +9,24 @@ namespace Bytewizer.Backblaze.Agent
     public partial class BackblazeAgent : IBackblazeBucketsAgent
     {
         public IBackblazeBucketsAgent Buckets { get { return this; } }
+
+        async Task<BucketObject> IBackblazeBucketsAgent.FirstAsync()
+        {
+            var request = new ListBucketsRequest(AccountId);
+            var buckets = await _client.ListBucketsAsync(request, cancellationToken);
+            buckets.EnsureSuccessStatusCode();
+
+            return buckets.Response.Buckets.First();
+        }
+
+        async Task<BucketObject> IBackblazeBucketsAgent.FirstAsync(Func<BucketObject, bool> predicate)
+        {
+            var request = new ListBucketsRequest(AccountId);
+            var buckets = await _client.ListBucketsAsync(request, cancellationToken);
+            buckets.EnsureSuccessStatusCode();
+
+            return buckets.Response.Buckets.First(predicate);
+        }
 
         async Task<IApiResults<ListBucketsResponse>> IBackblazeBucketsAgent.GetAsync()
         {

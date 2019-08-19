@@ -1,0 +1,13 @@
+﻿{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Critical",
+      "Bytewizer.Backblaze": "Debug",
+      "System.Net.Http.HttpClient": "Debug"
+    }
+  },
+  "Agent": {
+    "KeyId": "[key_id]",
+    "ApplicationKey": "[application_key]"
+  }
+}

@@ -112,10 +112,12 @@ The following table describes the [Agent Options](https://github.com/microcompil
 | ApplicationKey | --- | <strong>Required - </strong> The secret part of the key used to authenticate. |
 | AgentTimeout | 600 | The time in seconds to wait before the client request times out. |
 | AgentRetryCount | 3 | The number of times the client will retry failed requests before timing out.  |
-| UploadCutoffSize | 200MB | File upload cutoff size for switching to chunked parts in bits. |
-| UploadPartSize | 200MB | File upload part size in bits of chunked parts. |
-| DownloadCutoffSize | 200MB | File download cutoff size for switching to chunked parts in bits. |
-| DownloadPartSize | 200MB | File download part size in bits of chunked parts. |
+| UploadConnections | 3 | The maxium number of parallel upload connections established. |
+| UploadCutoffSize | 200MB | File upload cutoff size in bytes for switching to chunked parts. |
+| UploadPartSize | 200MB | File upload part size in bytes of chunked parts. |
+| DownloadConnections | 5 | The maxium number of parallel download connections established. |
+| DownloadCutoffSize | 200MB | File download cutoff size in bytes for switching to chunked parts. |
+| DownloadPartSize | 200MB | File download part size in bytes of chunked parts. |
 | HandlerLifetime | 600 | The time in seconds that the message handler instance can be reused. |
 | TestMode | --- | This is for testing use only and not recomended for production environments. |
 
@@ -138,7 +140,7 @@ The following test mode options are available to verify that your code correctly
 
 
 ## Disclaimer
-All source, documentation, instructions and products of this project are provided as-is without warranty. No liability is accepted for any damage, data loss or costs incurred by its use. 
+All source, documentation, instructions and products of this project are provided as-is without warranty. No liability is accepted for any damages, data loss or costs incurred by its use. 
 
 ## Contributions
 Contributions to this project are always welcome. Please consider forking this project on GitHub and sending a pull request to get your improvements added to the original project.

@@ -1,4 +1,5 @@
 ﻿using Bytewizer.Backblaze.Client;
+using Bytewizer.Backblaze.Models;
 using System;
 
 namespace Bytewizer.Backblaze.Agent
@@ -46,24 +47,34 @@ namespace Bytewizer.Backblaze.Agent
         int AgentRetryCount { get; set; }
 
         /// <summary>
+        /// The maxium number of parallel upload connections established.
+        /// </summary>
+        int UploadConnections { get; set; } 
+
+        /// <summary>
         /// Cutoff size for switching to chunked upload.
         /// </summary>
-        long UploadCutoffSize { get; set; }
+        FileSize UploadCutoffSize { get; set; }
 
         /// <summary>
         /// Chunk size of upload.
         /// </summary>
-        long UploadPartSize { get; set; }
+        FileSize UploadPartSize { get; set; }
+
+        /// <summary>
+        /// The maxium number of parallel download connections established.
+        /// </summary>
+        int DownloadConnections { get; set; }
 
         /// <summary>
         /// Download cutoff size for switching to chunked parts in bits.
         /// </summary>
-        long DownloadCutoffSize { get; set; }
+        FileSize DownloadCutoffSize { get; set; }
 
         /// <summary>
         /// Download part size in bits of chunked parts.
         /// </summary>
-        long DownloadPartSize { get; set; }
+        FileSize DownloadPartSize { get; set; }
 
         /// <summary>
         /// Validate the required values.
