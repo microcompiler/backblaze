@@ -67,9 +67,11 @@ namespace Bytewizer.Backblaze.Extensions
             {
                 using (var sha1 = SHA1.Create())
                 {
+                    var position = source.Position;
+
                     source.Position = 0;
                     var hash = sha1.ComputeHash(source).ToHex();
-                    source.Position = 0;
+                    source.Position = position;
                     return hash;
                 }
             }  

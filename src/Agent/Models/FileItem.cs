@@ -10,7 +10,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains response information related to a file.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class FileObject
+    public class FileItem
     {
         /// <summary>
         /// The account that owns the file. 

@@ -12,7 +12,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// An list of key objects.
         /// </summary>
-        public List<KeyObject> Keys { get; set; }
+        public List<KeyItem> Keys { get; set; }
 
         /// <summary>
         /// What to pass in to <see cref="ListKeysRequest.StartApplicationKeyId"/> for the next search to continue where this one left off or null if there are no 

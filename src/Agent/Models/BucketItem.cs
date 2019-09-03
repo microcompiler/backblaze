@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Collections.Generic;
 
 namespace Bytewizer.Backblaze.Models
 {
@@ -7,7 +6,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains response information related to a bucket.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class BucketObject
+    public class BucketItem
     {
         /// <summary>
         /// The account id that this bucket key is for.

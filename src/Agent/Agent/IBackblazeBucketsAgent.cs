@@ -9,8 +9,8 @@ namespace Bytewizer.Backblaze.Agent
 {
     public interface IBackblazeBucketsAgent
     {
-        Task<BucketObject> FirstAsync();
-        Task<BucketObject> FirstAsync(Func<BucketObject, bool> predicate);
+        Task<BucketItem> FirstAsync();
+        Task<BucketItem> FirstAsync(Func<BucketItem, bool> predicate);
 
         Task<IApiResults<ListBucketsResponse>> GetAsync();
         Task<IApiResults<ListBucketsResponse>> GetAsync(ListBucketsRequest request);

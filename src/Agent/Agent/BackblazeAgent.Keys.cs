@@ -11,35 +11,35 @@ namespace Bytewizer.Backblaze.Agent
         async Task<IApiResults<ListKeysResponse>> IBackblazeKeysAgent.GetAsync()
         {
             var request = new ListKeysRequest(AccountId);
-            return await _client.ListKeysAsync(request, cancellationToken);
+            return await InvokePolicy.ExecuteAsync(() => _client.ListKeysAsync(request, cancellationToken));
         }
 
         async Task<IApiResults<ListKeysResponse>> IBackblazeKeysAgent.GetAsync(ListKeysRequest request)
         {
-            return await _client.ListKeysAsync(request, cancellationToken);
+            return await InvokePolicy.ExecuteAsync(() => _client.ListKeysAsync(request, cancellationToken));
         }
 
         async Task<IApiResults<CreateKeyResponse>> IBackblazeKeysAgent.CreateAsync(CreateKeyRequest request)
         {
-            return await _client.CreateKeyAsync(request, cancellationToken);
+            return await InvokePolicy.ExecuteAsync(() => _client.CreateKeyAsync(request, cancellationToken));
         }
 
-        async Task<IApiResults<CreateKeyResponse>> IBackblazeKeysAgent.CreateAsync(string[] capabilities, string keyName)
+        async Task<IApiResults<CreateKeyResponse>> IBackblazeKeysAgent.CreateAsync(Capabilities capabilities, string keyName)
         {
             var request = new CreateKeyRequest(AccountId, capabilities, keyName);
-            return await _client.CreateKeyAsync(request, cancellationToken);
+            return await InvokePolicy.ExecuteAsync(() => _client.CreateKeyAsync(request, cancellationToken));
         }
 
-        async Task<IApiResults<CreateKeyResponse>> IBackblazeKeysAgent.CreateAsync(string accountId, string[] capabilities, string keyName)
+        async Task<IApiResults<CreateKeyResponse>> IBackblazeKeysAgent.CreateAsync(string accountId, Capabilities capabilities, string keyName)
         {
             var request = new CreateKeyRequest(AccountId, capabilities, keyName);
-            return await _client.CreateKeyAsync(request, cancellationToken);
+            return await InvokePolicy.ExecuteAsync(() => _client.CreateKeyAsync(request, cancellationToken));
         }
 
         async Task<IApiResults<DeleteKeyResponse>> IBackblazeKeysAgent.DeleteAsync(string applicationKeyId)
         {
             var request = new DeleteKeyRequest(applicationKeyId);
-            return await _client.DeleteKeyAsync(request, cancellationToken);
+            return await InvokePolicy.ExecuteAsync(() => _client.DeleteKeyAsync(request, cancellationToken));
         }
     }
 }

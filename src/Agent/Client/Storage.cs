@@ -5,16 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 using System.Collections.Generic;
-using System.Security.Authentication;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
 
-using Polly;
-
 using Bytewizer.Backblaze.Models;
 using Bytewizer.Backblaze.Extensions;
-
 
 namespace Bytewizer.Backblaze.Client
 {
@@ -26,21 +22,6 @@ namespace Bytewizer.Backblaze.Client
         //TODO: Multithreading uploads/download for large file parts.
 
         #region Constants
-
-        /// <summary>
-        /// Represents the default number of times the client will retry failed requests before timing out.
-        /// </summary>
-        public const int DefaultRetryCount = 3;
-
-        /// <summary>
-        /// Represents the default number of parallel upload connections established.
-        /// </summary>
-        public const int DefaultUploadConnections = 1;
-
-        /// <summary>
-        /// Represents the default number of parallel download connections established.
-        /// </summary>
-        public const int DefaultDownloadConnections = 1;
 
         /// <summary>
         /// Represents the default upload url cache time to live (TTL) in seconds.
@@ -70,10 +51,6 @@ namespace Bytewizer.Backblaze.Client
             _httpClient = httpClient ?? new HttpClient();
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _cache = cache ?? new MemoryCache(new MemoryCacheOptions());
-
-            DownloadPolicy = CreateDownloadPolicy();
-            UploadPolicy = CreateUploadPolicy();
-            InvokePolicy = CreateInvokePolicy();
         }
 
         #region IDisposable
@@ -109,7 +86,7 @@ namespace Bytewizer.Backblaze.Client
         /// <see cref="Logger"/> for application logging.
         /// </summary>
         protected readonly ILogger _logger;
-        
+
         /// <summary>
         /// <see cref="MemoryCache"/> for application caching.
         /// </summary>
@@ -143,16 +120,6 @@ namespace Bytewizer.Backblaze.Client
         public string TestMode { get; set; } = string.Empty;
 
         /// <summary>
-        /// The number of times the client will retry failed authentication requests before timing out.
-        /// </summary>
-        public int RetryCount { get; set; } = DefaultRetryCount;
-
-        /// <summary>
-        /// The maxium number of parallel upload connections established.
-        /// </summary>
-        public int UploadConnections { get; set; } = DefaultUploadConnections;
-
-        /// <summary>
         /// Upload cutoff size for switching to chunked parts in bits.
         /// </summary>
         public FileSize UploadCutoffSize { get; set; } = FileSize.DefaultUploadCutoffSize;
@@ -163,10 +130,6 @@ namespace Bytewizer.Backblaze.Client
         public FileSize UploadPartSize { get; set; } = FileSize.DefaultUploadPartSize;
 
         /// <summary>
-        /// The maxium number of parallel download connections established.
-        /// </summary>
-        public int DownloadConnections { get; set; } = DefaultDownloadConnections;
-        /// <summary>
         /// Download cutoff size for switching to chunked parts in bits.
         /// </summary>
         public FileSize DownloadCutoffSize { get; set; } = FileSize.DefaultDownloadCutoffSize;
@@ -176,35 +139,6 @@ namespace Bytewizer.Backblaze.Client
         /// </summary>
         public FileSize DownloadPartSize { get; set; } = FileSize.DefaultDownloadPartSize;
 
-        #endregion
-
-        #region Private Properties
-
-        /// <summary>
-        /// The key identifier used to authenticate to the Backblaze B2 Cloud Storage service. 
-        /// </summary>
-        protected string KeyId { get; set; }
-
-        /// <summary>
-        /// The secret part of the key used to authenticate.
-        /// </summary>
-        protected string ApplicationKey { get; set; }
-
-        /// <summary>
-        /// Retry policy used for downloading.
-        /// </summary>
-        protected IAsyncPolicy DownloadPolicy { get; set; }
-
-        /// <summary>
-        /// Retry policy used for uploading.
-        /// </summary>
-        protected IAsyncPolicy UploadPolicy { get; set; }
-
-        /// <summary>
-        /// Retry policy used for invoking post requests.
-        /// </summary>
-        protected IAsyncPolicy InvokePolicy { get; set; }
-        
         #endregion
 
         #region Public Methods
@@ -228,9 +162,6 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="applicationKey">The secret part of the key.</param>
         public async Task ConnectAsync(string keyId, string applicationKey)
         {
-            KeyId = keyId;
-            ApplicationKey = applicationKey;
-
             _cache.Remove(CacheKeys.UploadUrl);
             _cache.Remove(CacheKeys.UploadPartUrl);
 
@@ -262,14 +193,14 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="request">The upload file request content to send.</param>
         /// <param name="content">The upload content to receive.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
-        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
-        public async Task<IApiResults<UploadFileResponse>> UploadByIdAsync
+        /// <param name="cancel">The cancellation token to cancel operation.</param>
+        public async Task<IApiResults<UploadFileResponse>> UploadAsync
             (UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
             if (content.Length < GetCutoffSize(UploadCutoffSize, UploadPartSize))
             {
                 var urlRequest = new GetUploadUrlRequest(request.BucketId);
-                var urlResults = await GetUploadUrlAsync(urlRequest, TimeSpan.FromSeconds(DefaultUploadUrlTTL), cancel);
+                var urlResults = await GetUploadUrlAsync(urlRequest, cancel);
 
                 if (urlResults.IsSuccessStatusCode)
                 {
@@ -311,6 +242,8 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
+            //return await DownloadPolicy.ExecuteAsync(async () =>
+            //{
             var fileRequest = new DownloadFileByIdRequest(request.FileId);
             var fileResults = await DownloadFileByIdAsync(fileRequest, cancel);
             if (fileResults.IsSuccessStatusCode)
@@ -326,6 +259,7 @@ namespace Bytewizer.Backblaze.Client
             }
 
             return fileResults;
+            //});
         }
 
         /// <summary>
@@ -339,7 +273,7 @@ namespace Bytewizer.Backblaze.Client
             (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
             var fileRequest = new DownloadFileByNameRequest(request.BucketName, request.FileName);
-            var fileResults = await DownloadFileByNameAsync(fileRequest, cancel);
+            var fileResults = await DownloadFileByNameAsync(fileRequest, null, null, cancel);
 
             if (fileResults.IsSuccessStatusCode)
             {
@@ -452,7 +386,7 @@ namespace Bytewizer.Backblaze.Client
             if (fileResults.IsSuccessStatusCode)
             {
                 var urlRequest = new GetUploadPartUrlRequest(fileResults.Response.FileId);
-                var urlResults = await GetUploadPartUrlAsync(urlRequest,TimeSpan.FromSeconds(DefaultUploadPartUrlTTL), cancellationToken);
+                var urlResults = await GetUploadPartUrlAsync(urlRequest, TimeSpan.FromSeconds(DefaultUploadPartUrlTTL), cancellationToken);
                 if (fileResults.IsSuccessStatusCode)
                 {
                     foreach (var part in parts)
@@ -544,85 +478,6 @@ namespace Bytewizer.Backblaze.Client
                 }
             }
             return partSize;
-        }
-
-        /// <summary>
-        /// Create a retry policy for upload execptions.
-        /// </summary>
-        private IAsyncPolicy CreateUploadPolicy()
-        {
-            var auth = CreateAuthenticationPolicy();
-            var hash = CreateInvalidHashPolicy();
-            var bulkhead = Policy.BulkheadAsync(UploadConnections, int.MaxValue);
-
-            return Policy.WrapAsync(auth, hash, bulkhead);
-        }
-
-        /// <summary>
-        /// Create a retry policy for download execptions.
-        /// </summary>
-        private IAsyncPolicy CreateDownloadPolicy()
-        {
-            var auth = CreateAuthenticationPolicy();
-            var hash = CreateInvalidHashPolicy();
-            var bulkhead = Policy.BulkheadAsync(DownloadConnections, int.MaxValue);
-
-            return Policy.WrapAsync(auth, hash, bulkhead);
-        }
-
-        /// <summary>
-        /// Create a retry policy for Invoke execptions.
-        /// </summary>
-        private IAsyncPolicy CreateInvokePolicy()
-        {
-            return CreateAuthenticationPolicy();
-        }
-
-        /// <summary>
-        /// Create a retry policy for authentication execptions.
-        /// </summary>
-        private IAsyncPolicy CreateAuthenticationPolicy()
-        {
-            var auth = Policy
-                .Handle<AuthenticationException>()
-                .WaitAndRetryAsync(RetryCount,
-                    retryAttempt => GetSleepDuration(retryAttempt),
-                    onRetry: async (exception, timeSpan, count, context) =>
-                    {
-                        _logger.LogWarning($"{exception.Message} Retry attempt {count} waiting {timeSpan.TotalSeconds} seconds before next retry.");
-                        await ConnectAsync(KeyId, ApplicationKey);
-                    });
-
-            return auth;
-        }
-
-        /// <summary>
-        /// Create a retry policy for invalid hash execptions.
-        /// </summary>
-        private IAsyncPolicy CreateInvalidHashPolicy()
-        {
-            var hash = Policy
-               .Handle<InvalidHashException>()
-               .WaitAndRetryAsync(RetryCount,
-                   retryAttempt => GetSleepDuration(retryAttempt),
-                   onRetry: (exception, timeSpan, count, context) =>
-                   {
-                       _logger.LogWarning($"{exception.Message} Retry attempt {count} waiting {timeSpan.TotalSeconds} seconds before next retry.");
-                   });
-
-            return hash;
-        }
-
-        /// <summary>
-        /// Get the duration to wait (exponential backoff) allowing an increasing wait time.
-        /// </summary>
-        /// <param name="retryAttempt">The retry attempt count.</param>
-        public static TimeSpan GetSleepDuration(int retryAttempt)
-        {
-            Random jitterer = new Random();
-
-            return TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
-                    + TimeSpan.FromMilliseconds(jitterer.Next(10, 1000));
         }
 
         /// <summary>

@@ -10,7 +10,6 @@ using Polly.Extensions.Http;
 using Bytewizer.Backblaze.Agent;
 using Bytewizer.Backblaze.Client;
 
-
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
@@ -96,7 +95,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .HandleTransientHttpError()
                 .Or<IOException>()
                 .WaitAndRetryAsync(retryCount,
-                    retryAttempt => ApiClient.GetSleepDuration(retryAttempt));
+                    retryAttempt => BackblazeAgent.GetSleepDuration(retryAttempt));
         }
     }
 }

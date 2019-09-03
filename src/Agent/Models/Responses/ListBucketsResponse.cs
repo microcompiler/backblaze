@@ -12,7 +12,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// An list of bucket objects.
         /// </summary>
-        public List<BucketObject> Buckets { get; set; }
+        public List<BucketItem> Buckets { get; set; }
 
         ///	<summary>
         ///	Debugger display for this object.

@@ -6,7 +6,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains the results of a <see cref="GetFileInfoRequest"/> operation.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class GetFileInfoResponse : FileObject, IResponse
+    public class GetFileInfoResponse : FileItem, IResponse
     {
         ///	<summary>
         ///	Debugger display for this object.

@@ -1,6 +1,5 @@
 ﻿using System;
 
-using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
 
 namespace Bytewizer.Backblaze.Agent
@@ -10,6 +9,25 @@ namespace Bytewizer.Backblaze.Agent
     /// </summary>
     public class AgentOptions : IAgentOptions
     {
+        #region Constants
+
+        /// <summary>
+        /// Represents the default number of times the client will retry failed requests before timing out.
+        /// </summary>
+        public const int DefaultRetryCount = 5;
+
+        /// <summary>
+        /// Represents the default number of parallel upload connections established.
+        /// </summary>
+        public const int DefaultParallelUploads = 3;
+
+        /// <summary>
+        /// Represents the default number of parallel download connections established.
+        /// </summary>
+        public const int DefaultParallelDownloads = 5;
+
+        #endregion
+
         /// <summary>
         /// The key identifier used to authenticate to the Backblaze B2 Cloud Storage service. 
         /// </summary>
@@ -106,15 +124,15 @@ namespace Bytewizer.Backblaze.Agent
             if (DownloadCutoffSize < DownloadPartSize)
                 throw new ConfigurationException("Configuration error: Download cutoff size must be greater then part size.", nameof(UploadCutoffSize));
 
-            if (UploadConnections <= 0) UploadConnections = ApiClient.DefaultUploadConnections;
+            if (UploadConnections <= 0) UploadConnections = DefaultParallelUploads;
             if (UploadCutoffSize <= 0) UploadCutoffSize = FileSize.DefaultUploadCutoffSize;
             if (UploadPartSize <= 0) UploadPartSize = FileSize.DefaultUploadPartSize;
-            if (DownloadConnections <= 0) DownloadConnections = ApiClient.DefaultDownloadConnections;
+            if (DownloadConnections <= 0) DownloadConnections = DefaultParallelDownloads;
             if (DownloadCutoffSize <= 0) DownloadCutoffSize = FileSize.DefaultDownloadCutoffSize;
             if (DownloadPartSize <= 0) DownloadPartSize = FileSize.DefaultUploadPartSize;
             if (AgentTimeout <= 0) AgentTimeout = 600; // 10 minutes
             if (HandlerLifetime <= 0) HandlerLifetime = 600; // 10 minutes
-            if (AgentRetryCount <= 0) AgentRetryCount = ApiClient.DefaultRetryCount; // Retry three times before failing
+            if (AgentRetryCount <= 0) AgentRetryCount = DefaultRetryCount;
         }
     }
 }

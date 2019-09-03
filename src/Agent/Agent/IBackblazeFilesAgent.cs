@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Bytewizer.Backblaze.Models;
 
@@ -8,8 +9,10 @@ namespace Bytewizer.Backblaze.Agent
 {
     public interface IBackblazeFilesAgent
     {
-        Task<IApiResults<DownloadFileResponse>> DownloadAsync(string fileId, string localFilePath, IProgress<ICopyProgress> progress);
-        Task<IApiResults<DownloadFileResponse>> DownloadAsync(string fileId, string localFilePath, IProgress<ICopyProgress> progress, CancellationToken cancel);
+        Task<FileNames> GetAsync(ListFileNamesRequest request);
+        Task<FileVersions> GetAsync(ListFileVersionRequest request);
+        Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(string fileId, string localFilePath, IProgress<ICopyProgress> progress);
+        Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(string fileId, string localFilePath, IProgress<ICopyProgress> progress, CancellationToken cancel);
         Task<IApiResults<DownloadFileResponse>> DownloadAsync(string bucketName, string fileName, string localFilePath, IProgress<ICopyProgress> progress);
         Task<IApiResults<DownloadFileResponse>> DownloadAsync(string bucketName, string fileName, string localFilePath, IProgress<ICopyProgress> progress, CancellationToken cancel);
         Task<IApiResults<UploadFileResponse>> UploadAsync(string bucketId, string fileName, string localFilePath, IProgress<ICopyProgress> progress);
@@ -19,6 +22,6 @@ namespace Bytewizer.Backblaze.Agent
         Task<IApiResults<GetFileInfoResponse>> GetInfoAsync(string fileId);
         Task<IApiResults<HideFileResponse>> HideAsync(string bucketId, string fileName);
         Task<IApiResults<DeleteFileVersionResponse>> DeleteAsync(string fileId, string fileName);
-        Task<IApiResults<DeleteFileVersionResponse>> DeleteAllAsync(string bucketId);
+        //Task<IApiResults<DeleteFileVersionResponse>> DeleteAllAsync(string bucketId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,16 +13,14 @@ namespace Bytewizer.Backblaze.Client
         AccountInfo AccountInfo { get; }
         AuthToken AuthToken { get;}
         string TestMode { get; set; }
-        int RetryCount { get; set; }
-        int UploadConnections { get; set; }
         FileSize UploadCutoffSize { get; set; }
         FileSize UploadPartSize { get; set; }
-        int DownloadConnections { get; set; }
         FileSize DownloadCutoffSize { get; set; }
         FileSize DownloadPartSize { get; set; }
         void Connect(string accountId, string applicationKey);
         Task ConnectAsync(string applicationKeyId, string applicationKey);
-        Task<IApiResults<UploadFileResponse>> UploadByIdAsync(UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
+
+        Task<IApiResults<UploadFileResponse>> UploadAsync(UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
         Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync(DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
         Task<IApiResults<DownloadFileResponse>> DownloadAsync(DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel);
         Task<IApiResults<AuthorizeAccountResponse>> AuthorizeAccountAync(string accountId, string applicationKey, CancellationToken cancellationToken);
@@ -33,7 +32,6 @@ namespace Bytewizer.Backblaze.Client
         Task<IApiResults<DeleteKeyResponse>> DeleteKeyAsync(DeleteKeyRequest request, CancellationToken cancellationToken);
         Task<IApiResults<DownloadFileResponse>> DownloadFileByIdAsync(DownloadFileByIdRequest request, CancellationToken cancellationToken);
         Task<IApiResults<DownloadFileResponse>> DownloadFileByIdAsync(DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken);
-        Task<IApiResults<DownloadFileResponse>> DownloadFileByNameAsync(DownloadFileByNameRequest request, CancellationToken cancellationToken);
         Task<IApiResults<DownloadFileResponse>> DownloadFileByNameAsync(DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken);
         Task<IApiResults<UploadFileResponse>> FinishLargeFileAsync(FinishLargeFileRequest request, CancellationToken cancellationToken);
         Task<IApiResults<GetDownloadAuthorizationResponse>> GetDownloadAuthorizationAsync(GetDownloadAuthorizationRequest request, CancellationToken cancellationToken);

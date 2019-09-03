@@ -5,19 +5,19 @@ using Bytewizer.Backblaze.Client;
 
 namespace Bytewizer.Backblaze.Models
 {
-    public class FileList : BaseList<FileObject>
+    public class FileNames : BaseList<FileItem>
     {
         private readonly IApiClient _client;
         private readonly ListFileNamesRequest _request;
 
-        public FileList(IApiClient client, ListFileNamesRequest request)
+        public FileNames(IApiClient client, ListFileNamesRequest request)
             : base (client)
         {
             _client = client;
             _request = request;
         }
 
-        protected override List<FileObject> GetNextPage(out bool isDone)
+        protected override List<FileItem> GetNextPage(out bool isDone)
         {
             var results = _client.ListFileNamesAsync(_request, CancellationToken.None).GetAwaiter().GetResult();
             if (results.IsSuccessStatusCode)
@@ -29,7 +29,7 @@ namespace Bytewizer.Backblaze.Models
             else
             {
                 isDone = true;
-                return new List<FileObject>();
+                return new List<FileItem>();
             }
         }
     }

@@ -15,7 +15,7 @@ namespace Bytewizer.Backblaze.Models
         /// A part objects each one describing one unfinished file.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public List<FileObject> Files { get; internal set; }
+        public List<FileItem> Files { get; internal set; }
 
         /// <summary>
         /// What to pass in to <see cref="ListUnfinishedLargeFilesRequest.StartFileId"/> for the next search to continue where this one left off 

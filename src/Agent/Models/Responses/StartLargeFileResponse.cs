@@ -6,7 +6,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains the results of a <see cref="StartLargeFileRequest"/> operation.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class StartLargeFileResponse : FileObject, IResponse
+    public class StartLargeFileResponse : FileItem, IResponse
     {
         ///	<summary>
         ///	Debugger display for this object.

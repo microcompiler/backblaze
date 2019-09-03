@@ -111,11 +111,11 @@ The following table describes the [Agent Options](https://github.com/microcompil
 | KeyId  | --- | <strong>Required - </strong> The key identifier used to authenticate. |
 | ApplicationKey | --- | <strong>Required - </strong> The secret part of the key used to authenticate. |
 | AgentTimeout | 600 | The time in seconds to wait before the client request times out. |
-| AgentRetryCount | 3 | The number of times the client will retry failed requests before timing out.  |
-| UploadConnections | 3 | The maxium number of parallel upload connections established. |
+| AgentRetryCount | 5 | The number of times the client will retry failed requests before timing out.  |
+| UploadConnections | 2 | The maxium number of parallel upload connections established. |
 | UploadCutoffSize | 200MB | File upload cutoff size in bytes for switching to chunked parts. |
 | UploadPartSize | 200MB | File upload part size in bytes of chunked parts. |
-| DownloadConnections | 5 | The maxium number of parallel download connections established. |
+| DownloadConnections | 6 | The maxium number of parallel download connections established. |
 | DownloadCutoffSize | 200MB | File download cutoff size in bytes for switching to chunked parts. |
 | DownloadPartSize | 200MB | File download part size in bytes of chunked parts. |
 | HandlerLifetime | 600 | The time in seconds that the message handler instance can be reused. |

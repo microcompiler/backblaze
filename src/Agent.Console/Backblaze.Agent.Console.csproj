@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Backblaze.Agent.Console</PackageId>
+    <Authors>Microcompiler</Authors>
+    <Company>Bytewizer Inc.</Company>
+    <Product>Backblaze B2 Client</Product>
+    <LangVersion>7.1</LangVersion>
+    <RootNamespace>Bytewizer.Backblaze.Agent.Console</RootNamespace>
+    <Version>0.8.2</Version>
+    <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage API.</Description>
+    <Copyright>2019 Bytewizer</Copyright>
+    <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
+    <PackageLicense>https://github.com/microcompiler/backblaze/blob/master/LICENSE.md</PackageLicense>
+    <RepositoryUrl>https://github.com/microcompiler/backblaze</RepositoryUrl>
+    <PackageIconUrl>https://github.com/microcompiler/backblaze/raw/master/images/logo.png</PackageIconUrl>
+    <PackageTags>backblaze, b2, cloud-storage, api, csharp</PackageTags>
+    <AssemblyName>Backblaze.Agent.Console</AssemblyName>
+    <RepositoryType></RepositoryType>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.md" Link="LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Agent\Backblaze.Agent.csproj" />
+  </ItemGroup>
+
+</Project>

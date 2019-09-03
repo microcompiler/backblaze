@@ -12,10 +12,10 @@ namespace Bytewizer.Backblaze.Models
     public class Allowed
     {
         /// <summary>
-        /// A list of strings each one naming a capability the key has. 
+        /// A list of capabilities the key has. 
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public List<string> Capabilities { get; set; }
+        public List<Capability> Capabilities { get; set; }
 
         /// <summary>
         /// When present access is restricted to one bucket.

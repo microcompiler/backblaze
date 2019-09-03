@@ -171,30 +171,27 @@ namespace Bytewizer.Backblaze.Client
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await DownloadPolicy.ExecuteAsync(async () =>
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"{AccountInfo.DownloadUrl}b2api/v2/b2_download_file_by_id")
             {
-                var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"{AccountInfo.DownloadUrl}b2api/v2/b2_download_file_by_id")
-                {
-                    Content = CreateJsonContent(request)
-                };
+                Content = CreateJsonContent(request)
+            };
 
-                httpRequest.Headers.SetAuthorization(request.AuthorizationToken, AuthToken.Authorization);
-                httpRequest.Headers.SetRange(request.Range);
-                httpRequest.Headers.SetTestMode(TestMode);
+            httpRequest.Headers.SetAuthorization(request.AuthorizationToken, AuthToken.Authorization);
+            httpRequest.Headers.SetRange(request.Range);
+            httpRequest.Headers.SetTestMode(TestMode);
 
-                httpRequest.Content.Headers.SetContentDisposition(request);
+            httpRequest.Content.Headers.SetContentDisposition(request);
 
-                if (content == null)
-                {
-                    using (var response = await _httpClient.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
-                        return await HandleResponseAsync(response, content);
-                }
-                else
-                {
-                    using (var response = await _httpClient.SendAsync(httpRequest, content, progress, cancellationToken))
-                        return await HandleResponseAsync(response, content);
-                }
-            });
+            if (content == null)
+            {
+                using (var response = await _httpClient.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+                    return await HandleResponseAsync(response, content);
+            }
+            else
+            {
+                using (var response = await _httpClient.SendAsync(httpRequest, content, progress, cancellationToken))
+                    return await HandleResponseAsync(response, content);
+            }
         }
 
         #endregion
@@ -202,33 +199,14 @@ namespace Bytewizer.Backblaze.Client
         #region b2_download_file_by_name
 
         /// <summary>
-        /// Downloads the most recent version of a file without content. 
+        /// Downloads the most recent version of a file without content.
         /// </summary>
         /// <param name="request">The download file request content to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         public async Task<IApiResults<DownloadFileResponse>> DownloadFileByNameAsync
             (DownloadFileByNameRequest request, CancellationToken cancellationToken)
         {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            return await DownloadPolicy.ExecuteAsync(async () =>
-            {
-                var httpRequest = new HttpRequestMessage
-                    (HttpMethod.Get, $"{AccountInfo.DownloadUrl}file/{request.BucketName}/{request.FileName}");
-
-                httpRequest.Headers.SetAuthorization(request.AuthorizationToken, AuthToken.Authorization);
-                httpRequest.Headers.SetRange(request.Range);
-                httpRequest.Headers.SetTestMode(TestMode);
-
-                //TODO: Not sure if this is the best way to handle
-                httpRequest.Content = new StringContent(string.Empty);
-                httpRequest.Content.Headers.ContentDisposition(request);
-
-                using (var response = await _httpClient.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
-                    return await HandleResponseAsync(response, null);
-
-            });
+            return await DownloadFileByNameAsync(request, null, null, cancellationToken);
         }
 
         /// <summary>
@@ -239,28 +217,32 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         public async Task<IApiResults<DownloadFileResponse>> DownloadFileByNameAsync
-            (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken)
+        (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await DownloadPolicy.ExecuteAsync(async () =>
+            var httpRequest = new HttpRequestMessage
+                (HttpMethod.Get, $"{AccountInfo.DownloadUrl}file/{request.BucketName}/{request.FileName}");
+
+            httpRequest.Headers.SetAuthorization(request.AuthorizationToken, AuthToken.Authorization);
+            httpRequest.Headers.SetRange(request.Range);
+            httpRequest.Headers.SetTestMode(TestMode);
+
+            //TODO: Not sure if this is the best way to handle
+            httpRequest.Content = new StringContent(string.Empty);
+            httpRequest.Content.Headers.ContentDisposition(request);
+
+            if (content == null)
             {
-                var httpRequest = new HttpRequestMessage
-                    (HttpMethod.Get, $"{AccountInfo.DownloadUrl}file/{request.BucketName}/{request.FileName}");
-
-                httpRequest.Headers.SetAuthorization(request.AuthorizationToken, AuthToken.Authorization);
-                httpRequest.Headers.SetRange(request.Range);
-                httpRequest.Headers.SetTestMode(TestMode);
-
-                //TODO: Not sure if this is the best way to handle
-                httpRequest.Content = new StringContent(string.Empty);
-                httpRequest.Content.Headers.ContentDisposition(request);
-
+                using (var response = await _httpClient.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+                    return await HandleResponseAsync(response, null);
+            }
+            else
+            {
                 using (var response = await _httpClient.SendAsync(httpRequest, content, progress, cancellationToken))
                     return await HandleResponseAsync(response, content);
-
-            });
+            }
         }
 
         #endregion
@@ -370,7 +352,7 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<GetUploadUrlResponse>> GetUploadUrlAsync
             (GetUploadUrlRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
         {
-            return await _cache.GetOrCreateAsync(CacheKeys.UploadUrl, async(entry) =>
+            return await _cache.GetOrCreateAsync(CacheKeys.UploadUrl, async (entry) =>
             {
                 entry.AbsoluteExpirationRelativeToNow = cacheTTL;
                 return await GetUploadUrlAsync(request, cancellationToken);
@@ -508,21 +490,18 @@ namespace Bytewizer.Backblaze.Client
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await InvokePolicy.ExecuteAsync(async () =>
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"{AccountInfo.ApiUrl}b2_start_large_file")
             {
-                var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"{AccountInfo.ApiUrl}b2_start_large_file")
-                {
-                    Content = CreateJsonContent(request)
-                };
+                Content = CreateJsonContent(request)
+            };
 
-                httpRequest.Headers.SetAuthorization(AuthToken.Authorization);
-                httpRequest.Headers.SetBzInfo(request.FileInfo);
-                httpRequest.Headers.SetTestMode(TestMode);
+            httpRequest.Headers.SetAuthorization(AuthToken.Authorization);
+            httpRequest.Headers.SetBzInfo(request.FileInfo);
+            httpRequest.Headers.SetTestMode(TestMode);
 
-                using (var results = await _httpClient.SendAsync(httpRequest, cancellationToken))
-                    return await HandleResponseAsync<StartLargeFileResponse>(results);
+            using (var results = await _httpClient.SendAsync(httpRequest, cancellationToken))
+                return await HandleResponseAsync<StartLargeFileResponse>(results);
 
-            });
         }
 
         #endregion
@@ -558,49 +537,45 @@ namespace Bytewizer.Backblaze.Client
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await UploadPolicy.ExecuteAsync(async () =>
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, request.UploadUrl);
+
+            httpRequest.Headers.SetAuthorization(request.AuthorizationToken);
+            httpRequest.Headers.SetBzInfo(request.FileInfo);
+            httpRequest.Headers.SetTestMode(TestMode);
+
+            using (var httpContent = new ProgressStreamContent(content, progress, false))
             {
-                var httpRequest = new HttpRequestMessage(HttpMethod.Post, request.UploadUrl);
+                var hash = content.ToSha1();
 
-                httpRequest.Headers.SetAuthorization(request.AuthorizationToken);
-                httpRequest.Headers.SetBzInfo(request.FileInfo);
-                httpRequest.Headers.SetTestMode(TestMode);
+                httpRequest.Content = httpContent;
+                httpRequest.Content.Headers.ContentLength = content.Length;
+                httpRequest.Content.Headers.ContentSha1(hash);
+                httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
+                httpRequest.Content.Headers.SetContentFileName(request.FileName);
 
-                using (var httpContent = new ProgressStreamContent(content, progress, false))
+                using (var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken))
                 {
-                    var hash = content.ToSha1();
+                    var results = await HandleResponseAsync<UploadFileResponse>(httpResponse);
 
-                    httpRequest.Content = httpContent;
-                    httpRequest.Content.Headers.ContentLength = content.Length;
-                    httpRequest.Content.Headers.ContentSha1(hash);
-                    httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
-                    httpRequest.Content.Headers.SetContentFileName(request.FileName);
-
-                    using (var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken))
+                    if (results.IsSuccessStatusCode)
                     {
-                        var results = await HandleResponseAsync<UploadFileResponse>(httpResponse);
+                        if (hash.Equals(results.Response.ContentSha1))
+                            return results;
 
-                        if (results.IsSuccessStatusCode)
+                        if (results.Response.ContentSha1.Equals("none"))
                         {
-                            //TestFail("test");
-
-                            if (hash.Equals(results.Response.ContentSha1))
+                            var largeFileHash = results.Response.FileInfo.GetLargeFileSha1();
+                            if (hash.Equals(largeFileHash))
                                 return results;
-
-                            if (results.Response.ContentSha1.Equals("none"))
-                            {
-                                var largeFileHash = results.Response.FileInfo.GetLargeFileSha1();
-                                if (hash.Equals(largeFileHash))
-                                    return results;
-                            }
-
-                            throw new InvalidHashException($"Response checksum failed: Hash verify on '{results.Response.FileName}' failed.");
                         }
 
-                        return results;
+                        throw new InvalidHashException($"Response checksum failed: Hash verify on '{results.Response.FileName}' failed.");
                     }
+
+                    return results;
                 }
-            });
+            }
+
         }
 
         #endregion
@@ -619,40 +594,35 @@ namespace Bytewizer.Backblaze.Client
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await UploadPolicy.ExecuteAsync(async () =>
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, request.UploadUrl);
+
+            httpRequest.Headers.SetAuthorization(request.AuthorizationToken);
+            httpRequest.Headers.SetPartNumber(request.PartNumber);
+            httpRequest.Headers.SetTestMode(TestMode);
+
+            using (var httpContent = new ProgressStreamContent(content, progress, false))
             {
-                var httpRequest = new HttpRequestMessage(HttpMethod.Post, request.UploadUrl);
+                var hash = content.ToSha1();
 
-                httpRequest.Headers.SetAuthorization(request.AuthorizationToken);
-                httpRequest.Headers.SetPartNumber(request.PartNumber);
-                httpRequest.Headers.SetTestMode(TestMode);
+                httpRequest.Content = httpContent;
+                httpRequest.Content.Headers.ContentLength = content.Length;
+                httpRequest.Content.Headers.ContentSha1(hash);
 
-                using (var httpContent = new ProgressStreamContent(content, progress, false))
+                using (var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken))
                 {
-                    var hash = content.ToSha1();
+                    var results = await HandleResponseAsync<UploadPartResponse>(httpResponse);
 
-                    httpRequest.Content = httpContent;
-                    httpRequest.Content.Headers.ContentLength = content.Length;
-                    httpRequest.Content.Headers.ContentSha1(hash);
-
-                    using (var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken))
+                    if (results.IsSuccessStatusCode)
                     {
-                        var results = await HandleResponseAsync<UploadPartResponse>(httpResponse);
+                        if (hash.Equals(results.Response.ContentSha1))
+                            return results;
 
-                        if (results.IsSuccessStatusCode)
-                        {
-                            //TestFail("test");
-
-                            if (hash.Equals(results.Response.ContentSha1))
-                                return results;
-
-                            throw new InvalidHashException($"Response checksum failed: Hash verify on part {results.Response.PartNumber} file id '{results.Response.FileId}' failed.");
-                        }
-
-                        return results;
+                        throw new InvalidHashException($"Response checksum failed: Hash verify on part {results.Response.PartNumber} file id '{results.Response.FileId}' failed.");
                     }
+
+                    return results;
                 }
-            });
+            }
         }
 
         #endregion
@@ -677,19 +647,16 @@ namespace Bytewizer.Backblaze.Client
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
-            return await InvokePolicy.ExecuteAsync(async () =>
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, url)
             {
-                var httpRequest = new HttpRequestMessage(HttpMethod.Post, url)
-                {
-                    Content = CreateJsonContent(content)
-                };
+                Content = CreateJsonContent(content)
+            };
 
-                httpRequest.Headers.SetAuthorization(AuthToken.Authorization);
-                httpRequest.Headers.SetTestMode(TestMode);
+            httpRequest.Headers.SetAuthorization(AuthToken.Authorization);
+            httpRequest.Headers.SetTestMode(TestMode);
 
-                using (var results = await _httpClient.SendAsync(httpRequest, cancellationToken))
-                    return await HandleResponseAsync<TResponse>(results);
-            });
+            using (var results = await _httpClient.SendAsync(httpRequest, cancellationToken))
+                return await HandleResponseAsync<TResponse>(results);
         }
 
         /// <summary>
@@ -748,8 +715,6 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="content">Downloaded stream </param>
         private void VerifyDownloadHash(DownloadFileResponse response, Stream content)
         {
-            //TestFail("test");
-
             if (content.CompareTo(string.Empty))
                 return;
 
@@ -766,18 +731,6 @@ namespace Bytewizer.Backblaze.Client
             throw new InvalidHashException($"Response checksum failed: Hash verify on '{response.FileName.ToUrlDecode()}' failed.");
         }
 
-        //private void TestFail(string filename)
-        //{
-        //    if (true)
-        //    {
-        //        Random rand = new Random();
-        //        if (!Convert.ToBoolean(rand.Next(0, 5)))
-        //        {
-        //            throw new InvalidHashException($"Response checksum failed: Hash verify on '{filename}' failed.");
-        //        }
-        //    }
-        //}
-
         /// <summary>
         /// Handle a HTTP error response operation from the Backblaze B2 server.
         /// </summary>
@@ -785,23 +738,14 @@ namespace Bytewizer.Backblaze.Client
         private async Task<IApiResults<TResponse>> HandleErrorResponseAsync<TResponse>(HttpResponseMessage response)
         where TResponse : IResponse
         {
-            var error = await ReadAsJsonAsync<ErrorResponse>(response);
-
-            _logger.LogError($"Response error code:{error.Code} status:{error.Status} message:{error.Message}");
-
             if (response.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                if (error.Code == "expired_auth_token")
-                    throw new AuthenticationException("Authentication failed: Invalid or expired token.");
-
-                if (error.Code == "bad_auth_token")
-                    throw new AuthenticationException("Authentication failed: Invalid key id or application key.");
-
-                throw new AuthenticationException($"Authentication failed: {error.Message}.");
-            }
+                throw new AuthenticationException("Authentication failed: Invalid or expired token.");
 
             if (response.StatusCode == HttpStatusCode.Forbidden)
                 throw new CapExceededExecption("Cap exceeded: Account cap exceeded or in bad standing.");
+
+            var error = await ReadAsJsonAsync<ErrorResponse>(response);
+            _logger.LogError($"Response error code:{error.Code} status:{error.Status} message:{error.Message}");
 
             return new ApiResults<TResponse>(response, error);
         }
@@ -826,24 +770,15 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="content">A instance implementing <see cref="HttpResponseMessage"/>.</param>
         private async Task<T> ReadAsJsonAsync<T>(HttpResponseMessage response)
         {
-            string json = await ValidateAndGetString(response.Content);
+            var mediaType = response.Content.Headers.ContentType?.MediaType;
 
-            _logger.LogTrace($"Received B2 API Response: {json}");
-            return JsonSerializer.DeserializeObject<T>(json);
-        }
-
-        /// <summary>
-        /// Validate content type and read string.
-        /// </summary>
-        /// <param name="content">A instance implementing <see cref="HttpContent"/>.</param>
-        private static Task<string> ValidateAndGetString(HttpContent content)
-        {
-            var mediaType = content.Headers.ContentType?.MediaType;
             if (!string.Equals(mediaType, "application/json", StringComparison.OrdinalIgnoreCase))
-            {
                 throw new ApiException($"Invalid content type: Content header '{mediaType}' is an invalid media type.");
-            }
-            return content.ReadAsStringAsync();
+
+            string json = await response.Content?.ReadAsStringAsync();
+            _logger.LogTrace($"Received B2 API Response: {json}");
+
+            return JsonSerializer.DeserializeObject<T>(json);
         }
 
         #endregion

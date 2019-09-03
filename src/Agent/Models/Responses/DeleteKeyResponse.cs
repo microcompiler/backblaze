@@ -6,7 +6,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains the results of a <see cref="DeleteKeyRequest"/> operation.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class DeleteKeyResponse : KeyObject, IResponse
+    public class DeleteKeyResponse : KeyItem, IResponse
     {
         ///	<summary>
         ///	Debugger display for this object.

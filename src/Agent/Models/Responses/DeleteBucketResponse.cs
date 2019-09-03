@@ -6,7 +6,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains the results of a <see cref="DeleteBucketRequest"/> operation.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class DeleteBucketResponse: BucketObject , IResponse
+    public class DeleteBucketResponse: BucketItem , IResponse
     {
         ///	<summary>
         ///	Debugger display for this object.

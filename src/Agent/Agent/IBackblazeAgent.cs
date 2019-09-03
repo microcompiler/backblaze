@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
 
 namespace Bytewizer.Backblaze.Agent

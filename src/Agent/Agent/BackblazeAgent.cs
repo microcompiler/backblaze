@@ -9,11 +9,13 @@ using Polly;
 
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
+using System.Security.Authentication;
 
 namespace Bytewizer.Backblaze.Agent
 {
     public partial class BackblazeAgent : DisposableObject, IBackblazeAgent
     {
+
         //TODO: Backblaze agent class comments.
         //TODO: Disable checksum option using "do_not_verify" sha1.
 
@@ -33,14 +35,16 @@ namespace Bytewizer.Backblaze.Agent
 
                 // Sets client options 
                 _client.TestMode = _options.TestMode;
-                _client.UploadConnections = _options.UploadConnections;
                 _client.UploadCutoffSize = _options.UploadCutoffSize;
                 _client.UploadPartSize = _options.UploadPartSize;
-                _client.DownloadConnections = _options.DownloadConnections;
                 _client.DownloadCutoffSize = _options.DownloadCutoffSize;
                 _client.DownloadPartSize = _options.DownloadPartSize;
                 _client.AccountInfo.AuthUrl = _options.AuthUrl;
-                _client.RetryCount = _options.AgentRetryCount;
+
+                // Initialize policies
+                InvokePolicy = CreateInvokePolicy();
+                DownloadPolicy = CreateDownloadPolicy();
+                UploadPolicy = CreateUploadPolicy();
 
                 // Connect to the Backblaze B2 API server
                 _client.Connect(_options.KeyId, _options.ApplicationKey);
@@ -134,6 +138,26 @@ namespace Bytewizer.Backblaze.Agent
 
         #endregion
 
+        #region Private Properties
+
+        /// <summary>
+        /// Retry policy used for downloading.
+        /// </summary>
+        protected IAsyncPolicy DownloadPolicy { get; private set; }
+
+
+        /// <summary>
+        /// Retry policy used for uploading.
+        /// </summary>
+        protected IAsyncPolicy UploadPolicy { get; private set; }
+
+        /// <summary>
+        /// Retry policy used for invoking post requests.
+        /// </summary>
+        protected IAsyncPolicy InvokePolicy { get; private set; }
+
+        #endregion
+
         #region Public Methods
 
         #region UploadAsync
@@ -187,7 +211,10 @@ namespace Bytewizer.Backblaze.Agent
         public async Task<IApiResults<UploadFileResponse>> UploadAsync
             (UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await _client.UploadByIdAsync(request, content, progress, cancel);
+            return await UploadPolicy.ExecuteAsync(async () =>
+            {
+                return await _client.UploadAsync(request, content, progress, cancel);
+            });
         }
 
         #endregion
@@ -244,7 +271,10 @@ namespace Bytewizer.Backblaze.Agent
         public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await _client.DownloadByIdAsync(request, content, progress, cancel);
+            return await DownloadPolicy.ExecuteAsync(async () =>
+            {
+                return await _client.DownloadByIdAsync(request, content, progress, cancel);
+            });
         }
 
         // Download by bucket name and file name
@@ -297,7 +327,10 @@ namespace Bytewizer.Backblaze.Agent
         public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
             (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await _client.DownloadAsync(request, content, progress, cancel);
+            return await DownloadPolicy.ExecuteAsync(async () =>
+            {
+                return await _client.DownloadAsync(request, content, progress, cancel);
+            });
         }
 
         #endregion
@@ -306,7 +339,88 @@ namespace Bytewizer.Backblaze.Agent
 
         #region Private Methods
 
+        /// <summary>
+        /// Create a retry policy for upload execptions.
+        /// </summary>
+        private IAsyncPolicy CreateUploadPolicy()
+        {
+            var auth = CreateAuthenticationPolicy();
+            var hash = CreateInvalidHashPolicy();
+            var bulk = Policy.BulkheadAsync(_options.UploadConnections, int.MaxValue);
 
+            return Policy.WrapAsync(auth, hash, bulk);
+        }
+
+        /// <summary>
+        /// Create a retry policy for download execptions.
+        /// </summary>
+        private IAsyncPolicy CreateDownloadPolicy()
+        {
+
+            var auth = CreateAuthenticationPolicy();
+            var hash = CreateInvalidHashPolicy();
+            var bulk = Policy.BulkheadAsync(_options.DownloadConnections, int.MaxValue);
+
+            return Policy.WrapAsync(auth, hash, bulk);
+        }
+
+        /// <summary>
+        /// Create a retry policy for Invoke execptions.
+        /// </summary>
+        private IAsyncPolicy CreateInvokePolicy()
+        {
+            var auth = CreateAuthenticationPolicy();
+            var hash = CreateInvalidHashPolicy();
+            var bulk = Policy.BulkheadAsync(_options.DownloadConnections, int.MaxValue);
+            return Policy.WrapAsync(auth, hash, bulk);
+        }
+
+        /// <summary>
+        /// Create a retry policy for authentication execptions.
+        /// </summary>
+        private IAsyncPolicy CreateAuthenticationPolicy()
+        {
+            var auth = Policy
+                .Handle<AuthenticationException>()
+                .WaitAndRetryAsync(_options.AgentRetryCount,
+                    retryAttempt => GetSleepDuration(retryAttempt),
+                    onRetry: async (exception, timeSpan, count, context) =>
+                    {
+                        _logger.LogWarning($"{exception.Message} Retry attempt {count} waiting {timeSpan.TotalSeconds} seconds before next retry.");
+                        await _client.ConnectAsync(_options.KeyId, _options.ApplicationKey);
+                    });
+
+            return auth;
+        }
+
+        /// <summary>
+        /// Create a retry policy for invalid hash execptions.
+        /// </summary>
+        private IAsyncPolicy CreateInvalidHashPolicy()
+        {
+            var hash = Policy
+               .Handle<InvalidHashException>()
+               .WaitAndRetryAsync(_options.AgentRetryCount,
+                   retryAttempt => GetSleepDuration(retryAttempt),
+                   onRetry: (exception, timeSpan, count, context) =>
+                   {
+                       _logger.LogWarning($"{exception.Message} Retry attempt {count} waiting {timeSpan.TotalSeconds} seconds before next retry.");
+                   });
+
+            return hash;
+        }
+
+        /// <summary>
+        /// Get the duration to wait (exponential backoff) allowing an increasing wait time.
+        /// </summary>
+        /// <param name="retryAttempt">The retry attempt count.</param>
+        public static TimeSpan GetSleepDuration(int retryAttempt)
+        {
+            Random jitterer = new Random();
+
+            return TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+                    + TimeSpan.FromMilliseconds(jitterer.Next(10, 1000));
+        }
 
         #endregion
     }

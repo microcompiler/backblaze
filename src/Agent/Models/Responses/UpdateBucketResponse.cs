@@ -6,7 +6,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains the results of a <see cref="UpdateBucketRequest"/> operation.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class UpdateBucketResponse : BucketObject, IResponse
+    public class UpdateBucketResponse : BucketItem, IResponse
     {
         ///	<summary>
         ///	Debugger display for this object.

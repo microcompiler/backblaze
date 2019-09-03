@@ -8,7 +8,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains the results of a <see cref="CreateKeyRequest"/> operation.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class CreateKeyResponse : KeyObject, IResponse
+    public class CreateKeyResponse : KeyItem, IResponse
     {   
         /// <summary>
         /// The secret part of the key. This is the only time it will be returned so you need to keep it. 

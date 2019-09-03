@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
@@ -9,7 +10,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains response information related to a key.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class KeyObject
+    public class KeyItem
     {
         /// <summary>
         /// The name assigned when the key was created.
@@ -28,7 +29,7 @@ namespace Bytewizer.Backblaze.Models
         /// deleteKeys, listBuckets, writeBuckets, deleteBuckets, listFiles, readFiles, shareFiles, writeFiles, and deleteFiles. 
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string[] Capabilities { get; set; }
+        public Capabilities Capabilities { get; set; }
 
         /// <summary>
         /// The account id that this application key is for.

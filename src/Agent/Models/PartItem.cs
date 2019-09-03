@@ -9,7 +9,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains response information related to a file part.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class PartObject
+    public class PartItem
     {
         /// <summary>
         /// The unique identifier for this file. 

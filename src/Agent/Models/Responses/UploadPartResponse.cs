@@ -6,7 +6,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains the results of a <see cref="UploadPartRequest"/> operation.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class UploadPartResponse : PartObject, IResponse
+    public class UploadPartResponse : PartItem, IResponse
     {
         ///	<summary>
         ///	Debugger display for this object.

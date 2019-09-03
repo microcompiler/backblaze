@@ -11,28 +11,48 @@ namespace Bytewizer.Backblaze.Agent
     {
         public IBackblazeFilesAgent Files { get { return this; } }
 
-        async Task<IApiResults<DownloadFileResponse>> IBackblazeFilesAgent.DownloadAsync
-            (string fileId, string localFilePath, IProgress<ICopyProgress> progress)
+        public Task<FileNames> GetAsync(ListFileNamesRequest request)
         {
-            // Cancellation token overload
-            return await Files.DownloadAsync(fileId, localFilePath, progress, cancellationToken);
+            return Task.FromResult(new FileNames(_client, request));
         }
 
-        async Task<IApiResults<DownloadFileResponse>> IBackblazeFilesAgent.DownloadAsync
+        public Task<FileVersions> GetAsync(ListFileVersionRequest request)
+        {
+            return Task.FromResult(new FileVersions(_client, request));
+        }
+
+        async Task<IApiResults<DownloadFileResponse>> IBackblazeFilesAgent.DownloadByIdAsync
+        (string fileId, string localFilePath, IProgress<ICopyProgress> progress)
+        {
+            // Cancellation token overload
+            return await Files.DownloadByIdAsync(fileId, localFilePath, progress, cancellationToken);
+        }
+
+        async Task<IApiResults<DownloadFileResponse>> IBackblazeFilesAgent.DownloadByIdAsync
             (string fileId, string localFilePath, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            using (var content = File.Create(localFilePath))
+
+            if (!Directory.Exists(Path.GetDirectoryName(localFilePath)))
             {
-                var results = await DownloadAsync(fileId, localFilePath, content, progress, cancel);
-                if (results.IsSuccessStatusCode)
-                {
-                    if (results.Response.FileInfo.TryGetValue("src_last_modified_millis", out string lastModified))
-                    {
-                        File.SetLastWriteTime(localFilePath, DateTime.Now);
-                    }
-                }
-                return results;
+                Directory.CreateDirectory(Path.GetDirectoryName(localFilePath));
             }
+
+            return await DownloadPolicy.ExecuteAsync(async () =>
+            {
+                using (var content = File.Create(localFilePath))
+                {
+                    var request = new DownloadFileByIdRequest(fileId);
+                    var results = await _client.DownloadByIdAsync(request, content, progress, cancel);
+                    if (results.IsSuccessStatusCode)
+                    {
+                        if (results.Response.FileInfo.TryGetValue("src_last_modified_millis", out string lastModified))
+                        {
+                            File.SetLastWriteTime(localFilePath, DateTime.Now);
+                        }
+                    }
+                    return results;
+                }
+            });
         }
 
         async Task<IApiResults<DownloadFileResponse>> IBackblazeFilesAgent.DownloadAsync
@@ -45,18 +65,27 @@ namespace Bytewizer.Backblaze.Agent
         async Task<IApiResults<DownloadFileResponse>> IBackblazeFilesAgent.DownloadAsync
             (string bucketName, string fileName, string localFilePath, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            using (var content = File.Create(localFilePath))
+            if (!Directory.Exists(Path.GetDirectoryName(localFilePath)))
             {
-                var results = await DownloadAsync(bucketName, fileName, content, progress, cancel);
-                if (results.IsSuccessStatusCode)
-                {
-                    if (results.Response.FileInfo.TryGetValue("src_last_modified_millis", out string lastModified))
-                    {
-                        File.SetLastWriteTime(localFilePath, DateTime.Now);
-                    }
-                }
-                return results;
+                Directory.CreateDirectory(Path.GetDirectoryName(localFilePath));
             }
+
+            return await DownloadPolicy.ExecuteAsync(async () =>
+            {
+                using (var content = File.Create(localFilePath))
+                {
+                    var request = new DownloadFileByNameRequest(bucketName, fileName);
+                    var results = await _client.DownloadAsync(request, content, progress, cancel);
+                    if (results.IsSuccessStatusCode)
+                    {
+                        if (results.Response.FileInfo.TryGetValue("src_last_modified_millis", out string lastModified))
+                        {
+                            File.SetLastWriteTime(localFilePath, DateTime.Now);
+                        }
+                    }
+                    return results;
+                }
+            });
         }
 
         async Task<IApiResults<UploadFileResponse>> IBackblazeFilesAgent.UploadAsync
@@ -69,33 +98,37 @@ namespace Bytewizer.Backblaze.Agent
         async Task<IApiResults<UploadFileResponse>> IBackblazeFilesAgent.UploadAsync
             (string bucketId, string fileName, string localFilePath, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            using (var content = File.OpenRead(localFilePath))
+            return await UploadPolicy.ExecuteAsync(async () =>
             {
-                var fileInfo = new Models.FileInfo();
+                using (var content = File.OpenRead(localFilePath))
+                {
+                    var fileInfo = new Models.FileInfo();
 
-                // get last modified date
-                DateTime lastModified = File.GetLastWriteTime(localFilePath);
+                    // get last modified date
+                    DateTime lastModified = File.GetLastWriteTime(localFilePath);
 
-                // check whether a file is read only
-                var isReadOnly = ((File.GetAttributes(localFilePath) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly);
-                fileInfo.Add("src_file_readonly", isReadOnly.ToString().ToLower());
+                    // check whether a file is read only
+                    var isReadOnly = ((File.GetAttributes(localFilePath) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly);
+                    fileInfo.Add("src_file_readonly", isReadOnly.ToString().ToLower());
 
-                // check whether a file is hidden
-                var isHidden = ((File.GetAttributes(localFilePath) & FileAttributes.Hidden) == FileAttributes.Hidden);
-                fileInfo.Add("src_file_hidden", isHidden.ToString().ToLower());
+                    // check whether a file is hidden
+                    var isHidden = ((File.GetAttributes(localFilePath) & FileAttributes.Hidden) == FileAttributes.Hidden);
+                    fileInfo.Add("src_file_hidden", isHidden.ToString().ToLower());
 
-                // check whether a file has archive attribute
-                var isArchive = ((File.GetAttributes(localFilePath) & FileAttributes.Archive) == FileAttributes.Archive);
-                fileInfo.Add("src_file_archive", isArchive.ToString().ToLower());
+                    // check whether a file has archive attribute
+                    var isArchive = ((File.GetAttributes(localFilePath) & FileAttributes.Archive) == FileAttributes.Archive);
+                    fileInfo.Add("src_file_archive", isArchive.ToString().ToLower());
 
-                // check whether a file has compressed attribute
-                var isCompressed = ((File.GetAttributes(localFilePath) & FileAttributes.Compressed) == FileAttributes.Compressed);
-                fileInfo.Add("src_file_compressed", isCompressed.ToString().ToLower());
+                    // check whether a file has compressed attribute
+                    var isCompressed = ((File.GetAttributes(localFilePath) & FileAttributes.Compressed) == FileAttributes.Compressed);
+                    fileInfo.Add("src_file_compressed", isCompressed.ToString().ToLower());
 
-                var request = new UploadFileByBucketIdRequest(bucketId, fileName) { LastModified = lastModified, FileInfo = fileInfo };
+                    var request = new UploadFileByBucketIdRequest(bucketId, fileName) { LastModified = lastModified, FileInfo = fileInfo };
 
-                return await UploadAsync(request, content, progress, cancel);
-            }
+                    return await _client.UploadAsync(request, content, progress, cancel);
+
+                }
+            });
         }
 
         async Task<IApiResults<ListFileNamesResponse>> IBackblazeFilesAgent.GetNamesAsync
@@ -106,10 +139,10 @@ namespace Bytewizer.Backblaze.Agent
                 Prefix = prefix,
                 Delimiter = delimiter,
                 StartFileName = startFileName,
-                MaxFileCount = 10000
+                MaxFileCount = maxFileCount
             };
 
-            return await _client.ListFileNamesAsync(request, cancellationToken);
+            return await InvokePolicy.ExecuteAsync(() => _client.ListFileNamesAsync(request, cancellationToken));
         }
 
         async Task<IApiResults<ListFileVersionResponse>> IBackblazeFilesAgent.GetVersionsAsync
@@ -123,7 +156,7 @@ namespace Bytewizer.Backblaze.Agent
                 MaxFileCount = maxFileCount
             };
 
-            return await _client.ListFileVersionsAsync(request, cancellationToken);
+            return await InvokePolicy.ExecuteAsync(() => _client.ListFileVersionsAsync(request, cancellationToken));
         }
 
         async Task<IApiResults<GetFileInfoResponse>> IBackblazeFilesAgent.GetInfoAsync
@@ -131,14 +164,14 @@ namespace Bytewizer.Backblaze.Agent
         {
             var request = new GetFileInfoRequest(fileId);
 
-            return await _client.GetFileInfoAsync(request, cancellationToken);
+            return await InvokePolicy.ExecuteAsync(() => _client.GetFileInfoAsync(request, cancellationToken));
         }
 
         async Task<IApiResults<HideFileResponse>> IBackblazeFilesAgent.HideAsync
             (string bucketId, string fileName)
         {
             var request = new HideFileRequest(bucketId, fileName);
-            return await _client.HideFileAsync(request, cancellationToken);
+            return await InvokePolicy.ExecuteAsync(() => _client.HideFileAsync(request, cancellationToken));
         }
 
         async Task<IApiResults<DeleteFileVersionResponse>> IBackblazeFilesAgent.DeleteAsync
@@ -146,28 +179,28 @@ namespace Bytewizer.Backblaze.Agent
         {
             var request = new DeleteFileVersionRequest(fileId, fileName);
 
-            return await _client.DeleteFileVersionAsync(request, cancellationToken);
+            return await InvokePolicy.ExecuteAsync(() => _client.DeleteFileVersionAsync(request, cancellationToken));
         }
 
-        async Task<IApiResults<DeleteFileVersionResponse>> IBackblazeFilesAgent.DeleteAllAsync
-            (string bucketId)
-        {
-            var results = await Files.GetVersionsAsync(bucketId);
-            if (results.IsSuccessStatusCode)
-            {
-                foreach (var file in results.Response.Files)
-                {
-                    return await Files.DeleteAsync(file.FileId, file.FileName);
-                }
-            }
+        //async Task IBackblazeFilesAgent.DeleteAllAsync
+        //    (string bucketId)
+        //{
+        //    return await InvokePolicy.ExecuteAsync(async () =>
+        //    {
+        //        var results = await Files.GetVersionsAsync(bucketId);
+        //        results.EnsureSuccessStatusCode();
 
-            return default;
-        }
+        //        foreach (var file in results.Response.Files)
+        //        {
+        //            var request = new DeleteFileVersionRequest(file.FileId, file.FileName);
+        //            await _client.DeleteFileVersionAsync(request, cancellationToken);
+        //        }
+        //    });
+        //}
     }
 
     public static class BackblazeAgentExtensions
     {
-
         public static async Task<IApiResults<ListFileNamesResponse>> GetNamesAsync
            (this IBackblazeFilesAgent filesAgent, string bucketId)
         {

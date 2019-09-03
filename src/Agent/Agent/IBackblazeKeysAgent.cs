@@ -11,11 +11,9 @@ namespace Bytewizer.Backblaze.Agent
     {
         Task<IApiResults<ListKeysResponse>> GetAsync();
         Task<IApiResults<ListKeysResponse>> GetAsync(ListKeysRequest request);
-
         Task<IApiResults<CreateKeyResponse>> CreateAsync(CreateKeyRequest request);
-        Task<IApiResults<CreateKeyResponse>> CreateAsync(string[] capabilities, string keyName);
-        Task<IApiResults<CreateKeyResponse>> CreateAsync(string accountId, string[] capabilities, string keyName);
-
+        Task<IApiResults<CreateKeyResponse>> CreateAsync(Capabilities capabilities, string keyName);
+        Task<IApiResults<CreateKeyResponse>> CreateAsync(string accountId, Capabilities capabilities, string keyName);
         Task<IApiResults<DeleteKeyResponse>> DeleteAsync(string applicationKeyId);
     }
 }

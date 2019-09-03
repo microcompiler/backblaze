@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 using Newtonsoft.Json;
@@ -38,14 +39,14 @@ namespace Bytewizer.Backblaze.Models
         /// <param name="accountId">The account id.</param>
         /// <param name="capabilities">A list of strings each one naming a capability the new key should have.</param>
         /// <param name="keyName">The name for this key.</param>
-        public CreateKeyRequest(string accountId, string[] capabilities, string keyName)
+        public CreateKeyRequest(string accountId, Capabilities capabilities, string keyName)
         {
             // Validate required arguments
             if (string.IsNullOrWhiteSpace(accountId))
                 throw new ArgumentException("Argument can not be null, empty, or consist only of white-space characters.", nameof(accountId));
 
-            if (capabilities.Length == 0)
-                throw new ArgumentException("Argument must containe at least one capabilitiy.", nameof(capabilities));
+            //if (capabilities.Length == 0)
+            //    throw new ArgumentException("Argument must containe at least one capabilitiy.", nameof(capabilities));
 
             if (string.IsNullOrWhiteSpace(keyName))
                 throw new ArgumentException("Argument can not be null, empty, or consist only of white-space characters.", nameof(keyName));
@@ -73,7 +74,7 @@ namespace Bytewizer.Backblaze.Models
         /// deleteKeys, listBuckets, writeBuckets, deleteBuckets, listFiles, readFiles, shareFiles, writeFiles, and deleteFiles. 
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string[] Capabilities { get; private set; }
+        public Capabilities Capabilities { get; private set; }
 
         /// <summary>
         /// The name for this key. There is no requirement that the name be unique. The name cannot be used to look up the key.

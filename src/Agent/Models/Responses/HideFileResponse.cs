@@ -6,7 +6,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains the results of a <see cref="HideFileRequest"/> operation.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class HideFileResponse : FileObject, IResponse
+    public class HideFileResponse : FileItem, IResponse
     {
         ///	<summary>
         ///	Debugger display for this object.

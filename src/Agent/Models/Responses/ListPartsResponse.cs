@@ -15,7 +15,7 @@ namespace Bytewizer.Backblaze.Models
         /// A list of part objects each one describing one part.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public List<PartObject> Parts { get; internal set; }
+        public List<PartItem> Parts { get; internal set; }
 
         /// <summary>
         /// What to pass in to <see cref="ListPartsRequest.StartPartNumber"/> for the next search to continue where this one left off or null if there are no 

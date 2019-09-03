@@ -11,7 +11,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Bytewizer.Backblaze.Agent;
 using Bytewizer.Backblaze.Models;
-
+using System.Security.Cryptography;
+using System.Threading;
+using System.IO.Compression;
+using System.Diagnostics;
 
 namespace Backblaze.Test
 {
@@ -115,10 +118,30 @@ namespace Backblaze.Test
             _accountId = _storage.Agent.AccountId;
 
             // Initialize test bucket
-            InitializeBucketAsync().GetAwaiter().GetResult();
+            InitializeAsync().GetAwaiter().GetResult();
+
+        }
+        private static void ConfigureServices(IServiceCollection services)
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("settings.json", optional: true, reloadOnChange: true)
+                .Build();
+
+            // Add logging
+            services.AddLogging(builder =>
+            {
+                builder.AddConfiguration(config.GetSection("Logging"));
+                builder.AddDebug();
+            }).Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Debug);
+
+            // Add services
+            services.AddBackblazeAgent(config.GetSection("Agent"));
+
+            services.AddSingleton<Storage>();
         }
 
-        private async Task InitializeBucketAsync()
+        private async Task InitializeAsync()
         {
             // Get test bucket
             var bucketList = await _storage.Agent.Buckets.GetAsync();
@@ -140,7 +163,7 @@ namespace Backblaze.Test
                 _fileId = fileResults.Response.FileId;
 
                 // Create a test key
-                var capabilities = new string[] { "listBuckets", "listFiles", "readFiles", "shareFiles", "writeFiles", "deleteFiles" };
+                var capabilities = new Capabilities { Capability.ListBuckets, Capability.ListFiles, Capability.ReadFiles, Capability.ShareFiles, Capability.WriteFiles, Capability.DeleteFiles };
                 var keyResults = await _storage.Agent.Keys.CreateAsync(capabilities, KeyName);
             }
             else
@@ -154,28 +177,8 @@ namespace Backblaze.Test
                 _fileId = testFile.FileId;
             }
 
-            Assert.IsNotNull(_bucketId);
-            Assert.IsNotNull(_fileId);
-        }
-
-        private static void ConfigureServices(IServiceCollection services)
-        {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("settings.json", optional: true, reloadOnChange: true)
-                .Build();
-
-            // Add logging
-            services.AddLogging(builder =>
-            {
-                builder.AddConfiguration(config.GetSection("Logging"));
-                builder.AddDebug();
-            }).Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Debug);
-
-            // Add services
-            services.AddBackblazeAgent(config.GetSection("Agent"));
-
-            services.AddSingleton<Storage>();
+            //Assert.IsNotNull(_bucketId);
+            //Assert.IsNotNull(_fileId);
         }
 
         #endregion
@@ -189,36 +192,41 @@ namespace Backblaze.Test
         [TestMethod]
         public async Task Parallel_Uploads()
         {
-            var parallelTasks = new List<Task>();
             var source = new DirectoryInfo("C:/TestSrc");
             var files = source.EnumerateFiles("*.*", SearchOption.AllDirectories);
 
-            foreach (var file in files)
-            {
-                parallelTasks.Add(Task.Run(async () =>
-                {
-                    await _storage.Agent.Files.UploadAsync(_bucketId, file.FullName, file.FullName, null);
-                }));
-            }
-            await Task.WhenAll(parallelTasks);
+            await _storage.Agent.Directories.CopyToAsync(files, _bucketId);
+
         }
 
         [TestMethod]
         public async Task Parallel_Downloads()
         {
-            var parallelTasks = new List<Task>();
-
-            var results = await _storage.Agent.Files.GetNamesAsync(_bucketId, "C:/TestSrc", null, null, 10000);
-
-            foreach (var file in results.Response.Files)
-            {
-                parallelTasks.Add(Task.Run(async () =>
-                {
-                    await _storage.Agent.Files.DownloadAsync(BucketName, file.FileName, file.FileName, null);
-                }));
-            }
-            await Task.WhenAll(parallelTasks);
+            await _storage.Agent.Directories.CopyFromAsync(_bucketId, "C:/TestSrc");
         }
+
+        //[TestMethod]
+        //public async Task Tester()
+        //{
+        //    await _storage.Agent.Directories.Tester();
+        //}
+
+        //[TestMethod]
+        //public async Task Parallel_Downloads()
+        //{
+        //    var parallelTasks = new List<Task>();
+
+        //    var results = await _storage.Agent.Files.GetNamesAsync(_bucketId, "C:/TestSrc", null, null, 10000);
+
+        //    foreach (var file in results.Response.Files)
+        //    {
+        //        parallelTasks.Add(Task.Run(async () =>
+        //        {
+        //            await _storage.Agent.Files.DownloadAsync(BucketName, file.FileName, file.FileName, null);
+        //        }));
+        //    }
+        //    await Task.WhenAll(parallelTasks);
+        //}
 
         [TestMethod]
         public async Task Get_First_Bucket()
@@ -234,41 +242,75 @@ namespace Backblaze.Test
         public async Task Upload_And_Download_Stream()
         {
             // Upload stream
-            var uploadResults = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
+            var uploadResults = await _storage.Agent.UploadAsync(_bucketId, "c:/folder/file.bin", SmallStream);
             Assert.AreEqual(typeof(UploadFileResponse), uploadResults.Response.GetType());
 
-            var uploadResults2 = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
-            Assert.AreEqual(typeof(UploadFileResponse), uploadResults2.Response.GetType());
-
-            var uploadResults3 = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
-            Assert.AreEqual(typeof(UploadFileResponse), uploadResults3.Response.GetType());
-
-            var uploadResults4 = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
-            Assert.AreEqual(typeof(UploadFileResponse), uploadResults4.Response.GetType());
-
-            var uploadResults5 = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
-            Assert.AreEqual(typeof(UploadFileResponse), uploadResults5.Response.GetType());
-
-            var uploadResults6 = await _storage.Agent.UploadAsync(_bucketId, SmallStreamName, SmallStream);
-            Assert.AreEqual(typeof(UploadFileResponse), uploadResults6.Response.GetType());
-
             // Download stream
-            //var download = new MemoryStream();
-            //var downloadResults = await _storage.Agent.DownloadByIdAsync(_fileId, download);
-            //Assert.AreEqual(typeof(DownloadFileResponse), downloadResults.Response.GetType());
-            //Assert.AreEqual(SmallStream.Length, download.Length);
-            ////Assert.AreEqual(SmallStream.ToSha1(), download.ToSha1());
+            var download = new MemoryStream();
+            var downloadResults = await _storage.Agent.DownloadByIdAsync(_fileId, download);
+            Assert.AreEqual(typeof(DownloadFileResponse), downloadResults.Response.GetType());
+            Assert.AreEqual(SmallStream.Length, download.Length);
+            //Assert.AreEqual(SmallStream.ToSha1(), download.ToSha1());
+        }
+
+        //[TestMethod]
+        //public async Task Upload_Encrypted_Stream()
+        //{
+            //using (var aes = new AesCryptoServiceProvider())
+            //{
+            //    ICryptoTransform encryptor = aes.CreateEncryptor();
+            //    ICryptoTransform decryptor = aes.CreateDecryptor();
+
+            //    var outputFileStream = new MemoryStream();
+            //    var inputFileStream = new FileStream("c:/copyto/tester.json", FileMode.Open, FileAccess.Read);
+            //    var cryptoStream = new CryptoStream(outputFileStream, encryptor, CryptoStreamMode.Write);
+            //    var gZipStream = new GZipStream(cryptoStream, CompressionMode.Compress);
+
+            //    inputFileStream.CopyTo(gZipStream);
+
+            //    var uploadResults = await _storage.Agent.UploadAsync(_bucketId, "c:/copyto/tester.bin", cryptoStream);
+
+
+            //    //using (var inputFileStream = new FileStream("c:/copyto/tester.bin", FileMode.Open, FileAccess.Read))
+            //    //{
+            //    //    using (var outputFileStream = new FileStream("c:/copyto/tester-decrypted.json", FileMode.Create, FileAccess.Write))
+            //    //    {
+            //    //        DecryptThenDecompress(inputFileStream, outputFileStream, decryptor);
+            //    //    }
+            //    //}
+            //}
+        //}
+
+        private static void CompressThenEncrypt(Stream inputFileStream, Stream outputFileStream, ICryptoTransform encryptor)
+        {
+            using (var cryptoStream = new CryptoStream(outputFileStream, encryptor, CryptoStreamMode.Write))
+            using (var gZipStream = new GZipStream(cryptoStream, CompressionMode.Compress))
+            {
+                inputFileStream.CopyTo(gZipStream);
+            }
+        }
+
+        private static void DecryptThenDecompress(Stream inputFileStream, Stream outputFileStream, ICryptoTransform decryptor)
+        {
+            using (var cryptoStream = new CryptoStream(inputFileStream, decryptor, CryptoStreamMode.Read))
+            {
+                using (var gZipStream = new GZipStream(cryptoStream, CompressionMode.Decompress))
+                {
+                    gZipStream.CopyTo(outputFileStream);
+                }
+            }
         }
 
         [TestMethod]
         public async Task Create_And_Delete_Key()
         {
             // Create key
-            var capabilities = new string[] { "listBuckets", "listFiles", "readFiles", "shareFiles", "writeFiles", "deleteFiles" };
+            var capabilities = new Capabilities { Capability.ListBuckets, Capability.ListFiles, Capability.ReadFiles, Capability.ShareFiles, Capability.WriteFiles, Capability.DeleteFiles };
             var keyName = $"{Guid.NewGuid().ToString()}";
             var createResults = await _storage.Agent.Keys.CreateAsync(capabilities, keyName);
             Assert.AreEqual(typeof(CreateKeyResponse), createResults.Response.GetType());
             Assert.AreEqual(keyName, createResults.Response.KeyName);
+            // Assert.AreEqual(capabilities, createResults.Response.Capabilities);
 
             // Delete key
             var deleteResults = await _storage.Agent.Keys.DeleteAsync(createResults.Response.ApplicationKeyId);
@@ -353,6 +395,33 @@ namespace Backblaze.Test
             Assert.AreEqual(typeof(DeleteBucketResponse), deleteResults.Response.GetType());
             Assert.AreEqual(bucketName, deleteResults.Response.BucketName);
         }
+
+
+        [TestMethod]
+        public async Task FileNames_Iterator()
+        {
+            var request = new ListFileNamesRequest(_bucketId);
+            var filelist = await _storage.Agent.Files.GetAsync(request);
+
+            foreach (var file in filelist)
+            {
+                Debug.WriteLine(file.FileName);
+            }
+        }
+
+
+        [TestMethod]
+        public async Task FileVersions_Iterator()
+        {
+            var request = new ListFileVersionRequest(_bucketId);
+            var filelist = await _storage.Agent.Files.GetAsync(request);
+
+            foreach (var file in filelist)
+            {
+                Debug.WriteLine(file.FileName);
+            }
+        }
+
 
         [TestMethod]
         public async Task List_Buckets()
