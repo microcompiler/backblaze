@@ -200,6 +200,16 @@ namespace Backblaze.Test
         }
 
         [TestMethod]
+        public async Task TestCase5()
+        {
+            foreach (var filepath in Directory.GetFiles(@"c:\my\directory"))
+            {
+                using (var stream = File.OpenRead(filepath))
+                    await _storage.Agent.UploadAsync(new UploadFileByBucketIdRequest(_bucketId, new System.IO.FileInfo(filepath).Name), stream);
+            }
+        }
+
+        [TestMethod]
         public async Task Parallel_Downloads()
         {
             await _storage.Agent.Directories.CopyFromAsync(_bucketId, "C:/TestSrc");

@@ -42,8 +42,8 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public string FileName
         {
-            get { return _FileName.AbsolutePath; }
-            private set { _FileName = new Uri(value); }
+            get { return _FileName.ToPath(); }
+            private set { _FileName = new Uri(value, UriKind.RelativeOrAbsolute); }
         }
         private Uri _FileName;
 
