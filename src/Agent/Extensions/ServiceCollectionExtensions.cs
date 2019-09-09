@@ -72,18 +72,18 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton(options);
 
             services.AddMemoryCache();
+            services.AddSingleton<ICacheManager, CacheManager>();
 
             services.AddTransient<UserAgentHandler>();
 
             services.AddHttpClient<IApiClient, ApiClient>(client =>
             {
-                client.Timeout = TimeSpan.FromSeconds(options.AgentTimeout);
+                client.Timeout = TimeSpan.FromSeconds(options.Timeout);
             })
             .AddHttpMessageHandler<UserAgentHandler>()
             .SetHandlerLifetime(TimeSpan.FromSeconds(options.HandlerLifetime))
-            .AddPolicyHandler(RetryPolicy(options.AgentRetryCount));
+            .AddPolicyHandler(RetryPolicy(options.RetryCount));
 
-            
             services.AddSingleton<IBackblazeAgent, BackblazeAgent>();
 
             return new BackblazeAgentBuilder(services);
@@ -95,7 +95,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .HandleTransientHttpError()
                 .Or<IOException>()
                 .WaitAndRetryAsync(retryCount,
-                    retryAttempt => BackblazeAgent.GetSleepDuration(retryAttempt));
+                    retryAttempt => PolicyManager.GetSleepDuration(retryAttempt));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using Newtonsoft.Json;
@@ -9,7 +10,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains information to create a list buckets request.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class ListBucketsRequest : IRequest
+    public class ListBucketsRequest : IEquatable<ListBucketsRequest>, IRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ListBucketsRequest"/> class.
@@ -53,6 +54,13 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public string BucketType { get; set; }
 
+        /// <summary>
+        /// Converts the value of this instance to a memory cache key.
+        /// </summary>
+        public string ToCacheKey()
+        {
+            return $"{GetType().Name}--{GetHashCode().ToString()}";
+        }
 
         ///	<summary>
         ///	Debugger display for this object.
@@ -62,6 +70,40 @@ namespace Bytewizer.Backblaze.Models
         private string DebuggerDisplay
         {
             get { return $"{{{nameof(AccountId)}: {AccountId}}}"; }
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ListBucketsRequest);
+        }
+
+        public bool Equals(ListBucketsRequest other)
+        {
+            return other != null &&
+                   AccountId == other.AccountId &&
+                   BucketId == other.BucketId &&
+                   BucketName == other.BucketName &&
+                   BucketType == other.BucketType;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 248776742;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(AccountId);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(BucketId);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(BucketName);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(BucketType);
+            return hashCode;
+        }
+
+        public static bool operator ==(ListBucketsRequest left, ListBucketsRequest right)
+        {
+            return EqualityComparer<ListBucketsRequest>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(ListBucketsRequest left, ListBucketsRequest right)
+        {
+            return !(left == right);
         }
     }
 }

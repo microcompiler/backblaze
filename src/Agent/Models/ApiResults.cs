@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
+using System.Diagnostics;
 
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// A response from the Backblaze B2 API
+    ///  Represents a response from the Backblaze B2 Cloud Storage service.
     /// </summary>
     static class ApiResults
     {
@@ -17,7 +17,7 @@ namespace Bytewizer.Backblaze.Models
     }
 
     /// <summary>
-    /// A response from the Backblaze B2 API
+    /// Represents a response from the Backblaze B2 Cloud Storage service.
     /// </summary>
     /// <typeparam name="T">Payload contained in the response</typeparam>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
@@ -31,8 +31,7 @@ namespace Bytewizer.Backblaze.Models
         /// <param name="response">Http response message.</param>
         public ApiResults(HttpResponseMessage response)
             : this(response, GetBodyAsObject(response))
-        {
-        }
+        {}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiResults&lt;T&gt;" /> class.

@@ -37,7 +37,7 @@ namespace Bytewizer.Backblaze.Agent
             {
                 Prefix = prefix
             };
-            var filelist = Files.GetAsync(request).GetAwaiter().GetResult();
+            var filelist = Files.ListAsync(request, 0).GetAwaiter().GetResult();
 
             foreach (var file in filelist)
             {

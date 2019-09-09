@@ -24,6 +24,11 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Virtual folder when listing files.
         /// </summary>
-        Folder
+        Folder,
+
+        /// <summary>
+        /// Indicates a file that was copied from an existing file.
+        /// </summary>
+        Copy
     }
 }

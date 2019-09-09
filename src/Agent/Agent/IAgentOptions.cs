@@ -1,40 +1,26 @@
-﻿using Bytewizer.Backblaze.Client;
-using Bytewizer.Backblaze.Models;
-using System;
+﻿using System;
 
 namespace Bytewizer.Backblaze.Agent
 {
     /// <summary>
-    /// Backblaze B2 Cloud Storage service agent options interface
+    /// Agent options for the Backblaze B2 Cloud Storage service interface.
     /// </summary>
     public interface IAgentOptions
     {
         /// <summary>
-        /// The base authentication url of the Backblaze B2 Cloud Storage service.
-        /// </summary>
-        Uri AuthUrl { get; set; }
-
-        /// <summary>
-        /// The key identifier used to log in to the Backblaze B2 Cloud Storage service.
+        /// The identifier for the key.
         /// </summary>
         string KeyId { get; set; }
 
         /// <summary>
-        /// The secret part of the key used to log in to the Backblaze B2 Cloud Storage service.
+        /// The secret part of the key. You can use either the master application key or a normal application key.
         /// </summary>
         string ApplicationKey { get; set; }
-        
-        /// <summary>
-        /// A flag string for X-Bx-Test-Mode headers for debugging.  This is for debugging purposes only.
-        /// Setting it to "fail_some_uploads", "expire_some_account_authorization_tokens" or "force_cap exceeded" will cause
-        /// server to return specific errors used during debugging.
-        /// </summary>
-        string TestMode { get; set; }
 
         /// <summary>
-        /// The time in seconds to wait before the client request times out.
+        /// The base authentication url of the Backblaze B2 Cloud Storage service.
         /// </summary>
-        double AgentTimeout { get; set; }
+        Uri AuthUrl { get; set; }
 
         /// <summary>
         /// The time in seconds that the message handler instance can be reused.
@@ -42,42 +28,67 @@ namespace Bytewizer.Backblaze.Agent
         double HandlerLifetime { get; set; }
 
         /// <summary>
+        /// The time in seconds to wait before the client request times out.
+        /// </summary>
+        double Timeout { get; set; }
+
+        /// <summary>
         /// The number of times the client will retry failed requests before timing out.
         /// </summary>
-        int AgentRetryCount { get; set; }
+        int RetryCount { get; set; }
 
         /// <summary>
-        /// The maxium number of parallel upload connections established.
+        /// The maximum number of parallel request connections established.
         /// </summary>
-        int UploadConnections { get; set; } 
+        int RequestMaxParallel { get; set; }
 
         /// <summary>
-        /// Cutoff size for switching to chunked upload.
+        /// The maximum number of parallel download connections established.
         /// </summary>
-        FileSize UploadCutoffSize { get; set; }
+        int DownloadMaxParallel { get; set; }
 
         /// <summary>
-        /// Chunk size of upload.
+        /// Download cutoff size for switching to chunked parts in bytes.
         /// </summary>
-        FileSize UploadPartSize { get; set; }
+        long DownloadCutoffSize { get; set; }
 
         /// <summary>
-        /// The maxium number of parallel download connections established.
+        /// Download part size of chunked parts in bytes.
         /// </summary>
-        int DownloadConnections { get; set; }
+        long DownloadPartSize { get; set; }
 
         /// <summary>
-        /// Download cutoff size for switching to chunked parts in bits.
+        /// The maximum number of parallel upload connections established.
         /// </summary>
-        FileSize DownloadCutoffSize { get; set; }
+        int UploadMaxParallel { get; set; }
 
         /// <summary>
-        /// Download part size in bits of chunked parts.
+        /// Upload cutoff size for switching to chunked parts in bytes.
         /// </summary>
-        FileSize DownloadPartSize { get; set; }
+        long UploadCutoffSize { get; set; }
 
         /// <summary>
-        /// Validate the required values.
+        /// Upload part size of chunked parts in bytes.
+        /// </summary>
+        long UploadPartSize { get; set; }
+
+        /// <summary>
+        /// Use the recommended part size returned by the Backblaze B2 Cloud Storage service.
+        /// </summary>
+        bool AutoSetPartSize { get; set; }
+
+        /// <summary>
+        /// This is for testing use only and not recomended for production environments. 
+        /// </summary>
+        bool ChecksumDisabled { get; set; }
+
+        /// <summary>
+        /// This is for testing use only and not recomended for production environments. 
+        /// </summary>
+        string TestMode { get; set; }
+
+        /// <summary>
+        /// Validate required values and initialize default values.
         /// </summary>
         void Validate();
     }

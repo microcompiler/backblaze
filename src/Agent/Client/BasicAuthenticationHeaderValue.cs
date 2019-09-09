@@ -4,34 +4,31 @@ using System.Net.Http.Headers;
 namespace System.Net.Http
 {
     /// <summary>
-    /// HTTP Basic Authentication authorization header.
+    /// Represents the <see cref="BasicAuthenticationHeaderValue"/> header.
     /// </summary>
-    /// <seealso cref="AuthenticationHeaderValue" />
     public class BasicAuthenticationHeaderValue : AuthenticationHeaderValue
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BasicAuthenticationHeaderValue"/> class.
         /// </summary>
-        /// <param name="id">The identifier for the key.</param>
-        /// <param name="key">The secret part of the key.</param>
-        public BasicAuthenticationHeaderValue(string id, string key)
-            : base("Basic", EncodeCredential(id, key))
+        /// <param name="keyId">The identifier for the key.</param>
+        /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
+        public BasicAuthenticationHeaderValue(string keyId, string applicationKey)
+            : base("Basic", EncodeCredential(keyId, applicationKey))
         { }
 
         /// <summary>
         /// Encodes the credential.
         /// </summary>
-        /// <param name="id">The identifier for the key.</param>
-        /// <param name="key">The secret part of the key.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">userName</exception>
-        public static string EncodeCredential(string id, string key)
+        /// <param name="keyId">The identifier for the key.</param>
+        /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
+        public static string EncodeCredential(string keyId, string applicationKey)
         {
-            if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id));
-            if (string.IsNullOrWhiteSpace(key)) throw new ArgumentNullException(nameof(key));
+            if (string.IsNullOrWhiteSpace(keyId)) throw new ArgumentNullException(nameof(keyId));
+            if (string.IsNullOrWhiteSpace(applicationKey)) throw new ArgumentNullException(nameof(applicationKey));
 
             Encoding encoding = Encoding.UTF8;
-            string credential = string.Format("{0}:{1}", id, key);
+            string credential = string.Format("{0}:{1}", keyId, applicationKey);
 
             return Convert.ToBase64String(encoding.GetBytes(credential));
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using Newtonsoft.Json;
@@ -9,7 +10,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains information to create a get an upload url request.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class GetUploadUrlRequest : IRequest
+    public class GetUploadUrlRequest : IEquatable<GetUploadUrlRequest>, IRequest
     {
         /// <summary>
         /// Initializes a new instance of the class.
@@ -31,6 +32,14 @@ namespace Bytewizer.Backblaze.Models
         [JsonProperty(Required = Required.Always)]
         public string BucketId { get; private set; }
 
+        /// <summary>
+        /// Converts the value of this instance to a memory cache key.
+        /// </summary>
+        public string ToCacheKey()
+        {
+            return $"{GetType().Name}--{GetHashCode().ToString()}";
+        }
+
         ///	<summary>
         ///	Debugger display for this object.
         ///	</summary>
@@ -40,5 +49,49 @@ namespace Bytewizer.Backblaze.Models
         {
             get { return $"{{{nameof(BucketId)}: {BucketId}}}"; }
         }
+
+        #region IEquatable
+
+        /// <summary>
+        /// Determines whether this object is equal <paramref name="obj"/>.
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as GetUploadUrlRequest);
+        }
+
+        /// <summary>
+        /// Determines whether this object is equal <paramref name="other"/>.
+        /// </summary>
+        public bool Equals(GetUploadUrlRequest other)
+        {
+            return other != null &&
+                   BucketId == other.BucketId;
+        }
+        /// <summary>
+        /// Provides hash code for the request.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return 731021066 + EqualityComparer<string>.Default.GetHashCode(BucketId);
+        }
+
+        /// <summary>
+        /// Determines whether the given <paramref name="left"/> is equal <paramref name="right"/>.
+        /// </summary>
+        public static bool operator ==(GetUploadUrlRequest left, GetUploadUrlRequest right)
+        {
+            return EqualityComparer<GetUploadUrlRequest>.Default.Equals(left, right);
+        }
+
+        /// <summary>
+        /// Determines whether the given <paramref name="left"/> is not equal <paramref name="right"/>.
+        /// </summary>
+        public static bool operator !=(GetUploadUrlRequest left, GetUploadUrlRequest right)
+        {
+            return !(left == right);
+        }
+
+        #endregion
     }
 }

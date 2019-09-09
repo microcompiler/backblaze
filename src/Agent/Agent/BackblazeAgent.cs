@@ -34,17 +34,21 @@ namespace Bytewizer.Backblaze.Agent
                 _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
                 // Sets client options 
-                _client.TestMode = _options.TestMode;
-                _client.UploadCutoffSize = _options.UploadCutoffSize;
-                _client.UploadPartSize = _options.UploadPartSize;
-                _client.DownloadCutoffSize = _options.DownloadCutoffSize;
-                _client.DownloadPartSize = _options.DownloadPartSize;
-                _client.AccountInfo.AuthUrl = _options.AuthUrl;
-
-                // Initialize policies
-                InvokePolicy = CreateInvokePolicy();
-                DownloadPolicy = CreateDownloadPolicy();
-                UploadPolicy = CreateUploadPolicy();
+                _client.Options = new ClientOptions()
+                {
+                    Timeout = _options.Timeout,
+                    RetryCount = _options.RetryCount,
+                    RequestMaxParallel = _options.RequestMaxParallel,
+                    DownloadMaxParallel = _options.DownloadMaxParallel,
+                    DownloadCutoffSize = _options.DownloadCutoffSize,
+                    DownloadPartSize = _options.DownloadPartSize,
+                    UploadMaxParallel = _options.UploadMaxParallel,
+                    UploadCutoffSize = _options.UploadCutoffSize,
+                    UploadPartSize = _options.UploadPartSize,
+                    AutoSetPartSize = _options.AutoSetPartSize,
+                    ChecksumDisabled = _options.ChecksumDisabled,
+                    TestMode = _options.TestMode
+                };
 
                 // Connect to the Backblaze B2 API server
                 _client.Connect(_options.KeyId, _options.ApplicationKey);
@@ -95,7 +99,7 @@ namespace Bytewizer.Backblaze.Agent
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Connected client to the Backblaze B2 API server.
+        /// Connected client to the Backblaze B2 Cloud Storage service.
         /// </summary>
         public readonly IApiClient _client;
 
@@ -107,19 +111,6 @@ namespace Bytewizer.Backblaze.Agent
         /// The identifier for the account.
         /// </summary>
         public string AccountId => _client?.AccountInfo.AccountId;
-
-        /// <summary>
-        /// The recommended size for each part of a large file. We recommend using this
-        /// part size for optimal upload performance.
-        /// </summary>
-        public long RecommendedPartSize => _client.AccountInfo.RecommendedPartSize;
-
-        /// <summary>
-        /// The smallest possible size of a part of a large file (except the last one). This is smaller 
-        /// than the <see cref="RecommendedPartSize"/>. If you use it, you may find that it takes longer
-        /// overall to upload a large file.
-        /// </summary>
-        public long AbsoluteMinimumPartSize => _client.AccountInfo.AbsoluteMinimumPartSize;
 
         /// <summary>
         /// The cancellation token associated with this <see cref="BackblazeAgent"/> instance.
@@ -135,26 +126,6 @@ namespace Bytewizer.Backblaze.Agent
             }
         }
         private CancellationToken cancellationToken = CancellationToken.None;
-
-        #endregion
-
-        #region Private Properties
-
-        /// <summary>
-        /// Retry policy used for downloading.
-        /// </summary>
-        protected IAsyncPolicy DownloadPolicy { get; private set; }
-
-
-        /// <summary>
-        /// Retry policy used for uploading.
-        /// </summary>
-        protected IAsyncPolicy UploadPolicy { get; private set; }
-
-        /// <summary>
-        /// Retry policy used for invoking post requests.
-        /// </summary>
-        protected IAsyncPolicy InvokePolicy { get; private set; }
 
         #endregion
 
@@ -211,10 +182,7 @@ namespace Bytewizer.Backblaze.Agent
         public async Task<IApiResults<UploadFileResponse>> UploadAsync
             (UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await UploadPolicy.ExecuteAsync(async () =>
-            {
-                return await _client.UploadAsync(request, content, progress, cancel);
-            });
+                return await _client.UploadAsync(request, content, progress, cancel);   
         }
 
         #endregion
@@ -271,10 +239,7 @@ namespace Bytewizer.Backblaze.Agent
         public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await DownloadPolicy.ExecuteAsync(async () =>
-            {
                 return await _client.DownloadByIdAsync(request, content, progress, cancel);
-            });
         }
 
         // Download by bucket name and file name
@@ -327,100 +292,10 @@ namespace Bytewizer.Backblaze.Agent
         public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
             (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await DownloadPolicy.ExecuteAsync(async () =>
-            {
                 return await _client.DownloadAsync(request, content, progress, cancel);
-            });
         }
 
         #endregion
-
-        #endregion
-
-        #region Private Methods
-
-        /// <summary>
-        /// Create a retry policy for upload execptions.
-        /// </summary>
-        private IAsyncPolicy CreateUploadPolicy()
-        {
-            var auth = CreateAuthenticationPolicy();
-            var hash = CreateInvalidHashPolicy();
-            var bulk = Policy.BulkheadAsync(_options.UploadConnections, int.MaxValue);
-
-            return Policy.WrapAsync(auth, hash, bulk);
-        }
-
-        /// <summary>
-        /// Create a retry policy for download execptions.
-        /// </summary>
-        private IAsyncPolicy CreateDownloadPolicy()
-        {
-
-            var auth = CreateAuthenticationPolicy();
-            var hash = CreateInvalidHashPolicy();
-            var bulk = Policy.BulkheadAsync(_options.DownloadConnections, int.MaxValue);
-
-            return Policy.WrapAsync(auth, hash, bulk);
-        }
-
-        /// <summary>
-        /// Create a retry policy for Invoke execptions.
-        /// </summary>
-        private IAsyncPolicy CreateInvokePolicy()
-        {
-            var auth = CreateAuthenticationPolicy();
-            var hash = CreateInvalidHashPolicy();
-            var bulk = Policy.BulkheadAsync(_options.DownloadConnections, int.MaxValue);
-            return Policy.WrapAsync(auth, hash, bulk);
-        }
-
-        /// <summary>
-        /// Create a retry policy for authentication execptions.
-        /// </summary>
-        private IAsyncPolicy CreateAuthenticationPolicy()
-        {
-            var auth = Policy
-                .Handle<AuthenticationException>()
-                .WaitAndRetryAsync(_options.AgentRetryCount,
-                    retryAttempt => GetSleepDuration(retryAttempt),
-                    onRetry: async (exception, timeSpan, count, context) =>
-                    {
-                        _logger.LogWarning($"{exception.Message} Retry attempt {count} waiting {timeSpan.TotalSeconds} seconds before next retry.");
-                        await _client.ConnectAsync(_options.KeyId, _options.ApplicationKey);
-                    });
-
-            return auth;
-        }
-
-        /// <summary>
-        /// Create a retry policy for invalid hash execptions.
-        /// </summary>
-        private IAsyncPolicy CreateInvalidHashPolicy()
-        {
-            var hash = Policy
-               .Handle<InvalidHashException>()
-               .WaitAndRetryAsync(_options.AgentRetryCount,
-                   retryAttempt => GetSleepDuration(retryAttempt),
-                   onRetry: (exception, timeSpan, count, context) =>
-                   {
-                       _logger.LogWarning($"{exception.Message} Retry attempt {count} waiting {timeSpan.TotalSeconds} seconds before next retry.");
-                   });
-
-            return hash;
-        }
-
-        /// <summary>
-        /// Get the duration to wait (exponential backoff) allowing an increasing wait time.
-        /// </summary>
-        /// <param name="retryAttempt">The retry attempt count.</param>
-        public static TimeSpan GetSleepDuration(int retryAttempt)
-        {
-            Random jitterer = new Random();
-
-            return TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
-                    + TimeSpan.FromMilliseconds(jitterer.Next(10, 1000));
-        }
 
         #endregion
     }

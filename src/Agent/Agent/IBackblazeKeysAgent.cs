@@ -9,6 +9,8 @@ namespace Bytewizer.Backblaze.Agent
 {
     public interface IBackblazeKeysAgent
     {
+        Task<List<KeyItem>> ListAsync(ListKeysRequest request, int cacheTTL);
+
         Task<IApiResults<ListKeysResponse>> GetAsync();
         Task<IApiResults<ListKeysResponse>> GetAsync(ListKeysRequest request);
         Task<IApiResults<CreateKeyResponse>> CreateAsync(CreateKeyRequest request);

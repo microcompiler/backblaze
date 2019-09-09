@@ -104,22 +104,25 @@ services.AddBackblazeAgent(options =>
 	options.ApplicationKey = "[application_key]";
 });
 ```
-The following table describes the [Agent Options](https://github.com/microcompiler/backblaze/blob/master/src/Agent/Agent/AgentOptions.cs) available:
+The following table describes the [Agent Options](https://github.com/microcompiler/backblaze/blob/master/src/Agent/Agent/IAgentOptions.cs) available:
 
 | Option Name | Default | Description | 
 | ----------- | ------- | ----------- |
 | KeyId  | --- | <strong>Required - </strong> The key identifier used to authenticate. |
 | ApplicationKey | --- | <strong>Required - </strong> The secret part of the key used to authenticate. |
-| AgentTimeout | 600 | The time in seconds to wait before the client request times out. |
-| AgentRetryCount | 5 | The number of times the client will retry failed requests before timing out.  |
-| UploadConnections | 2 | The maxium number of parallel upload connections established. |
-| UploadCutoffSize | 200MB | File upload cutoff size in bytes for switching to chunked parts. |
-| UploadPartSize | 200MB | File upload part size in bytes of chunked parts. |
-| DownloadConnections | 6 | The maxium number of parallel download connections established. |
-| DownloadCutoffSize | 200MB | File download cutoff size in bytes for switching to chunked parts. |
-| DownloadPartSize | 200MB | File download part size in bytes of chunked parts. |
 | HandlerLifetime | 600 | The time in seconds that the message handler instance can be reused. |
-| TestMode | --- | This is for testing use only and not recomended for production environments. |
+| Timeout | 600 | The time in seconds to wait before the client request times out. |
+| RetryCount | 5 | The number of times the client will retry failed requests before timing out. |
+| RequestMaxParallel | 10 | The maximum number of parallel request connections established. |
+| DownloadMaxParallel | 5 | The maximum number of parallel download connections established. |
+| DownloadCutoffSize | 100MB | Download cutoff size for switching to chunked parts in bytes. |
+| DownloadPartSize | 100MB | Download part size of chunked parts in bytes. |
+| UploadMaxParallel | 3 | The maximum number of parallel upload connections established. |
+| UploadCutoffSize | 100MB | Upload cutoff size for switching to chunked parts in bytes. |
+| UploadPartSize | 100MB | Upload part size of chunked parts in bytes. |
+| AutoSetPartSize  | false | Use the recommended part size returned by the Backblaze service. |
+| ChecksumDisabled  | false | This is for testing use only and not recomended for production environments. |
+| TestMode  | --- | This is for testing use only and not recomended for production environments. |
 
 ### Test Mode Options
 

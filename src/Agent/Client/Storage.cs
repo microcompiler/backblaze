@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 using System.Collections.Generic;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Memory;
 
 using Bytewizer.Backblaze.Models;
 using Bytewizer.Backblaze.Extensions;
@@ -24,14 +23,9 @@ namespace Bytewizer.Backblaze.Client
         #region Constants
 
         /// <summary>
-        /// Represents the default upload url cache time to live (TTL) in seconds.
+        /// Represents the default cache time to live (TTL) in seconds.
         /// </summary>
-        public const int DefaultUploadUrlTTL = 3600;
-
-        /// <summary>
-        /// Represents the default upload part url cache time to live (TTL) in seconds.
-        /// </summary>
-        public const int DefaultUploadPartUrlTTL = 3600;
+        public const int DefaultCacheTTL = 3600;
 
         #endregion
 
@@ -43,14 +37,20 @@ namespace Bytewizer.Backblaze.Client
         public Storage() : this(null, null, null) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Storage"/> class.
+        /// Initializes a new instance of the <see cref="ApiClient"/> class.
         /// </summary>
-        /// <param name="httpClient">The <see cref="HttpClient"/> used for making requests.</param>
-        public Storage(HttpClient httpClient, ILogger<Storage> logger, IMemoryCache cache)
+        /// <param name="httpClient">The <see cref="HttpClient"/> used for making HTTP requests.</param>
+        /// <param name="logger">The <see cref="ILogger"/> used for application logging.</param>
+        /// <param name="cache">The <see cref="ICacheManager"/> used for application caching.</param>
+        /// <param name="policy">The <see cref="IPolicyManager"/> used for application resilience.</param>
+        public Storage(HttpClient httpClient, ILogger<Storage> logger, ICacheManager cache)
         {
             _httpClient = httpClient ?? new HttpClient();
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _cache = cache ?? new MemoryCache(new MemoryCacheOptions());
+            _logger = logger ?? new LoggerFactory().CreateLogger<Storage>();
+            _cacheManager = cache;
+
+            // Initialize policy manager
+            _policyManager = new PolicyManager(_logger, Options);
         }
 
         #region IDisposable
@@ -75,22 +75,27 @@ namespace Bytewizer.Backblaze.Client
 
         #endregion
 
-        #region Protected Fields
+        #region Private Fields
 
         /// <summary>
-        /// <see cref="HttpClient"/> for making HTTP requests.
+        /// The <see cref="HttpClient"/> used for making HTTP requests.
         /// </summary>
-        protected readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
         /// <summary>
-        /// <see cref="Logger"/> for application logging.
+        /// The <see cref="ILogger"/> used for application logging.
         /// </summary>
-        protected readonly ILogger _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
-        /// <see cref="MemoryCache"/> for application caching.
+        /// The <see cref="ICacheManager"/> used for application caching.
         /// </summary>
-        public IMemoryCache _cache;
+        private readonly ICacheManager _cacheManager;
+
+        /// <summary>
+        /// The <see cref="IPolicyManager"/> used for application resilience.
+        /// </summary>
+        private readonly IPolicyManager _policyManager;
 
         #endregion
 
@@ -102,7 +107,12 @@ namespace Bytewizer.Backblaze.Client
         internal JsonSerializer JsonSerializer { get; } = new JsonSerializer();
 
         /// <summary>
-        /// The account information returned from the Backblaze B2 server.
+        /// Client configuration options.
+        /// </summary>
+        public ClientOptions Options { get; set; } = new ClientOptions();
+
+        /// <summary>
+        /// The account information returned from the Backblaze B2 Cloud Storage service.
         /// </summary>
         public AccountInfo AccountInfo { get; } = new AccountInfo();
 
@@ -112,33 +122,6 @@ namespace Bytewizer.Backblaze.Client
         /// </summary>
         public AuthToken AuthToken { get; private set; }
 
-        /// <summary>
-        /// This is for testing use only and not recomended for production environments. Sets "X-Bx-Test-Mode" headers used for debugging and testing.  
-        /// Setting it to "fail_some_uploads", "expire_some_account_authorization_tokens" or "force_cap exceeded" will cause the
-        /// server to return specific errors used for testing.
-        /// </summary>
-        public string TestMode { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Upload cutoff size for switching to chunked parts in bits.
-        /// </summary>
-        public FileSize UploadCutoffSize { get; set; } = FileSize.DefaultUploadCutoffSize;
-
-        /// <summary>
-        /// Upload part size of chunked parts in bits.
-        /// </summary>
-        public FileSize UploadPartSize { get; set; } = FileSize.DefaultUploadPartSize;
-
-        /// <summary>
-        /// Download cutoff size for switching to chunked parts in bits.
-        /// </summary>
-        public FileSize DownloadCutoffSize { get; set; } = FileSize.DefaultDownloadCutoffSize;
-
-        /// <summary>
-        /// Download part size of chunked parts in bits.
-        /// </summary>
-        public FileSize DownloadPartSize { get; set; } = FileSize.DefaultDownloadPartSize;
-
         #endregion
 
         #region Public Methods
@@ -146,24 +129,26 @@ namespace Bytewizer.Backblaze.Client
         #region Authorize Account
 
         /// <summary>
-        /// Connect to Backblaze B2 Cloud storage and initialize account settings.
+        /// Connect to Backblaze B2 Cloud Storage service and initialize <see cref="AccountInfo"/>.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
-        /// <param name="applicationKey">The secret part of the key.</param>
+        /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
         public void Connect(string keyId, string applicationKey)
         {
             ConnectAsync(keyId, applicationKey).GetAwaiter().GetResult();
         }
 
         /// <summary>
-        /// Connect to Backblaze B2 Cloud storage and initialize account settings.
+        /// Connect to Backblaze B2 Cloud Storage service and initialize <see cref="AccountInfo"/>.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
-        /// <param name="applicationKey">The secret part of the key.</param>
+        /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
         public async Task ConnectAsync(string keyId, string applicationKey)
         {
-            _cache.Remove(CacheKeys.UploadUrl);
-            _cache.Remove(CacheKeys.UploadPartUrl);
+            _policyManager.ConnectAsync = () => ConnectAsync(keyId, applicationKey);
+
+            //ClearCache(CacheKey.UploadUrl);
+            //ClearCache(CacheKey.UploadPartUrl);
 
             var results = await AuthorizeAccountAync(keyId, applicationKey, CancellationToken.None);
             if (results.IsSuccessStatusCode)
@@ -176,10 +161,16 @@ namespace Bytewizer.Backblaze.Client
                 AccountInfo.ApiUrl = new Uri($"{results.Response.ApiUrl}b2api/v2/");
                 AccountInfo.DownloadUrl = new Uri($"{results.Response.DownloadUrl}");
                 AccountInfo.AccountId = results.Response.AccountId;
-                AccountInfo.AbsoluteMinimumPartSize = results.Response.AbsoluteMinimumPartSize;
-                AccountInfo.RecommendedPartSize = results.Response.RecommendedPartSize;
 
-                _logger.LogInformation("Agent successfully authenticated account.");
+                if (Options.AutoSetPartSize)
+                {
+                    Options.UploadPartSize = results.Response.RecommendedPartSize;
+                    Options.UploadCutoffSize = results.Response.RecommendedPartSize;
+                    Options.DownloadPartSize = results.Response.RecommendedPartSize;
+                    Options.DownloadCutoffSize = results.Response.RecommendedPartSize;
+                }
+
+                _logger.LogInformation("Agent successfully authenticated to Backblaze B2 Cloud Storage service.");
             }
         }
 
@@ -187,80 +178,46 @@ namespace Bytewizer.Backblaze.Client
 
         #region Upload Stream
 
-        /// <summary>
-        /// Uploads file content by bucket id. 
-        /// </summary>
-        /// <param name="request">The upload file request content to send.</param>
-        /// <param name="content">The upload content to receive.</param>
-        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
-        /// <param name="cancel">The cancellation token to cancel operation.</param>
         public async Task<IApiResults<UploadFileResponse>> UploadAsync
             (UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            if (content.Length < GetCutoffSize(UploadCutoffSize, UploadPartSize))
+            return await _policyManager.UploadPolicy.ExecuteAsync(async () =>
             {
-                var urlRequest = new GetUploadUrlRequest(request.BucketId);
-                var urlResults = await GetUploadUrlAsync(urlRequest, cancel);
-
-                if (urlResults.IsSuccessStatusCode)
+                if (content.Length < Options.UploadCutoffSize)
                 {
-                    var response = urlResults.Response;
-                    var fileRequest = new UploadFileRequest(response.UploadUrl, request.FileName, response.AuthorizationToken)
+                    var urlRequest = new GetUploadUrlRequest(request.BucketId);
+                    var urlResults = await GetUploadUrlAsync(urlRequest, cancel);
+
+                    if (urlResults.IsSuccessStatusCode)
+                    {
+                        var response = urlResults.Response;
+                        var fileRequest = new UploadFileRequest(response.UploadUrl, request.FileName, response.AuthorizationToken)
+                        {
+                            ContentType = request.ContentType,
+                            FileInfo = request.FileInfo
+                        };
+
+                        return await UploadFileAsync(fileRequest, content, progress, cancel);
+                    }
+
+                    return new ApiResults<UploadFileResponse>(urlResults.HttpResponse, urlResults.Error);
+                }
+                else
+                {
+                    var largeFileRequest = new UploadLargeFileRequest(request.BucketId, request.FileName, content)
                     {
                         ContentType = request.ContentType,
                         FileInfo = request.FileInfo
                     };
 
-                    return await UploadFileAsync(fileRequest, content, progress, cancel);
+                    return await UploadLargeFileAsync(largeFileRequest, progress, cancel);
                 }
-
-                return new ApiResults<UploadFileResponse>(urlResults.HttpResponse, urlResults.Error);
-            }
-            else
-            {
-                var largeFileRequest = new UploadLargeFileRequest(request.BucketId, request.FileName, content)
-                {
-                    ContentType = request.ContentType,
-                    FileInfo = request.FileInfo
-                };
-
-                return await UploadLargeFileAsync(largeFileRequest, progress, cancel);
-            }
+            });
         }
 
         #endregion
 
         #region Download Stream
-
-        /// <summary>
-        /// Downloads a specific version of content by file id. 
-        /// </summary>
-        /// <param name="request">The download file request to send.</param>
-        /// <param name="content">The download content to receive.</param>
-        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
-        /// <param name="cancel">The cancellation token to cancel operation.</param>
-        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
-            (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
-        {
-            //return await DownloadPolicy.ExecuteAsync(async () =>
-            //{
-            var fileRequest = new DownloadFileByIdRequest(request.FileId);
-            var fileResults = await DownloadFileByIdAsync(fileRequest, cancel);
-            if (fileResults.IsSuccessStatusCode)
-            {
-                if (fileResults.Response.ContentLength < DownloadCutoffSize)
-                {
-                    return await DownloadFileByIdAsync(request, content, progress, cancel);
-                }
-                else
-                {
-                    return await DownloadLargeFileAsync(fileRequest, fileResults, content, progress, cancel);
-                }
-            }
-
-            return fileResults;
-            //});
-        }
 
         /// <summary>
         /// Downloads the most recent version of content by bucket and file name. 
@@ -272,22 +229,55 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
             (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            var fileRequest = new DownloadFileByNameRequest(request.BucketName, request.FileName);
-            var fileResults = await DownloadFileByNameAsync(fileRequest, null, null, cancel);
-
-            if (fileResults.IsSuccessStatusCode)
+            return await _policyManager.DownloadPolicy.ExecuteAsync(async () =>
             {
-                if (fileResults.Response.ContentLength < GetCutoffSize(DownloadCutoffSize, DownloadPartSize))
-                {
-                    return await DownloadFileByNameAsync(request, content, progress, cancel);
-                }
-                else
-                {
-                    return await DownloadLargeFileAsync(fileRequest, fileResults, content, progress, cancel);
-                }
-            }
+                var fileRequest = new DownloadFileByNameRequest(request.BucketName, request.FileName);
+                var fileResults = await DownloadFileByNameAsync(fileRequest, null, null, cancel);
 
-            return fileResults;
+                if (fileResults.IsSuccessStatusCode)
+                {
+                    if (fileResults.Response.ContentLength < Options.DownloadCutoffSize)
+                    {
+                        return await DownloadFileByNameAsync(request, content, progress, cancel);
+                    }
+                    else
+                    {
+                        return await DownloadLargeFileAsync(fileRequest, fileResults, content, progress, cancel);
+                    }
+                }
+
+                return fileResults;
+            });
+        }
+
+        /// <summary>
+        /// Downloads a specific version of content by file id. 
+        /// </summary>
+        /// <param name="request">The download file request to send.</param>
+        /// <param name="content">The download content to receive.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <param name="cancel">The cancellation token to cancel operation.</param>
+        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
+            (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
+        {
+            return await _policyManager.DownloadPolicy.ExecuteAsync(async () =>
+            {
+                var fileRequest = new DownloadFileByIdRequest(request.FileId);
+                var fileResults = await DownloadFileByIdAsync(fileRequest, cancel);
+                if (fileResults.IsSuccessStatusCode)
+                {
+                    if (fileResults.Response.ContentLength < Options.DownloadCutoffSize)
+                    {
+                        return await DownloadFileByIdAsync(request, content, progress, cancel);
+                    }
+                    else
+                    {
+                        return await DownloadLargeFileAsync(fileRequest, fileResults, content, progress, cancel);
+                    }
+                }
+
+                return fileResults;
+            });
         }
 
         #endregion
@@ -306,7 +296,7 @@ namespace Bytewizer.Backblaze.Client
         private async Task<IApiResults<DownloadFileResponse>> DownloadLargeFileAsync
             (DownloadFileByIdRequest request, IApiResults<DownloadFileResponse> results, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken)
         {
-            var parts = GetContentParts(results.Response.ContentLength, DownloadPartSize);
+            var parts = GetContentParts(results.Response.ContentLength, Options.DownloadPartSize);
 
             foreach (var part in parts)
             {
@@ -336,7 +326,7 @@ namespace Bytewizer.Backblaze.Client
         private async Task<IApiResults<DownloadFileResponse>> DownloadLargeFileAsync
             (DownloadFileByNameRequest request, IApiResults<DownloadFileResponse> results, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken)
         {
-            var parts = GetContentParts(results.Response.ContentLength, DownloadPartSize);
+            var parts = GetContentParts(results.Response.ContentLength, Options.DownloadPartSize);
 
             foreach (var part in parts)
             {
@@ -365,12 +355,12 @@ namespace Bytewizer.Backblaze.Client
         private async Task<IApiResults<UploadFileResponse>> UploadLargeFileAsync
             (UploadLargeFileRequest request, IProgress<ICopyProgress> progress, CancellationToken cancellationToken)
         {
-            if (request.ContentLength < AccountInfo.AbsoluteMinimumPartSize)
-                throw new ArgumentOutOfRangeException($"Argument must be a minimum of {AccountInfo.AbsoluteMinimumPartSize} bytes long.", nameof(request.ContentLength));
+            if (request.ContentLength < ClientOptions.MinimumPartSize)
+                throw new ArgumentOutOfRangeException($"Argument must be a minimum of {ClientOptions.MinimumPartSize} bytes long.", nameof(request.ContentLength));
 
             List<string> sha1Hash = new List<string>();
 
-            var parts = GetStreamParts(request.ContentStream, (long)GetPartSize(UploadPartSize));
+            var parts = GetStreamParts(request.ContentStream, Options.UploadPartSize);
             if (parts.Count == 0)
                 throw new ApiException($"The number of large file parts could not be determined from stream.");
 
@@ -386,7 +376,7 @@ namespace Bytewizer.Backblaze.Client
             if (fileResults.IsSuccessStatusCode)
             {
                 var urlRequest = new GetUploadPartUrlRequest(fileResults.Response.FileId);
-                var urlResults = await GetUploadPartUrlAsync(urlRequest, TimeSpan.FromSeconds(DefaultUploadPartUrlTTL), cancellationToken);
+                var urlResults = await GetUploadPartUrlAsync(urlRequest, DefaultCacheTTL, cancellationToken);
                 if (fileResults.IsSuccessStatusCode)
                 {
                     foreach (var part in parts)
@@ -428,56 +418,6 @@ namespace Bytewizer.Backblaze.Client
                 return new ApiResults<UploadFileResponse>(finishResults.HttpResponse, finishResults.Error);
             }
             return new ApiResults<UploadFileResponse>(fileResults.HttpResponse, fileResults.Error);
-        }
-
-        /// <summary>
-        /// Gets cutoff size in bits for switching to chunked parts upload.
-        /// </summary>
-        private FileSize GetCutoffSize(FileSize cutoff, FileSize part)
-        {
-            FileSize cutoffSize;
-            if (cutoff == 0)
-            {
-                cutoffSize = GetPartSize(part);
-            }
-            else
-            {
-                if (cutoff <= AccountInfo.AbsoluteMinimumPartSize)
-                {
-                    cutoffSize = AccountInfo.AbsoluteMinimumPartSize;
-                }
-                else
-                {
-                    cutoffSize = cutoff;
-                }
-            }
-            return cutoffSize;
-        }
-
-        /// <summary>
-        /// Gets part size in bits of large file chunked parts.
-        /// </summary>
-        private FileSize GetPartSize(FileSize part)
-        {
-            var func = new Func<string, string, Task>(ConnectAsync);
-
-            FileSize partSize;
-            if (part == 0)
-            {
-                partSize = AccountInfo.RecommendedPartSize;
-            }
-            else
-            {
-                if (part < AccountInfo.AbsoluteMinimumPartSize)
-                {
-                    partSize = AccountInfo.AbsoluteMinimumPartSize;
-                }
-                else
-                {
-                    partSize = part;
-                }
-            }
-            return partSize;
         }
 
         /// <summary>

@@ -9,7 +9,6 @@ using System.Net.Http.Headers;
 using System.Security.Authentication;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Memory;
 
 using Bytewizer.Backblaze.Models;
 using Bytewizer.Backblaze.Extensions;
@@ -23,22 +22,33 @@ namespace Bytewizer.Backblaze.Client
         #region b2_authorize_account
 
         /// <summary>
-        /// Used to log in to the Backblaze B2 API Service. Returns an <see cref="AuthToken"/> that can be used for 
-        /// account-level operations, and <see cref="ApiUrl"/> that should be used as the base url for subsequent API calls.
+        /// Authenticate to the Backblaze B2 Cloud Storage service.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
-        /// <param name="applicationKey">The secret part of the key.</param>
+        /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        /// <returns>The <see cref="AuthorizeAccountResponse" /> of this <see cref="IApiResults{T}.Response"/> value, or <see cref="null"/>, if the response was was error data.</returns>
         public async Task<IApiResults<AuthorizeAccountResponse>> AuthorizeAccountAync
         (string keyId, string applicationKey, CancellationToken cancellationToken)
         {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{AccountInfo.AuthUrl}b2_authorize_account");
+            if (string.IsNullOrEmpty(keyId))
+                throw new ArgumentNullException(nameof(keyId));
 
-            httpRequest.Headers.Authorization = new BasicAuthenticationHeaderValue(keyId, applicationKey);
-            httpRequest.Headers.SetTestMode(TestMode);
+            if (string.IsNullOrEmpty(applicationKey))
+                throw new ArgumentNullException(nameof(applicationKey));
 
-            using (var results = await _httpClient.SendAsync(httpRequest, cancellationToken))
-                return await HandleResponseAsync<AuthorizeAccountResponse>(results);
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{AccountInfo.AuthUrl}b2_authorize_account");
+
+                httpRequest.Headers.Authorization = new BasicAuthenticationHeaderValue(keyId, applicationKey);
+                httpRequest.Headers.SetTestMode(Options.TestMode);
+
+                using (var results = await _httpClient.SendAsync(httpRequest, cancellationToken))
+                    return await HandleResponseAsync<AuthorizeAccountResponse>(results);
+            });
         }
 
         #endregion
@@ -46,34 +56,97 @@ namespace Bytewizer.Backblaze.Client
         #region b2_cancel_large_file
 
         /// <summary>
-        /// Cancels the upload of a large file and deletes all of the parts that have been uploaded. 
+        /// Cancels the upload of a large file and deletes all parts that have been uploaded. 
         /// </summary>
-        /// <param name="request">The create bucket request content to send.</param>
+        /// <param name="request">The cancel large file request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<CancelLargeFileResponse>> CancelLargeFileAsync
             (CancelLargeFileRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<CancelLargeFileRequest, CancelLargeFileResponse>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<CancelLargeFileRequest, CancelLargeFileResponse>
                 (request, $"{AccountInfo.ApiUrl}b2_cancel_large_file", cancellationToken);
+            });
         }
 
         #endregion
 
-        // TODO: b2_copy_file - IN BETA
-        // TODO: b2_copy_part - IN BETA
+        #region b2_copy_file
+
+        /// <summary>
+        /// Creates a new file by copying from an existing file.
+        /// </summary>
+        /// <param name="request">The copy file request to send.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        public async Task<IApiResults<CopyFileResponse>> CopyFileAsync
+            (CopyFileRequest request, CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<CopyFileRequest, CopyFileResponse>
+                (request, $"{AccountInfo.ApiUrl}b2_copy_file", cancellationToken);
+            });
+        }
+
+        #endregion
+
+        #region b2_copy_part
+
+        /// <summary>
+        /// Creates a new file part by copying from an existing file and storing it as a part of a large file which has already been started.
+        /// </summary>
+        /// <param name="request">The copy file part request to send.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        public async Task<IApiResults<CopyPartResponse>> CopyPartAsync
+            (CopyPartRequest request, CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<CopyPartRequest, CopyPartResponse>
+                (request, $"{AccountInfo.ApiUrl}b2_copy_part", cancellationToken);
+            });
+        }
+
+        #endregion
 
         #region b2_create_bucket
 
         /// <summary>
         /// Creates a new bucket belonging to the specified account. 
         /// </summary>
-        /// <param name="request">The create bucket request content to send.</param>
+        /// <param name="request">The create bucket request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<CreateBucketResponse>> CreateBucketAsync
             (CreateBucketRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<CreateBucketRequest, CreateBucketResponse>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<CreateBucketRequest, CreateBucketResponse>
                 (request, $"{AccountInfo.ApiUrl}b2_create_bucket", cancellationToken);
+            });
         }
 
         #endregion
@@ -83,13 +156,21 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Creates a new application key. There is a limit of 100 million key creations per account.
         /// </summary>
-        /// <param name="request">The create application key request content to send.</param>
+        /// <param name="request">The create application key request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<CreateKeyResponse>> CreateKeyAsync
             (CreateKeyRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<CreateKeyRequest, CreateKeyResponse>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<CreateKeyRequest, CreateKeyResponse>
                 (request, $"{AccountInfo.ApiUrl}b2_create_key", cancellationToken);
+            });
         }
 
         #endregion
@@ -99,13 +180,21 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Deletes the bucket specified. Only buckets that contain no version of any files can be deleted. 
         /// </summary>
-        /// <param name="request">The delete bucket request content to send.</param>
+        /// <param name="request">The delete bucket request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<DeleteBucketResponse>> DeleteBucketAsync
             (DeleteBucketRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<DeleteBucketRequest, DeleteBucketResponse>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<DeleteBucketRequest, DeleteBucketResponse>
                 (request, $"{AccountInfo.ApiUrl}b2_delete_bucket", cancellationToken);
+            });
         }
 
         #endregion
@@ -115,13 +204,21 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Deletes a specific version of a file. 
         /// </summary>
-        /// <param name="request">The delete file version request content to send.</param>
+        /// <param name="request">The delete file request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<DeleteFileVersionResponse>> DeleteFileVersionAsync
             (DeleteFileVersionRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<DeleteFileVersionRequest, DeleteFileVersionResponse>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<DeleteFileVersionRequest, DeleteFileVersionResponse>
                 (request, $"{AccountInfo.ApiUrl}b2_delete_file_version", cancellationToken);
+            });
         }
 
         #endregion
@@ -131,13 +228,21 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Deletes the application key specified. 
         /// </summary>
-        /// <param name="request">The delete key request content to send.</param>
+        /// <param name="request">The delete key request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<DeleteKeyResponse>> DeleteKeyAsync
             (DeleteKeyRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<DeleteKeyRequest, DeleteKeyResponse>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<DeleteKeyRequest, DeleteKeyResponse>
                 (request, $"{AccountInfo.ApiUrl}b2_delete_key", cancellationToken);
+            });
         }
 
         #endregion
@@ -147,8 +252,10 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Downloads a specific version of a file by file id without content.  
         /// </summary>
-        /// <param name="request">The download file request content to send.</param>
+        /// <param name="request">The download file request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<DownloadFileResponse>> DownloadFileByIdAsync
             (DownloadFileByIdRequest request, CancellationToken cancellationToken)
         {
@@ -161,10 +268,13 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Downloads a specific version of a file by file id.  
         /// </summary>
-        /// <param name="request">The download file request content to send.</param>
+        /// <param name="request">The download file request to send.</param>
         /// <param name="content">The download content to receive.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a validation hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<DownloadFileResponse>> DownloadFileByIdAsync
             (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken)
         {
@@ -178,7 +288,7 @@ namespace Bytewizer.Backblaze.Client
 
             httpRequest.Headers.SetAuthorization(request.AuthorizationToken, AuthToken.Authorization);
             httpRequest.Headers.SetRange(request.Range);
-            httpRequest.Headers.SetTestMode(TestMode);
+            httpRequest.Headers.SetTestMode(Options.TestMode);
 
             httpRequest.Content.Headers.SetContentDisposition(request);
 
@@ -199,23 +309,31 @@ namespace Bytewizer.Backblaze.Client
         #region b2_download_file_by_name
 
         /// <summary>
-        /// Downloads the most recent version of a file without content.
+        /// Downloads the most recent version of a file by name without content.
         /// </summary>
         /// <param name="request">The download file request content to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<DownloadFileResponse>> DownloadFileByNameAsync
             (DownloadFileByNameRequest request, CancellationToken cancellationToken)
         {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
             return await DownloadFileByNameAsync(request, null, null, cancellationToken);
         }
 
         /// <summary>
-        /// Downloads the most recent version of a file. 
+        /// Downloads the most recent version of a file by name. 
         /// </summary>
-        /// <param name="request">The download file request content to send.</param>
+        /// <param name="request">The download file request to send.</param>
         /// <param name="content">The download content to receive.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a validation hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<DownloadFileResponse>> DownloadFileByNameAsync
         (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken)
         {
@@ -227,7 +345,7 @@ namespace Bytewizer.Backblaze.Client
 
             httpRequest.Headers.SetAuthorization(request.AuthorizationToken, AuthToken.Authorization);
             httpRequest.Headers.SetRange(request.Range);
-            httpRequest.Headers.SetTestMode(TestMode);
+            httpRequest.Headers.SetTestMode(Options.TestMode);
 
             //TODO: Not sure if this is the best way to handle
             httpRequest.Content = new StringContent(string.Empty);
@@ -250,15 +368,23 @@ namespace Bytewizer.Backblaze.Client
         #region b2_finish_large_file
 
         /// <summary>
-        /// Converts the file parts that have been uploaded into a single file. 
+        /// Converts file parts that have been uploaded into a single file. 
         /// </summary>
-        /// <param name="request">The delete key request content to send.</param>
+        /// <param name="request">The finish large file request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<UploadFileResponse>> FinishLargeFileAsync
-        (FinishLargeFileRequest request, CancellationToken cancellationToken)
+            (FinishLargeFileRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<FinishLargeFileRequest, UploadFileResponse>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<FinishLargeFileRequest, UploadFileResponse>
                 (request, $"{AccountInfo.ApiUrl}b2_finish_large_file", cancellationToken);
+            });
         }
 
         #endregion
@@ -266,16 +392,23 @@ namespace Bytewizer.Backblaze.Client
         #region b2_get_download_authorization
 
         /// <summary>
-        /// Used to generate an authorization token that can be used to download files from a private bucket. 
+        /// Generate an authorization token that can be used to download files from a private bucket. 
         /// </summary>
-        /// <param name="request">The get download authorization request content to send.</param>
-        /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>An authorization token that can be passed to <see cref="DownloadFileByNameAsync"/>.</returns>
+        /// <param name="request">The download authorization request to send.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<GetDownloadAuthorizationResponse>> GetDownloadAuthorizationAsync
             (GetDownloadAuthorizationRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<GetDownloadAuthorizationRequest, GetDownloadAuthorizationResponse>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<GetDownloadAuthorizationRequest, GetDownloadAuthorizationResponse>
                 (request, $"{AccountInfo.ApiUrl}b2_get_download_authorization", cancellationToken);
+            });
         }
 
         #endregion
@@ -285,14 +418,21 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Gets information about a file. 
         /// </summary>
-        /// <param name="request">The get file info request content to send.</param>
+        /// <param name="request">The file info request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
-        /// <returns>A <see cref="IApiResults{T}.Error"/> if called on a non-existent file id or if called on an unfinished large file.</returns>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<GetFileInfoResponse>> GetFileInfoAsync
             (GetFileInfoRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<GetFileInfoRequest, GetFileInfoResponse>
-                (request, $"{AccountInfo.ApiUrl}b2_get_file_info", cancellationToken);
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<GetFileInfoRequest, GetFileInfoResponse>
+                    (request, $"{AccountInfo.ApiUrl}b2_get_file_info", cancellationToken);
+            });
         }
 
         #endregion
@@ -300,31 +440,57 @@ namespace Bytewizer.Backblaze.Client
         #region b2_get_upload_part_url
 
         /// <summary>
-        /// Gets a url to use for uploading multi-parts of a large file. 
+        /// Gets a url for uploading parts of a large file. 
         /// </summary>
-        /// <param name="request">The get upload part url request content to send.</param>
+        /// <param name="request">The upload part url request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<GetUploadPartUrlResponse>> GetUploadPartUrlAsync
             (GetUploadPartUrlRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<GetUploadPartUrlRequest, GetUploadPartUrlResponse>
-                (request, $"{AccountInfo.ApiUrl}b2_get_upload_part_url", cancellationToken);
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await GetUploadPartUrlAsync(request, 0, cancellationToken);
+            });
         }
 
         /// <summary>
-        /// Gets a url to use for uploading multi-parts of a large file. 
+        /// Gets a url for uploading parts of a large file from memory cache. 
         /// </summary>
-        /// <param name="request">The get upload part url request content to send.</param>
-        /// <param name="cacheTTL">An absolute expiration time to live (TTL) relative to now.</param>
+        /// <param name="request">The upload part url request to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<GetUploadPartUrlResponse>> GetUploadPartUrlAsync
-            (GetUploadPartUrlRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
+            (GetUploadPartUrlRequest request, int cacheTTL, CancellationToken cancellationToken)
         {
-            return await _cache.GetOrCreateAsync(CacheKeys.UploadPartUrl, async (entry) =>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (cacheTTL <= 0)
             {
-                entry.AbsoluteExpirationRelativeToNow = cacheTTL;
-                return await GetUploadPartUrlAsync(request, cancellationToken);
-            });
+                return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                {
+                    return await InvokePostAsync<GetUploadPartUrlRequest, GetUploadPartUrlResponse>
+                    (request, $"{AccountInfo.ApiUrl}b2_get_upload_part_url", cancellationToken);
+                });
+            }
+            else
+            {
+                return await _cacheManager.GetOrCreateAsync(request.ToCacheKey(), async (entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(cacheTTL);
+                    return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                    {
+                        return await GetUploadPartUrlAsync(request, cancellationToken);
+                    });
+                });
+            }
         }
 
         #endregion
@@ -332,31 +498,51 @@ namespace Bytewizer.Backblaze.Client
         #region b2_get_upload_url
 
         /// <summary>
-        /// Gets a url to use for uploading files.  
+        /// Gets a url for uploading files. 
         /// </summary>
-        /// <param name="request">The get upload Url request content to send.</param>
+        /// <param name="request">The get upload part url request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<GetUploadUrlResponse>> GetUploadUrlAsync
             (GetUploadUrlRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<GetUploadUrlRequest, GetUploadUrlResponse>
-                (request, $"{AccountInfo.ApiUrl}b2_get_upload_url", cancellationToken);
+            return await GetUploadUrlAsync(request, 0, cancellationToken);
         }
 
         /// <summary>
-        /// Gets a url to use for uploading files.  
+        /// Gets a url for uploading files from memory cache. 
         /// </summary>
-        /// <param name="request">The get upload Url request content to send.</param>
-        /// <param name="cacheTTL">An absolute expiration time to live (TTL) relative to now.</param>
+        /// <param name="request">The get upload part url request to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<GetUploadUrlResponse>> GetUploadUrlAsync
-            (GetUploadUrlRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
+            (GetUploadUrlRequest request, int cacheTTL, CancellationToken cancellationToken)
         {
-            return await _cache.GetOrCreateAsync(CacheKeys.UploadUrl, async (entry) =>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (cacheTTL <= 0)
             {
-                entry.AbsoluteExpirationRelativeToNow = cacheTTL;
-                return await GetUploadUrlAsync(request, cancellationToken);
-            });
+                return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                {
+                    return await InvokePostAsync<GetUploadUrlRequest, GetUploadUrlResponse>
+                    (request, $"{AccountInfo.ApiUrl}b2_get_upload_url", cancellationToken);
+                });
+            }
+            else
+            {
+                return await _cacheManager.GetOrCreateAsync(request.ToCacheKey(), async (entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(cacheTTL);
+                    return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                    {
+                        return await GetUploadUrlAsync(request, cancellationToken);
+                    });
+                });
+            }
         }
 
         #endregion
@@ -371,8 +557,14 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<HideFileResponse>> HideFileAsync
             (HideFileRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<HideFileRequest, HideFileResponse>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<HideFileRequest, HideFileResponse>
                 (request, $"{AccountInfo.ApiUrl}b2_hide_file", cancellationToken);
+            });
         }
 
         #endregion
@@ -380,17 +572,56 @@ namespace Bytewizer.Backblaze.Client
         #region b2_list_buckets
 
         /// <summary>
-        /// Lists buckets associated with an account in alphabetical order by bucket name. When using an authorization token
+        /// List buckets associated with an account in alphabetical order by bucket name. When using an authorization token
         /// that is restricted to a bucket you must include the <see cref="ListBucketsRequest.BucketId"/>
         /// or <see cref="ListBucketsRequest.BucketName"/> of that bucket in the request or the request will be denied. 
         /// </summary>
-        /// <param name="request">The list buckets request content to send.</param>
+        /// <param name="request">The list buckets request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<ListBucketsResponse>> ListBucketsAsync
             (ListBucketsRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<ListBucketsRequest, ListBucketsResponse>
-                (request, $"{AccountInfo.ApiUrl}b2_list_buckets", cancellationToken);
+            return await ListBucketsAsync(request, 0, cancellationToken);
+        }
+
+        /// <summary>
+        /// List buckets from memory cache associated with an account in alphabetical order by bucket name. When using an authorization token
+        /// that is restricted to a bucket you must include the <see cref="ListBucketsRequest.BucketId"/>
+        /// or <see cref="ListBucketsRequest.BucketName"/> of that bucket in the request or the request will be denied. 
+        /// </summary>
+        /// <param name="request">The list buckets request to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        public async Task<IApiResults<ListBucketsResponse>> ListBucketsAsync
+            (ListBucketsRequest request, int cacheTTL, CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (cacheTTL <= 0)
+            {
+                return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                {
+                    return await InvokePostAsync<ListBucketsRequest, ListBucketsResponse>
+                    (request, $"{AccountInfo.ApiUrl}b2_list_buckets", cancellationToken);
+                });
+            }
+            else
+            {
+                return await _cacheManager.GetOrCreateAsync(request.ToCacheKey(), async (entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(cacheTTL);
+                    return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                    {
+                        return await InvokePostAsync<ListBucketsRequest, ListBucketsResponse>
+                        (request, $"{AccountInfo.ApiUrl}b2_list_buckets", cancellationToken);
+                    });
+                });
+            }
         }
 
         #endregion
@@ -398,15 +629,54 @@ namespace Bytewizer.Backblaze.Client
         #region b2_list_file_names
 
         /// <summary>
-        /// Lists the names of all files in a bucket starting at a given name. 
+        /// List the names of all files in a bucket starting at a given name. 
         /// </summary>
-        /// <param name="request">The list file name request content to send.</param>
+        /// <param name="request">The list file name request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<ListFileNamesResponse>> ListFileNamesAsync
             (ListFileNamesRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<ListFileNamesRequest, ListFileNamesResponse>
-                (request, $"{AccountInfo.ApiUrl}b2_list_file_names", cancellationToken);
+
+            return await ListFileNamesAsync(request, 0, cancellationToken);
+
+        }
+
+        /// <summary>
+        /// List the names of all files in a bucket starting at a given name from memory cache. 
+        /// </summary>
+        /// <param name="request">The list file name request to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        public async Task<IApiResults<ListFileNamesResponse>> ListFileNamesAsync
+            (ListFileNamesRequest request, int cacheTTL, CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (cacheTTL <= 0)
+            {
+                return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                {
+                    return await InvokePostAsync<ListFileNamesRequest, ListFileNamesResponse>
+                        (request, $"{AccountInfo.ApiUrl}b2_list_file_names", cancellationToken);
+                });
+            }
+            else
+            {
+                return await _cacheManager.GetOrCreateAsync(request.ToCacheKey(), async (entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(cacheTTL);
+                    return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                    {
+                        return await InvokePostAsync<ListFileNamesRequest, ListFileNamesResponse>
+                            (request, $"{AccountInfo.ApiUrl}b2_list_file_names", cancellationToken);
+                    });
+                });
+            }
         }
 
         #endregion
@@ -414,16 +684,54 @@ namespace Bytewizer.Backblaze.Client
         #region b2_list_file_versions
 
         /// <summary>
-        /// Lists all of the versions of all of the files contained in one bucket, in alphabetical order by file name,
+        /// List all versions of the files contained in one bucket in alphabetical order by file name
         /// and by reverse of date/time uploaded for versions of files with the same name. 
         /// </summary>
-        /// <param name="request">The list buckets request content to send.</param>
+        /// <param name="request">The list file versions request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<ListFileVersionResponse>> ListFileVersionsAsync
             (ListFileVersionRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<ListFileVersionRequest, ListFileVersionResponse>
-                (request, $"{AccountInfo.ApiUrl}b2_list_file_versions", cancellationToken);
+            return await ListFileVersionsAsync(request, 0, cancellationToken);
+        }
+
+        /// <summary>
+        /// List all versions of the files contained in one bucket in alphabetical order by file name
+        /// and by reverse of date/time uploaded for versions of files with the same name. 
+        /// </summary>
+        /// <param name="request">The list file versions request to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        public async Task<IApiResults<ListFileVersionResponse>> ListFileVersionsAsync
+            (ListFileVersionRequest request, int cacheTTL, CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (cacheTTL <= 0)
+            {
+                return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                {
+                    return await InvokePostAsync<ListFileVersionRequest, ListFileVersionResponse>
+                    (request, $"{AccountInfo.ApiUrl}b2_list_file_versions", cancellationToken);
+                });
+            }
+            else
+            {
+                return await _cacheManager.GetOrCreateAsync(request.ToCacheKey(), async (entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(cacheTTL);
+                    return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                    {
+                        return await InvokePostAsync<ListFileVersionRequest, ListFileVersionResponse>
+                        (request, $"{AccountInfo.ApiUrl}b2_list_file_versions", cancellationToken);
+                    });
+                });
+            }
         }
 
         #endregion
@@ -431,15 +739,58 @@ namespace Bytewizer.Backblaze.Client
         #region b2_list_keys
 
         /// <summary>
-        /// Lists application keys associated with an account. 
+        /// List application keys associated with an account. 
         /// </summary>
-        /// <param name="request">The list application keys request content to send.</param>
+        /// <param name="request">The list application keys request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<ListKeysResponse>> ListKeysAsync
             (ListKeysRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<ListKeysRequest, ListKeysResponse>
-                (request, $"{AccountInfo.ApiUrl}b2_list_keys", cancellationToken);
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await ListKeysAsync(request, 0, cancellationToken);
+            });
+        }
+
+        /// <summary>
+        /// List application keys associated with an account from memory cache. 
+        /// </summary>
+        /// <param name="request">The list application keys request to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        public async Task<IApiResults<ListKeysResponse>> ListKeysAsync
+            (ListKeysRequest request, int cacheTTL, CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (cacheTTL <= 0)
+            {
+                return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                {
+                    return await InvokePostAsync<ListKeysRequest, ListKeysResponse>
+                    (request, $"{AccountInfo.ApiUrl}b2_list_keys", cancellationToken);
+                });
+            }
+            else
+            {
+                return await _cacheManager.GetOrCreateAsync(request.ToCacheKey(), async (entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(cacheTTL);
+                    return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                    {
+                        return await InvokePostAsync<ListKeysRequest, ListKeysResponse>
+                        (request, $"{AccountInfo.ApiUrl}b2_list_keys", cancellationToken);
+                    });
+                });
+            }
         }
 
         #endregion
@@ -447,16 +798,59 @@ namespace Bytewizer.Backblaze.Client
         #region b2_list_parts
 
         /// <summary>
-        /// Lists the parts that have been uploaded for a large file that has not been finished yet. This call returns at 
-        /// most 1000 entries but it can be called repeatedly to scan through all of the parts for an upload. 
+        /// List parts that have been uploaded for a large file that has not been finished yet. 
         /// </summary>
-        /// <param name="request">The list parts request content to send.</param>
+        /// <param name="request">The list parts request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<ListPartsResponse>> ListPartsAsync
             (ListPartsRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<ListPartsRequest, ListPartsResponse>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<ListPartsRequest, ListPartsResponse>
                 (request, $"{AccountInfo.ApiUrl}b2_list_parts", cancellationToken);
+            });
+        }
+
+        /// <summary>
+        /// List parts that have been uploaded for a large file that has not been finished yet from memory cache. 
+        /// </summary>
+        /// <param name="request">The list parts request to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        public async Task<IApiResults<ListPartsResponse>> ListPartsAsync
+            (ListPartsRequest request, int cacheTTL, CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (cacheTTL <= 0)
+            {
+                return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                {
+                    return await InvokePostAsync<ListPartsRequest, ListPartsResponse>
+                    (request, $"{AccountInfo.ApiUrl}b2_list_parts", cancellationToken);
+                });
+            }
+            else
+            {
+                return await _cacheManager.GetOrCreateAsync(request.ToCacheKey(), async (entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(cacheTTL);
+                    return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                    {
+                        return await InvokePostAsync<ListPartsRequest, ListPartsResponse>
+                        (request, $"{AccountInfo.ApiUrl}b2_list_parts", cancellationToken);
+                    });
+                });
+            }
         }
 
         #endregion
@@ -464,15 +858,52 @@ namespace Bytewizer.Backblaze.Client
         #region b2_list_unfinished_large_files
 
         /// <summary>
-        /// Lists information about large file uploads that have been started but have not been finished or canceled. 
+        /// List information about large file uploads that have been started but have not been finished or canceled.
         /// </summary>
-        /// <param name="request">The list unfinished large files request content to send.</param>
+        /// <param name="request">The list unfinished large files request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<ListUnfinishedLargeFilesResponse>> ListUnfinishedLargeFilesAsync
             (ListUnfinishedLargeFilesRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<ListUnfinishedLargeFilesRequest, ListUnfinishedLargeFilesResponse>
-                (request, $"{AccountInfo.ApiUrl}b2_list_unfinished_large_files", cancellationToken);
+            return await ListUnfinishedLargeFilesAsync(request, 0, cancellationToken);
+        }
+
+        /// <summary>
+        /// List information about large file uploads that have been started but have not been finished or canceled from memory cache.
+        /// </summary>
+        /// <param name="request">The list unfinished large files request to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        public async Task<IApiResults<ListUnfinishedLargeFilesResponse>> ListUnfinishedLargeFilesAsync
+            (ListUnfinishedLargeFilesRequest request, int cacheTTL, CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (cacheTTL <= 0)
+            {
+                return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                {
+                    return await InvokePostAsync<ListUnfinishedLargeFilesRequest, ListUnfinishedLargeFilesResponse>
+                    (request, $"{AccountInfo.ApiUrl}b2_list_unfinished_large_files", cancellationToken);
+                });
+            }
+            else
+            {
+                return await _cacheManager.GetOrCreateAsync(request.ToCacheKey(), async (entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(cacheTTL);
+                    return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+                    {
+                        return await InvokePostAsync<ListUnfinishedLargeFilesRequest, ListUnfinishedLargeFilesResponse>
+                        (request, $"{AccountInfo.ApiUrl}b2_list_unfinished_large_files", cancellationToken);
+                    });
+                });
+            }
         }
 
         #endregion
@@ -480,10 +911,12 @@ namespace Bytewizer.Backblaze.Client
         #region b2_start_large_file
 
         /// <summary>
-        /// Prepares for uploading the multi-parts of a large file. 
+        /// Prepares for uploading parts of a large file. 
         /// </summary>
-        /// <param name="request">The start large file request content to send.</param>
+        /// <param name="request">The start large file request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<StartLargeFileResponse>> StartLargeFileAsync
             (StartLargeFileRequest request, CancellationToken cancellationToken)
         {
@@ -497,11 +930,10 @@ namespace Bytewizer.Backblaze.Client
 
             httpRequest.Headers.SetAuthorization(AuthToken.Authorization);
             httpRequest.Headers.SetBzInfo(request.FileInfo);
-            httpRequest.Headers.SetTestMode(TestMode);
+            httpRequest.Headers.SetTestMode(Options.TestMode);
 
             using (var results = await _httpClient.SendAsync(httpRequest, cancellationToken))
                 return await HandleResponseAsync<StartLargeFileResponse>(results);
-
         }
 
         #endregion
@@ -509,15 +941,23 @@ namespace Bytewizer.Backblaze.Client
         #region b2_update_bucket
 
         /// <summary>
-        /// Update an existing bucket. 
+        /// Update an existing bucket belonging to the specific account. 
         /// </summary>
-        /// <param name="request">The update bucket request content to send.</param>
+        /// <param name="request">The update bucket request to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<UpdateBucketResponse>> UpdateBucketAsync
             (UpdateBucketRequest request, CancellationToken cancellationToken)
         {
-            return await InvokePostAsync<UpdateBucketRequest, UpdateBucketResponse>
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
+            {
+                return await InvokePostAsync<UpdateBucketRequest, UpdateBucketResponse>
                 (request, $"{AccountInfo.ApiUrl}b2_update_bucket", cancellationToken);
+            });
         }
 
         #endregion
@@ -525,57 +965,63 @@ namespace Bytewizer.Backblaze.Client
         #region b2_upload_file
 
         /// <summary>
-        /// Uploads a file. 
+        /// Upload content stream to the Backblaze B2 Cloud Storage service. 
         /// </summary>
-        /// <param name="request">The upload file request content to send.</param>
-        /// <param name="content"> The content stream of the file payload.</param>
+        /// <param name="request">The upload file request to send.</param>
+        /// <param name="content"> The content stream of the content payload.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a validation hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<UploadFileResponse>> UploadFileAsync
             (UploadFileRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, request.UploadUrl);
-
-            httpRequest.Headers.SetAuthorization(request.AuthorizationToken);
-            httpRequest.Headers.SetBzInfo(request.FileInfo);
-            httpRequest.Headers.SetTestMode(TestMode);
-
-            using (var httpContent = new ProgressStreamContent(content, progress, false))
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
             {
-                var hash = content.ToSha1();
+                var httpRequest = new HttpRequestMessage(HttpMethod.Post, request.UploadUrl);
 
-                httpRequest.Content = httpContent;
-                httpRequest.Content.Headers.ContentLength = content.Length;
-                httpRequest.Content.Headers.ContentSha1(hash);
-                httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
-                httpRequest.Content.Headers.SetContentFileName(request.FileName);
+                httpRequest.Headers.SetAuthorization(request.AuthorizationToken);
+                httpRequest.Headers.SetBzInfo(request.FileInfo);
+                httpRequest.Headers.SetTestMode(Options.TestMode);
 
-                using (var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken))
+                using (var httpContent = new ProgressStreamContent(content, progress, false))
                 {
-                    var results = await HandleResponseAsync<UploadFileResponse>(httpResponse);
+                    var hash = content.ToSha1();
 
-                    if (results.IsSuccessStatusCode)
+                    httpRequest.Content = httpContent;
+                    httpRequest.Content.Headers.ContentLength = content.Length;
+                    httpRequest.Content.Headers.ContentSha1(hash);
+                    httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
+                    httpRequest.Content.Headers.SetContentFileName(request.FileName);
+
+                    using (var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken))
                     {
-                        if (hash.Equals(results.Response.ContentSha1))
-                            return results;
+                        var results = await HandleResponseAsync<UploadFileResponse>(httpResponse);
 
-                        if (results.Response.ContentSha1.Equals("none"))
+                        if (results.IsSuccessStatusCode)
                         {
-                            var largeFileHash = results.Response.FileInfo.GetLargeFileSha1();
-                            if (hash.Equals(largeFileHash))
+                            if (hash.Equals(results.Response.ContentSha1))
                                 return results;
+
+                            if (results.Response.ContentSha1.Equals("none"))
+                            {
+                                var largeFileHash = results.Response.FileInfo.GetLargeFileSha1();
+                                if (hash.Equals(largeFileHash))
+                                    return results;
+                            }
+
+                            throw new InvalidHashException($"Response checksum failed: Hash verify on '{results.Response.FileName}' failed.");
                         }
 
-                        throw new InvalidHashException($"Response checksum failed: Hash verify on '{results.Response.FileName}' failed.");
+                        return results;
                     }
-
-                    return results;
                 }
-            }
-
+            });
         }
 
         #endregion
@@ -583,46 +1029,53 @@ namespace Bytewizer.Backblaze.Client
         #region b2_upload_part
 
         /// <summary>
-        /// Uploads one part of a multi-part file using a file id obtained from <see cref="StartLargeFileAsync"/>. 
+        /// Uploads one part of a multi-part content stream using file id obtained from <see cref="StartLargeFileAsync"/>. 
         /// </summary>
-        /// <param name="request">The upload file request content to send.</param>
+        /// <param name="request">The upload file request to send.</param>
+        /// <param name="content"> The content stream of the content payload.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a validation hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<UploadPartResponse>> UploadPartAsync
             (UploadPartRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancellationToken)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, request.UploadUrl);
-
-            httpRequest.Headers.SetAuthorization(request.AuthorizationToken);
-            httpRequest.Headers.SetPartNumber(request.PartNumber);
-            httpRequest.Headers.SetTestMode(TestMode);
-
-            using (var httpContent = new ProgressStreamContent(content, progress, false))
+            return await _policyManager.InvokePolicy.ExecuteAsync(async () =>
             {
-                var hash = content.ToSha1();
+                var httpRequest = new HttpRequestMessage(HttpMethod.Post, request.UploadUrl);
 
-                httpRequest.Content = httpContent;
-                httpRequest.Content.Headers.ContentLength = content.Length;
-                httpRequest.Content.Headers.ContentSha1(hash);
+                httpRequest.Headers.SetAuthorization(request.AuthorizationToken);
+                httpRequest.Headers.SetPartNumber(request.PartNumber);
+                httpRequest.Headers.SetTestMode(Options.TestMode);
 
-                using (var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken))
+                using (var httpContent = new ProgressStreamContent(content, progress, false))
                 {
-                    var results = await HandleResponseAsync<UploadPartResponse>(httpResponse);
+                    var hash = content.ToSha1();
 
-                    if (results.IsSuccessStatusCode)
+                    httpRequest.Content = httpContent;
+                    httpRequest.Content.Headers.ContentLength = content.Length;
+                    httpRequest.Content.Headers.ContentSha1(hash);
+
+                    using (var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken))
                     {
-                        if (hash.Equals(results.Response.ContentSha1))
-                            return results;
+                        var results = await HandleResponseAsync<UploadPartResponse>(httpResponse);
+                        if (results.IsSuccessStatusCode)
+                        {
+                            if (hash.Equals(results.Response.ContentSha1))
+                                return results;
 
-                        throw new InvalidHashException($"Response checksum failed: Hash verify on part {results.Response.PartNumber} file id '{results.Response.FileId}' failed.");
+                            throw new InvalidHashException($"Response checksum failed: Hash verify on part {results.Response.PartNumber} file id '{results.Response.FileId}' failed.");
+                        }
+
+                        return results;
                     }
-
-                    return results;
                 }
-            }
+            });
         }
 
         #endregion
@@ -632,14 +1085,13 @@ namespace Bytewizer.Backblaze.Client
         #region Private Methods
 
         /// <summary>
-        /// Invokes a HTTP POST operation on the Backblaze B2 server.
+        /// Invokes a HTTP POST operation on the Backblaze B2 Cloud Storage service.
         /// </summary>
         /// <typeparam name="TRequest">Request resource type.</typeparam>
         /// <typeparam name="TResponse">Response resource type.</typeparam>
         /// <param name="content">Resource content to send.</param>
         /// <param name="url">Relative url to the resource.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
-        /// <returns>A results object returned from the server.</returns>
         private async Task<IApiResults<TResponse>> InvokePostAsync<TRequest, TResponse>
             (TRequest content, string url, CancellationToken cancellationToken)
         where TRequest : IRequest where TResponse : IResponse
@@ -653,14 +1105,14 @@ namespace Bytewizer.Backblaze.Client
             };
 
             httpRequest.Headers.SetAuthorization(AuthToken.Authorization);
-            httpRequest.Headers.SetTestMode(TestMode);
+            httpRequest.Headers.SetTestMode(Options.TestMode);
 
             using (var results = await _httpClient.SendAsync(httpRequest, cancellationToken))
                 return await HandleResponseAsync<TResponse>(results);
         }
 
         /// <summary>
-        /// Handle a HTTP response operation from the Backblaze B2 server.
+        /// Handle a HTTP response operation from the Backblaze B2 Cloud Storage service.
         /// </summary>
         /// <typeparam name="TResponse">Response resource type.</typeparam>
         /// <param name="content">A instance implementing <see cref="HttpResponseMessage"/>.</param>
@@ -680,7 +1132,7 @@ namespace Bytewizer.Backblaze.Client
         }
 
         /// <summary>
-        /// Handle a HTTP response operation from the Backblaze B2 server.
+        /// Handle a HTTP response operation from Backblaze B2 Cloud Storage service.
         /// </summary>
         /// <param name="response">A instance implementing <see cref="HttpResponseMessage"/>.</param>
         private async Task<IApiResults<DownloadFileResponse>> HandleResponseAsync(HttpResponseMessage response, Stream content)
@@ -732,7 +1184,7 @@ namespace Bytewizer.Backblaze.Client
         }
 
         /// <summary>
-        /// Handle a HTTP error response operation from the Backblaze B2 server.
+        /// Handle a HTTP error response operation from the Backblaze B2 Cloud Storage service.
         /// </summary>
         /// <param name="response">A instance implementing <see cref="HttpResponseMessage"/>.</param>
         private async Task<IApiResults<TResponse>> HandleErrorResponseAsync<TResponse>(HttpResponseMessage response)

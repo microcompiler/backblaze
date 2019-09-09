@@ -190,6 +190,29 @@ namespace Backblaze.Test
         }
 
         [TestMethod]
+        public async Task Copy_File()
+        {
+            var results = await _storage.Agent.Files.CopyAsync(_fileId, "copyfile.bin");
+            Assert.AreEqual(typeof(CopyFileResponse), results.Response.GetType());
+            Assert.AreEqual(SmallStreamSize, results.Response.ContentLength, "The file size did not match");
+            Assert.AreEqual("copyfile.bin", results.Response.FileName, "The file name did not match");
+
+            var range = new System.Net.Http.Headers.RangeHeaderValue(1, 1000);
+            Debug.WriteLine(range.ToString());
+
+            var request = new CopyFileRequest(_fileId, "copyfile2.bin");
+            request.Range = range;
+            var results2 = await _storage.Agent.Files.CopyAsync(request);
+        }
+
+
+        //[TestMethod]
+        //public async Task Copy_Part()
+        //{
+
+        //}
+
+        [TestMethod]
         public async Task Parallel_Uploads()
         {
             var source = new DirectoryInfo("C:/TestSrc");
@@ -334,6 +357,19 @@ namespace Backblaze.Test
             var results = await _storage.Agent.Keys.GetAsync();
             Assert.AreEqual(typeof(ListKeysResponse), results.Response.GetType());
             Assert.IsTrue(results.Response.Keys.Count >= 1, "The actual count was not greater than one");
+
+            var filelist2 = await _storage.Agent.Keys.ListAsync(new ListKeysRequest(_accountId) { MaxKeyCount = 5 }, 0);
+
+            foreach (var file in filelist2)
+            {
+                Debug.WriteLine(file.KeyName);
+            }
+        }
+
+        [TestMethod]
+        public async Task List_Parts()
+        {
+            var results = await _storage.Agent.Parts.ListAsync(new ListPartsRequest(_fileId), 60);
         }
 
         [TestMethod]
@@ -410,23 +446,56 @@ namespace Backblaze.Test
         [TestMethod]
         public async Task FileNames_Iterator()
         {
-            var request = new ListFileNamesRequest(_bucketId);
-            var filelist = await _storage.Agent.Files.GetAsync(request);
+            var request = new ListFileNamesRequest(_bucketId) { MaxFileCount = 10 };
+            var filelist = await _storage.Agent.Files.ListAsync(request, 10);
 
+            Debug.WriteLine("First Run");
             foreach (var file in filelist)
+            {
+                Debug.WriteLine(file.FileName);
+            }
+
+            var filelist2 = await _storage.Agent.Files.ListAsync(request, 10);
+            Debug.WriteLine("Second Run");
+            foreach (var file in filelist2)
             {
                 Debug.WriteLine(file.FileName);
             }
         }
 
-
         [TestMethod]
         public async Task FileVersions_Iterator()
         {
             var request = new ListFileVersionRequest(_bucketId);
-            var filelist = await _storage.Agent.Files.GetAsync(request);
+            var filelist = await _storage.Agent.Files.ListAsync(request, 10);
 
             foreach (var file in filelist)
+            {
+                Debug.WriteLine(file.FileName);
+            }
+
+            var filelist2 = await _storage.Agent.Files.ListAsync(request, 0);
+
+            foreach (var file in filelist2)
+            {
+                Debug.WriteLine(file.FileName);
+            }
+        }
+
+        [TestMethod]
+        public async Task UnfinishedLargeFiles_Iterator()
+        {
+            var request = new ListUnfinishedLargeFilesRequest(_bucketId);
+            var filelist = await _storage.Agent.Files.ListAsync(request, 10);
+
+            foreach (var file in filelist)
+            {
+                Debug.WriteLine(file.FileName);
+            }
+
+            var filelist2 = await _storage.Agent.Files.ListAsync(request, 0);
+
+            foreach (var file in filelist2)
             {
                 Debug.WriteLine(file.FileName);
             }

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Net;
+using System.Runtime.Serialization;
 
 using Bytewizer.Backblaze.Models;
 
 namespace Bytewizer.Backblaze
 {
     /// <summary>
-    /// Represents base exception class for Backblaze client errors.
+    /// The exception thrown when an error occurs during client operations.
     /// </summary>
+    [Serializable]
     public class ApiException : Exception
     {
         /// <summary>
@@ -24,38 +26,42 @@ namespace Bytewizer.Backblaze
         /// Initializes a new instance of the <see cref="ApiException"/> class.
         /// </summary>
         public ApiException()
-        { }
+        {}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiException"/> class.
+        /// Initializes a new instance of the <see cref="ApiException"/> class
+        /// with a specified error message.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         public ApiException(string message)
             : base(message)
-        { }
+        {}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiException"/> class.
+        /// Initializes a new instance of the <see cref="ApiException"/> class
+        /// with a specified error message and a reference to the inner exception that is the cause of this exception.
         /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception. </param>
-        /// <param name="inner">The exception that is the cause of the current exception. If the <paramref name="inner" /> parameter
-        /// is not a null reference, the current exception is raised in a catch block that handles the inner exception.</param>
-        public ApiException(string message, Exception inner)
-            : base(message, inner)
-        { }
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception. If the <paramref name="innerException" /> parameter
+        /// is not a null reference, the current exception is raised in a catch block that handles the inner exception. </param>
+        public ApiException(string message, Exception innerException)
+            : base(message, innerException)
+        {}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiException"/> class with a specified http status code.
+        /// Initializes a new instance of the <see cref="ApiException"/> class
+        /// with a specified http status code.
         /// </summary>
         /// <param name="statusCode">The http status code.</param>
         public ApiException(HttpStatusCode statusCode)
-            : base($"Backblaze API server responded with the following: httpcode={statusCode.ToString().ToLower()}")
+            : base($"Backblaze B2 Cloud Storage service responded with the following: httpcode={statusCode.ToString().ToLower()}")
         {
             StatusCode = statusCode;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiException"/> class with a specified http status code and error message.
+        /// Initializes a new instance of the <see cref="ApiException"/> class
+        /// with a specified http status code and error message.
         /// </summary>
         /// <param name="statusCode">The http status code.</param>
         /// <param name="message">The error message that explains the reason for the exception.</param>
@@ -66,7 +72,8 @@ namespace Bytewizer.Backblaze
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiException"/> class with a specified http status code and error message.
+        /// Initializes a new instance of the <see cref="ApiException"/> class 
+        /// with a specified http status code and error message.
         /// </summary>
         /// <param name="statusCode">The http status code.</param>
         /// <param name="error">The server error that explains the reason for the exception.</param>
@@ -76,5 +83,15 @@ namespace Bytewizer.Backblaze
             StatusCode = statusCode;
             Error = error;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiException"/> class
+        /// with serialized data.
+        /// </summary>
+        /// <param name="info">The object that holds the serialized object data. </param>
+        /// <param name="context">The contextual information about the source or destination. </param>
+        protected ApiException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {}
     }
 }

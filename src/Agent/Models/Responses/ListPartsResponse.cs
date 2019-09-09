@@ -15,14 +15,14 @@ namespace Bytewizer.Backblaze.Models
         /// A list of part objects each one describing one part.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public List<PartItem> Parts { get; internal set; }
+        public List<PartItem> Parts { get; set; }
 
         /// <summary>
         /// What to pass in to <see cref="ListPartsRequest.StartPartNumber"/> for the next search to continue where this one left off or null if there are no 
         /// more files. Note this this may not be the number of an actual part but using it is guaranteed to find the next file
         /// in the bucket.
         /// </summary>
-        public string NextPartNumber { get; internal set; }
+        public string NextPartNumber { get; set; }
 
         ///	<summary>
         ///	Debugger display for this object.

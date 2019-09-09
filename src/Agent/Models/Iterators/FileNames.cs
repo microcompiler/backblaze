@@ -5,30 +5,40 @@ using Bytewizer.Backblaze.Client;
 
 namespace Bytewizer.Backblaze.Models
 {
-    public class FileNames : BaseList<FileItem>
+    /// <summary>
+    /// Iterates sequentially through the <see cref="ListFileNamesResponse"/> response elements.
+    /// </summary>
+    public class FileNames : BaseIterator<FileItem>
     {
-        private readonly IApiClient _client;
+        /// <summary>
+        /// The request to send.
+        /// </summary>
         private readonly ListFileNamesRequest _request;
 
-        public FileNames(IApiClient client, ListFileNamesRequest request)
-            : base (client)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileNames"/> class.
+        /// </summary>
+        public FileNames(IApiClient client, ListFileNamesRequest request, int cacheTTL, CancellationToken cancellationToken)
+            : base(client, cacheTTL, cancellationToken)
         {
-            _client = client;
             _request = request;
         }
 
-        protected override List<FileItem> GetNextPage(out bool isDone)
+        /// <summary>
+        /// Returns the next iterator until completed.
+        /// </summary>
+        protected override List<FileItem> GetNextPage(out bool isCompleted)
         {
-            var results = _client.ListFileNamesAsync(_request, CancellationToken.None).GetAwaiter().GetResult();
+            var results = _client.ListFileNamesAsync(_request, _cacheManagerTTL, _cancellationToken).GetAwaiter().GetResult();
             if (results.IsSuccessStatusCode)
             {
                 _request.StartFileName = results.Response.NextFileName;
-                isDone = _request.StartFileName == null;
+                isCompleted = string.IsNullOrEmpty(results.Response.NextFileName);
                 return results.Response.Files;
             }
             else
             {
-                isDone = true;
+                isCompleted = true;
                 return new List<FileItem>();
             }
         }

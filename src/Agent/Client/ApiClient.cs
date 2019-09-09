@@ -2,12 +2,11 @@
 using System.Net.Http;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Bytewizer.Backblaze.Client
 {
     /// <summary>
-    /// Represents a default implementation of the <see cref="Storage"/> which uses <see cref="HttpClient"/> for making HTTP requests.
+    /// Represents a default implementation of the <see cref="ApiClient"/> which uses <see cref="HttpClient"/> for making HTTP requests.
     /// </summary>
     public class ApiClient : Storage, IApiClient
     {
@@ -17,18 +16,21 @@ namespace Bytewizer.Backblaze.Client
         public ApiClient() : base(null, null, null) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Storage"/> class.
+        /// Initializes a new instance of the <see cref="ApiClient"/> class.
         /// </summary>
-        /// <param name="httpClient">The <see cref="HttpClient"/> used for making requests.</param>
-        public ApiClient(HttpClient httpClient, ILogger<Storage> logger, IMemoryCache cache)
+        /// <param name="httpClient">The <see cref="HttpClient"/> used for making HTTP requests.</param>
+        /// <param name="logger">The <see cref="ILogger"/> used for application logging.</param>
+        /// <param name="cache">The <see cref="ICacheManager"/> used for application caching.</param>
+        /// <param name="policy">The <see cref="IPolicyManager"/> used for application resilience.</param>
+        public ApiClient(HttpClient httpClient, ILogger<Storage> logger, ICacheManager cache)
             : base(httpClient, logger, cache)
         { }
 
         /// <summary>
-        /// Creates an initialized instance of the client connected to the Backblaze B2 API server.
+        /// Creates an initialized instance of the client connected to the Backblaze B2 Cloud Storage service.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
-        /// <param name="applicationKey">The secret part of the key.</param>
+        /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
         public static ApiClient Initialize(string keyId, string applicationKey)
         {
             // Create client

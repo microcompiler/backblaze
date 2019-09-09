@@ -7,6 +7,8 @@ namespace Bytewizer.Backblaze.Agent
 {
     public interface IBackblazePartsAgent
     {
+        Task<List<PartItem>> ListAsync(ListPartsRequest request, int cacheTTL);
+
         Task<IApiResults<ListPartsResponse>> GetAsync(string fileId);
         Task<IApiResults<ListPartsResponse>> GetAsync(ListPartsRequest request);
         Task<IApiResults<GetUploadPartUrlResponse>> GetUploadUrlAsync(string fileId);
@@ -14,5 +16,7 @@ namespace Bytewizer.Backblaze.Agent
         Task<IApiResults<StartLargeFileResponse>> StartLargeFileAsync(string bucketId, string fileName);
         Task<IApiResults<UploadFileResponse>> FinishLargeFileAsync(string fileId, List<string> partSha1Array);
         Task<IApiResults<CancelLargeFileResponse>> CancelLargeFileAsync(string fileId);
+        Task<IApiResults<CopyPartResponse>> CopyAsync(CopyPartRequest request);
+        Task<IApiResults<CopyPartResponse>> CopyAsync(string sourceFileId, string largeFileId, int partNumber);
     }
 }

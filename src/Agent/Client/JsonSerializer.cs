@@ -19,6 +19,7 @@ namespace Bytewizer.Backblaze.Client
             JsonSettings = new JsonSerializerSettings();
             JsonSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
             JsonSettings.Converters.Add(new UnixTimeConverter());
+            JsonSettings.Converters.Add(new RangeHeaderConverter());
             JsonSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             JsonSettings.NullValueHandling = NullValueHandling.Ignore;
             JsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;

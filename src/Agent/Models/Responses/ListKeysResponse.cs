@@ -19,7 +19,7 @@ namespace Bytewizer.Backblaze.Models
         /// more files. Note this this may not be the number of an actual key but using it is guaranteed to find the next file
         /// in the bucket.
         /// </summary>
-        public string NextApplicationKeyId { get; internal set; }
+        public string NextApplicationKeyId { get; set; }
 
         ///	<summary>
         ///	Debugger display for this object.
