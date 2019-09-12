@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Agent
+namespace Bytewizer.Backblaze.Storage
 {
-    public interface IBackblazeFilesAgent
+    public interface IBackblazeFiles
     {
         Task<List<FileItem>> ListAsync(ListFileNamesRequest request, int cacheTTL);
         Task<List<FileItem>> ListAsync(ListFileVersionRequest request, int cacheTTL);

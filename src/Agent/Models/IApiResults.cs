@@ -4,32 +4,28 @@ using System.Net.Http;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// An interface for <see cref="ApiResults"/>.
+    /// An interface for <see cref="ApiResults{T}"/>.
     /// </summary>
     public interface IApiResults<T>
     {
         /// <summary>
         /// The HTTP response message.
         /// </summary>
-        /// <value>The http response message.</value>
         HttpResponseMessage HttpResponse { get; }
 
         /// <summary>
         /// The parsed HTTP body data.
         /// </summary>
-        /// <value>The response data.</value>
         T Response { get; }
 
         /// <summary>
         /// The parsed API error data.
         /// </summary>
-        /// <value>The error response data.</value>
         ErrorResponse Error { get; }
 
         /// <summary>
         /// The status code of the HTTP response.
         /// </summary>
-        /// <value>The http response message status code.</value>
         HttpStatusCode StatusCode { get; }
 
         /// <summary>
@@ -38,7 +34,7 @@ namespace Bytewizer.Backblaze.Models
         bool IsSuccessStatusCode { get; }
 
         /// <summary>
-        /// Throws an exception if the <see cref="IsSuccessStatusCode"/> property for the HTTP response is <see cref="false"/>.
+        /// Throws an exception if the <see cref="IsSuccessStatusCode"/> property for the HTTP response is <c>false</c>"/>.
         /// </summary>
         IApiResults<T> EnsureSuccessStatusCode();
     }

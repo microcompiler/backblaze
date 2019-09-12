@@ -2,7 +2,7 @@
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Represent file action status.
+    /// Specifies the file action type.
     /// </summary>
     public enum ActionType
     {

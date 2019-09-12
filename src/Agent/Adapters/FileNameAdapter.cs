@@ -2,23 +2,24 @@
 using System.Collections.Generic;
 
 using Bytewizer.Backblaze.Client;
+using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Models
+namespace Bytewizer.Backblaze.Adapters
 {
     /// <summary>
-    /// Iterates sequentially through the <see cref="ListUnfinishedLargeFilesRequest"/> response elements.
+    /// Iterates sequentially through the <see cref="ListFileNamesResponse"/> response elements.
     /// </summary>
-    public class UnfinishedLargeFiles : BaseIterator<FileItem>
+    public class FileNameAdapter : BaseIterator<FileItem>
     {
         /// <summary>
         /// The request to send.
         /// </summary>
-        private readonly ListUnfinishedLargeFilesRequest _request;
+        private readonly ListFileNamesRequest _request;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UnfinishedLargeFiles"/> class.
+        /// Initializes a new instance of the <see cref="FileNameAdapter"/> class.
         /// </summary>
-        public UnfinishedLargeFiles(IApiClient client, ListUnfinishedLargeFilesRequest request, int cacheTTL, CancellationToken cancellationToken)
+        public FileNameAdapter(IApiClient client, ListFileNamesRequest request, int cacheTTL, CancellationToken cancellationToken)
             : base(client, cacheTTL, cancellationToken)
         {
             _request = request;
@@ -29,11 +30,11 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         protected override List<FileItem> GetNextPage(out bool isCompleted)
         {
-            var results = _client.ListUnfinishedLargeFilesAsync(_request, _cacheManagerTTL, _cancellationToken).GetAwaiter().GetResult();
+            var results = _client.ListFileNamesAsync(_request, _cacheManagerTTL, _cancellationToken).GetAwaiter().GetResult();
             if (results.IsSuccessStatusCode)
             {
-                _request.StartFileId = results.Response.NextFileId;
-                isCompleted = string.IsNullOrEmpty(results.Response.NextFileId);
+                _request.StartFileName = results.Response.NextFileName;
+                isCompleted = string.IsNullOrEmpty(results.Response.NextFileName);
                 return results.Response.Files;
             }
             else

@@ -5,7 +5,7 @@ using System.Diagnostics;
 using Bytewizer.Backblaze.Models;
 using System.Text;
 
-namespace Bytewizer.Backblaze.Agent
+namespace Bytewizer.Backblaze.Storage
 {
     /// <summary>
     /// Represents a console progress bar which uses <see cref="IProgress{T}"/> for status updates.

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Agent
+namespace Bytewizer.Backblaze.Storage
 {
-    public interface IBackblazeDirectoriesAgent
+    public interface IBackblazeDirectories
     {
         Task CopyToAsync(IEnumerable<System.IO.FileInfo> files, string bucketId);
         Task CopyFromAsync(string bucketId, string prefix);

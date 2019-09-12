@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Agent
+namespace Bytewizer.Backblaze.Storage
 {
-    public interface IBackblazePartsAgent
+    public interface IBackblazeParts
     {
         Task<List<PartItem>> ListAsync(ListPartsRequest request, int cacheTTL);
 

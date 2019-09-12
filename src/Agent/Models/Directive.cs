@@ -1,8 +1,7 @@
-﻿
-namespace Bytewizer.Backblaze.Models
+﻿namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Represent the strategy to copy files.
+    /// Specifies the strategy to copy files.
     /// </summary>
     public enum Directive
     {

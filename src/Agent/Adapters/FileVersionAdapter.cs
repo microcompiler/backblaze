@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 
 using Bytewizer.Backblaze.Client;
+using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Models
+namespace Bytewizer.Backblaze.Adapters
 {
     /// <summary>
     /// Iterates sequentially through the <see cref="ListFileNamesResponse"/> response elements.
     /// </summary>
-    public class FileVersions : BaseIterator<FileItem>
+    public class FileVersionAdapter : BaseIterator<FileItem>
     {
         /// <summary>
         /// The request to send.
@@ -16,9 +17,9 @@ namespace Bytewizer.Backblaze.Models
         private readonly ListFileVersionRequest _request;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileVersions"/> class.
+        /// Initializes a new instance of the <see cref="FileVersionAdapter"/> class.
         /// </summary>
-        public FileVersions(IApiClient client, ListFileVersionRequest request, int cacheTTL, CancellationToken cancellationToken)
+        public FileVersionAdapter(IApiClient client, ListFileVersionRequest request, int cacheTTL, CancellationToken cancellationToken)
             : base(client, cacheTTL, cancellationToken)
         {
             _request = request;

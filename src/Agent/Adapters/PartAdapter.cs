@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 
 using Bytewizer.Backblaze.Client;
+using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Models
+namespace Bytewizer.Backblaze.Adapters
 {
     /// <summary>
     /// Iterates sequentially through the <see cref="ListPartsResponse"/> response elements.
     /// </summary>
-    public class Parts : BaseIterator<PartItem>
+    public class PartAdapter : BaseIterator<PartItem>
     {
         /// <summary>
         /// The request to send.
@@ -16,9 +17,9 @@ namespace Bytewizer.Backblaze.Models
         private readonly ListPartsRequest _request;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Parts"/> class.
+        /// Initializes a new instance of the <see cref="PartAdapter"/> class.
         /// </summary>
-        public Parts(IApiClient client, ListPartsRequest request, int cacheTTL, CancellationToken cancellationToken)
+        public PartAdapter(IApiClient client, ListPartsRequest request, int cacheTTL, CancellationToken cancellationToken)
             : base(client, cacheTTL, cancellationToken)
         {
             _request = request;

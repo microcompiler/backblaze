@@ -9,6 +9,7 @@ using Polly.Extensions.Http;
 
 using Bytewizer.Backblaze.Agent;
 using Bytewizer.Backblaze.Client;
+using Bytewizer.Backblaze.Storage;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -84,7 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .SetHandlerLifetime(TimeSpan.FromSeconds(options.HandlerLifetime))
             .AddPolicyHandler(RetryPolicy(options.RetryCount));
 
-            services.AddSingleton<IBackblazeAgent, BackblazeAgent>();
+            services.AddSingleton<IBackblazeStorage, BackblazeStorage>();
 
             return new BackblazeAgentBuilder(services);
         }

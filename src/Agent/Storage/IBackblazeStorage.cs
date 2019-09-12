@@ -4,15 +4,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Agent
+namespace Bytewizer.Backblaze.Storage
 {
-    public interface IBackblazeAgent
+    public interface IBackblazeStorage
     {
-        IBackblazeFilesAgent Files { get; }
-        IBackblazeDirectoriesAgent Directories { get; }
-        IBackblazeBucketsAgent Buckets { get; }
-        IBackblazeKeysAgent Keys { get; }
-        IBackblazePartsAgent Parts { get; }
+        IBackblazeFiles Files { get; }
+        IBackblazeDirectories Directories { get; }
+        IBackblazeBuckets Buckets { get; }
+        IBackblazeKeys Keys { get; }
+        IBackblazeParts Parts { get; }
 
         string AccountId { get; }
 

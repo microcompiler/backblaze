@@ -6,11 +6,11 @@ using Microsoft.Extensions.Logging;
 
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Agent
+namespace Bytewizer.Backblaze.Storage
 {
-    public partial class BackblazeAgent : IBackblazeDirectoriesAgent
+    public partial class BackblazeStorage : IBackblazeDirectories
     {
-        public IBackblazeDirectoriesAgent Directories { get { return this; } }
+        public IBackblazeDirectories Directories { get { return this; } }
 
         public async Task CopyToAsync(IEnumerable<System.IO.FileInfo> files, string bucketId)
         {

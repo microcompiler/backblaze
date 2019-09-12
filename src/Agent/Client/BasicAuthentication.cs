@@ -4,16 +4,16 @@ using System.Net.Http.Headers;
 namespace System.Net.Http
 {
     /// <summary>
-    /// Represents the <see cref="BasicAuthenticationHeaderValue"/> header.
+    /// Represents the <see cref="BasicAuthentication"/> header.
     /// </summary>
-    public class BasicAuthenticationHeaderValue : AuthenticationHeaderValue
+    public class BasicAuthentication : AuthenticationHeaderValue
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BasicAuthenticationHeaderValue"/> class.
+        /// Initializes a new instance of the <see cref="BasicAuthentication"/> class.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
-        public BasicAuthenticationHeaderValue(string keyId, string applicationKey)
+        public BasicAuthentication(string keyId, string applicationKey)
             : base("Basic", EncodeCredential(keyId, applicationKey))
         { }
 

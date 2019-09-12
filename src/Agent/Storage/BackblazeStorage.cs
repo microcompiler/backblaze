@@ -5,15 +5,13 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using Polly;
-
+using Bytewizer.Backblaze.Agent;
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
-using System.Security.Authentication;
 
-namespace Bytewizer.Backblaze.Agent
+namespace Bytewizer.Backblaze.Storage
 {
-    public partial class BackblazeAgent : DisposableObject, IBackblazeAgent
+    public partial class BackblazeStorage : DisposableObject, IBackblazeStorage
     {
 
         //TODO: Backblaze agent class comments.
@@ -24,7 +22,7 @@ namespace Bytewizer.Backblaze.Agent
         /// <summary>
         /// Creates an instance.
         /// </summary>
-        public BackblazeAgent(IAgentOptions options, IApiClient client, ILogger<BackblazeAgent> logger)
+        public BackblazeStorage(IAgentOptions options, IApiClient client, ILogger<BackblazeStorage> logger)
         {
             try
             {
@@ -113,7 +111,7 @@ namespace Bytewizer.Backblaze.Agent
         public string AccountId => _client?.AccountInfo.AccountId;
 
         /// <summary>
-        /// The cancellation token associated with this <see cref="BackblazeAgent"/> instance.
+        /// The cancellation token associated with this <see cref="BackblazeStorage"/> instance.
         /// </summary>
         public CancellationToken CancellationToken
         {

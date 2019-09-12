@@ -10,9 +10,9 @@ namespace Bytewizer.Backblaze.Models
     /// </summary>
     static class ApiResults
     {
-        internal static T Create<T>(HttpResponseMessage resp, object content, ErrorResponse error = null)
+        internal static T Create<T>(HttpResponseMessage response, object content, ErrorResponse error = null)
         {
-            return (T)Activator.CreateInstance(typeof(T), resp, content, error);
+            return (T)Activator.CreateInstance(typeof(T), response, content, error);
         }
     }
 
@@ -26,7 +26,7 @@ namespace Bytewizer.Backblaze.Models
         #region Lifetime
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiResults&lt;T&gt;" /> class.
+        /// Initializes a new instance of the <see cref="ApiResults{T}." /> class.
         /// </summary>
         /// <param name="response">Http response message.</param>
         public ApiResults(HttpResponseMessage response)
@@ -34,7 +34,7 @@ namespace Bytewizer.Backblaze.Models
         {}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiResults&lt;T&gt;" /> class.
+        /// Initializes a new instance of the <see cref="ApiResults{T}." /> class.
         /// </summary>
         /// <param name="response">Http response message.</param>
         public ApiResults(HttpResponseMessage response, T content)
@@ -44,7 +44,7 @@ namespace Bytewizer.Backblaze.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiResults&lt;T&gt;" /> class.
+        /// Initializes a new instance of the <see cref="ApiResults{T}." /> class.
         /// </summary>
         /// <param name="response">Http response message.</param>
         public ApiResults(HttpResponseMessage response, ErrorResponse error)
@@ -54,7 +54,7 @@ namespace Bytewizer.Backblaze.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiResults&lt;T&gt;" /> class.
+        /// Initializes a new instance of the <see cref="ApiResults{T}." /> class.
         /// </summary>
         /// <param name="response">Http response message.</param>
         public ApiResults(HttpResponseMessage response, T content, ErrorResponse error)
@@ -81,25 +81,25 @@ namespace Bytewizer.Backblaze.Models
         #region Public Properties
 
         /// <summary>
-        /// The HTTP response message.
+        /// Gets the HTTP response message.
         /// </summary>
         /// <value>The http response message.</value>
         public HttpResponseMessage HttpResponse { get; private set; }
 
         /// <summary>
-        /// The parsed HTTP body data.
+        /// Gets the parsed HTTP body data.
         /// </summary>
         /// <value>The response data.</value>
         public T Response { get; private set; }
 
         /// <summary>
-        /// The parsed API error data.
+        /// Gets the parsed API error data.
         /// </summary>
         /// <value>The error response data.</value>
         public ErrorResponse Error { get; private set; }
 
         /// <summary>
-        /// The status code of the HTTP response.
+        /// Gets the status code of the HTTP response.
         /// </summary>
         /// <value>The http response message status code.</value>
         public HttpStatusCode StatusCode { get { return HttpResponse.StatusCode; } }

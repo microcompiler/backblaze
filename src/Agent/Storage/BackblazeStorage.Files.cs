@@ -6,36 +6,37 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Bytewizer.Backblaze.Models;
+using Bytewizer.Backblaze.Adapters;
 
-namespace Bytewizer.Backblaze.Agent
+namespace Bytewizer.Backblaze.Storage
 {
-    public partial class BackblazeAgent : IBackblazeFilesAgent
+    public partial class BackblazeStorage : IBackblazeFiles
     {
-        public IBackblazeFilesAgent Files { get { return this; } }
+        public IBackblazeFiles Files { get { return this; } }
 
         public Task<List<FileItem>> ListAsync(ListFileNamesRequest request, int cacheTTL)
         {
-            return Task.FromResult(new FileNames(_client, request, cacheTTL, cancellationToken).ToList());
+            return Task.FromResult(new FileNameAdapter(_client, request, cacheTTL, cancellationToken).ToList());
         }
 
         public Task<List<FileItem>> ListAsync(ListFileVersionRequest request, int cacheTTL)
         {
-            return Task.FromResult(new FileVersions(_client, request, cacheTTL, cancellationToken).ToList());
+            return Task.FromResult(new FileVersionAdapter(_client, request, cacheTTL, cancellationToken).ToList());
         }
 
         public Task<List<FileItem>> ListAsync(ListUnfinishedLargeFilesRequest request, int cacheTTL)
         {
-            return Task.FromResult(new UnfinishedLargeFiles(_client, request, cacheTTL, cancellationToken).ToList());
+            return Task.FromResult(new UnfinishedAdapter(_client, request, cacheTTL, cancellationToken).ToList());
         }
 
-        async Task<IApiResults<DownloadFileResponse>> IBackblazeFilesAgent.DownloadByIdAsync
+        async Task<IApiResults<DownloadFileResponse>> IBackblazeFiles.DownloadByIdAsync
         (string fileId, string localFilePath, IProgress<ICopyProgress> progress)
         {
             // Cancellation token overload
             return await Files.DownloadByIdAsync(fileId, localFilePath, progress, cancellationToken);
         }
 
-        async Task<IApiResults<DownloadFileResponse>> IBackblazeFilesAgent.DownloadByIdAsync
+        async Task<IApiResults<DownloadFileResponse>> IBackblazeFiles.DownloadByIdAsync
             (string fileId, string localFilePath, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
 
@@ -58,14 +59,14 @@ namespace Bytewizer.Backblaze.Agent
                 }
         }
 
-        async Task<IApiResults<DownloadFileResponse>> IBackblazeFilesAgent.DownloadAsync
+        async Task<IApiResults<DownloadFileResponse>> IBackblazeFiles.DownloadAsync
             (string bucketName, string fileName, string localFilePath, IProgress<ICopyProgress> progress)
         {
             // Cancellation token overload
             return await Files.DownloadAsync(bucketName, fileName, localFilePath, progress, cancellationToken);
         }
 
-        async Task<IApiResults<DownloadFileResponse>> IBackblazeFilesAgent.DownloadAsync
+        async Task<IApiResults<DownloadFileResponse>> IBackblazeFiles.DownloadAsync
             (string bucketName, string fileName, string localFilePath, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
             if (!Directory.Exists(Path.GetDirectoryName(localFilePath)))
@@ -88,14 +89,14 @@ namespace Bytewizer.Backblaze.Agent
                 }
         }
 
-        async Task<IApiResults<UploadFileResponse>> IBackblazeFilesAgent.UploadAsync
+        async Task<IApiResults<UploadFileResponse>> IBackblazeFiles.UploadAsync
             (string bucketId, string fileName, string localFilePath, IProgress<ICopyProgress> progress)
         {
             // Cancellation token overload
             return await Files.UploadAsync(bucketId, fileName, localFilePath, progress, cancellationToken);
         }
 
-        async Task<IApiResults<UploadFileResponse>> IBackblazeFilesAgent.UploadAsync
+        async Task<IApiResults<UploadFileResponse>> IBackblazeFiles.UploadAsync
             (string bucketId, string fileName, string localFilePath, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
                 using (var content = File.OpenRead(localFilePath))
@@ -128,7 +129,7 @@ namespace Bytewizer.Backblaze.Agent
                 }
         }
 
-        async Task<IApiResults<ListFileNamesResponse>> IBackblazeFilesAgent.GetNamesAsync
+        async Task<IApiResults<ListFileNamesResponse>> IBackblazeFiles.GetNamesAsync
             (string bucketId, string prefix, string delimiter, string startFileName, long maxFileCount)
         {
             var request = new ListFileNamesRequest(bucketId)
@@ -142,7 +143,7 @@ namespace Bytewizer.Backblaze.Agent
             return await _client.ListFileNamesAsync(request, cancellationToken);
         }
 
-        async Task<IApiResults<ListFileVersionResponse>> IBackblazeFilesAgent.GetVersionsAsync
+        async Task<IApiResults<ListFileVersionResponse>> IBackblazeFiles.GetVersionsAsync
             (string bucketId, string prefix, string delimiter, string startFileName, long maxFileCount)
         {
             var request = new ListFileVersionRequest(bucketId)
@@ -156,33 +157,33 @@ namespace Bytewizer.Backblaze.Agent
             return await _client.ListFileVersionsAsync(request, cancellationToken);
         }
 
-        async Task<IApiResults<GetFileInfoResponse>> IBackblazeFilesAgent.GetInfoAsync
+        async Task<IApiResults<GetFileInfoResponse>> IBackblazeFiles.GetInfoAsync
             (string fileId)
         {
             var request = new GetFileInfoRequest(fileId);
             return await _client.GetFileInfoAsync(request, cancellationToken);
         }
 
-        async Task<IApiResults<HideFileResponse>> IBackblazeFilesAgent.HideAsync
+        async Task<IApiResults<HideFileResponse>> IBackblazeFiles.HideAsync
             (string bucketId, string fileName)
         {
             var request = new HideFileRequest(bucketId, fileName);
             return await _client.HideFileAsync(request, cancellationToken);
         }
 
-        async Task<IApiResults<DeleteFileVersionResponse>> IBackblazeFilesAgent.DeleteAsync
+        async Task<IApiResults<DeleteFileVersionResponse>> IBackblazeFiles.DeleteAsync
             (string fileId, string fileName)
         {
             var request = new DeleteFileVersionRequest(fileId, fileName);
             return await _client.DeleteFileVersionAsync(request, cancellationToken);
         }
 
-        async Task<IApiResults<CopyFileResponse>> IBackblazeFilesAgent.CopyAsync(CopyFileRequest request)
+        async Task<IApiResults<CopyFileResponse>> IBackblazeFiles.CopyAsync(CopyFileRequest request)
         {
             return await _client.CopyFileAsync(request, cancellationToken);
         }
 
-        async Task<IApiResults<CopyFileResponse>> IBackblazeFilesAgent.CopyAsync(string sourceFileId, string fileName)
+        async Task<IApiResults<CopyFileResponse>> IBackblazeFiles.CopyAsync(string sourceFileId, string fileName)
         {
             var request = new CopyFileRequest(sourceFileId, fileName);
             return await _client.CopyFileAsync(request, cancellationToken);
@@ -209,25 +210,25 @@ namespace Bytewizer.Backblaze.Agent
     public static class BackblazeAgentExtensions
     {
         public static async Task<IApiResults<ListFileNamesResponse>> GetNamesAsync
-           (this IBackblazeFilesAgent filesAgent, string bucketId)
+           (this IBackblazeFiles filesAgent, string bucketId)
         {
             return await filesAgent.GetNamesAsync(bucketId, string.Empty, null, string.Empty, 0);
         }
 
         public static async Task<IApiResults<ListFileNamesResponse>> GetNamesAsync
-            (this IBackblazeFilesAgent filesAgent, string bucketId, string delimiter)
+            (this IBackblazeFiles filesAgent, string bucketId, string delimiter)
         {
             return await filesAgent.GetNamesAsync(bucketId, delimiter, string.Empty, string.Empty, 0);
         }
 
         public static async Task<IApiResults<ListFileVersionResponse>> GetVersionsAsync
-            (this IBackblazeFilesAgent filesAgent, string bucketId)
+            (this IBackblazeFiles filesAgent, string bucketId)
         {
             return await filesAgent.GetVersionsAsync(bucketId, string.Empty, null, string.Empty, 0);
         }
 
         public static async Task<IApiResults<ListFileVersionResponse>> GetVersionsAsync
-            (this IBackblazeFilesAgent filesAgent, string bucketId, string delimiter)
+            (this IBackblazeFiles filesAgent, string bucketId, string delimiter)
         {
             return await filesAgent.GetVersionsAsync(bucketId, delimiter, string.Empty, string.Empty, 0);
         }

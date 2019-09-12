@@ -1,54 +1,52 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains response information related to a key.
+    /// Represents information related to a <see cref="KeyItem"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class KeyItem
+    public class KeyItem : IItem
     {
         /// <summary>
-        /// The name assigned when the key was created.
+        /// Gets or sets the key name.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string KeyName { get; set; }
 
         /// <summary>
-        /// The application key id.
+        /// Gets or sets the application key id.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string ApplicationKeyId { get; set; }
 
         /// <summary>
-        /// A list of strings, each one naming a capability the key has. Possibilities are: listKeys, writeKeys, 
-        /// deleteKeys, listBuckets, writeBuckets, deleteBuckets, listFiles, readFiles, shareFiles, writeFiles, and deleteFiles. 
+        /// Gets or sets a list of <see cref="Capability"/> associated with the key. 
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public Capabilities Capabilities { get; set; }
 
         /// <summary>
-        /// The account id that this application key is for.
+        /// Gets or sets the account id this application key associated with.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string AccountId { get; set; }
 
         /// <summary>
-        /// When present indicates when this key will expire.
+        /// Gets or sets when this key will expire.
         /// </summary>  
         public DateTime ExpirationTimestamp { get; set; }
 
         /// <summary>
-        /// Restricts access to this bucket.
+        /// Gets or sets restricted access only to this bucket id.
         /// </summary>
         public string BucketId { get; set; }
 
         /// <summary>
-        /// Restricts access to files whose names start with the prefix.
+        /// Gets or sets restricted access to files whose names start with the prefix.
         /// </summary>
         public string NamePrefix { get; set; }
 

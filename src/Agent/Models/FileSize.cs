@@ -2,6 +2,9 @@
 
 namespace Bytewizer.Backblaze.Models
 {
+    /// <summary>
+    /// Represents a file size and related properties.
+    /// </summary>
     public struct FileSize : IComparable, IComparable<FileSize>, IEquatable<FileSize>
     {
 

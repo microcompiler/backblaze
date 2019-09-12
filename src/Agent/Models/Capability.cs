@@ -1,7 +1,7 @@
 ﻿namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Represent capabilities associated with an appication key.
+    /// Specifies capabilities associated with an appication key.
     /// </summary>
     public enum Capability
     {

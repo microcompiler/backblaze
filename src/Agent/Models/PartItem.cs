@@ -6,44 +6,44 @@ using Newtonsoft.Json;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains response information related to a file part.
+    /// Represents information related to a <see cref="PartItem"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class PartItem
+    public class PartItem : IItem
     {
         /// <summary>
-        /// The unique identifier for this file. 
+        /// Gets or sets the unique identifier for this file. 
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string FileId { get; set; }
 
         /// <summary>
-        /// The part number it is.  
+        /// Gets or sets the part number.  
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string PartNumber { get; set; }
 
         /// <summary>
-        /// The number of bytes stored in the part.
+        /// Gets or sets the number of bytes stored in the part.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public long ContentLength { get; set; }
 
         /// <summary>
-        /// The SHA1 of the bytes stored in the part.  
+        /// Gets or sets the SHA1 of the bytes stored in the part.  
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string ContentSha1 { get; set; }
 
         /// <summary>
-        /// This is a UTC time when this part was uploaded.
+        /// Gets or sets a UTC time when this part was uploaded.
         /// </summary>
         [JsonProperty(Required = Required.Always)]      
         public DateTime UploadTimestamp { get; set; }
 
-        ///	<summary>
-        ///	Debugger display for this object.
-        ///	</summary>
+        /// <summary>
+        /// Debugger display for this object.
+        /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay
         {

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Agent
+namespace Bytewizer.Backblaze.Storage
 {
-    public interface IBackblazeKeysAgent
+    public interface IBackblazeKeys
     {
         Task<List<KeyItem>> ListAsync(ListKeysRequest request, int cacheTTL);
 

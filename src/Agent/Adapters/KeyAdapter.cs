@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 
 using Bytewizer.Backblaze.Client;
+using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Models
+namespace Bytewizer.Backblaze.Adapters
 {
     /// <summary>
     /// Iterates sequentially through the <see cref="ListKeysResponse"/> response elements.
     /// </summary>
-    public class Keys : BaseIterator<KeyItem>
+    public class KeyAdapter : BaseIterator<KeyItem>
     {
         /// <summary>
         /// The request to send.
@@ -16,9 +17,9 @@ namespace Bytewizer.Backblaze.Models
         private readonly ListKeysRequest _request;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Keys"/> class.
+        /// Initializes a new instance of the <see cref="KeyAdapter"/> class.
         /// </summary>
-        public Keys(IApiClient client, ListKeysRequest request, int cacheTTL, CancellationToken cancellationToken)
+        public KeyAdapter(IApiClient client, ListKeysRequest request, int cacheTTL, CancellationToken cancellationToken)
             : base(client, cacheTTL, cancellationToken)
         {
             _request = request;

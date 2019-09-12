@@ -1,7 +1,7 @@
 ﻿namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Represent a bucket security type.
+    /// Specifies a bucket security type.
     /// </summary>
     public enum BucketType
     {

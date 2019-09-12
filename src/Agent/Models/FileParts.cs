@@ -1,13 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Bytewizer.Backblaze.Models
+﻿namespace Bytewizer.Backblaze.Models
 {
+    /// <summary>
+    /// Represents information related to a <see cref="FileParts"/>.
+    /// </summary>
     public class FileParts
     {
+        /// <summary>
+        /// Gets or sets the part number.  
+        /// </summary>
         public int PartNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the start position of the file part.
+        /// </summary>
         public long Position { get; set; }
+
+        /// <summary>
+        /// Gets or sets the legnth of the file part
+        /// </summary>
         public long Length { get; set; }
     }
 }

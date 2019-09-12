@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Agent
+namespace Bytewizer.Backblaze.Storage
 {
-    public interface IBackblazeBucketsAgent
+    public interface IBackblazeBuckets
     {
         Task<BucketItem> FirstAsync();
         Task<BucketItem> FirstAsync(Func<BucketItem, bool> predicate);

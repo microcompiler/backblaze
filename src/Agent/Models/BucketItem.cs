@@ -1,51 +1,52 @@
 ﻿using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains response information related to a bucket.
+    /// Represents information related to a <see cref="BucketItem"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class BucketItem
+    public class BucketItem : IItem
     {
         /// <summary>
-        /// The account id that this bucket key is for.
+        /// Gets or sets the account id that this bucket is for.
         /// </summary>
         public string AccountId { get; set; }
 
         /// <summary>
-        /// The unique id of the bucket.
+        /// Gets or sets the unique id of the bucket.
         /// </summary>
         public string BucketId { get; set; }
 
         /// <summary>
-        /// The unique name of the bucket.
+        /// Gets or sets the unique name of the bucket.
         /// </summary>
         public string BucketName { get; set; }
 
         /// <summary>
-        /// The bucket secuirty authorization type. The <see cref="BucketType.AllPublic"/> indicates that files in this bucket can be downloaded by anybody
+        /// Gets or sets the bucket secuirty authorization type. The <see cref="BucketType.AllPublic"/> indicates that files in this bucket can be downloaded by anybody
         /// or <see cref="BucketType.AllPrivate"/> requires that you need a bucket authorization token to download the files. 
         /// </summary>
         public BucketType BucketType { get; set; }
 
         /// <summary>
-        /// User-defined information to be stored with the bucket.
+        /// Gets or set the <see cref="Dictionary{TKey, TValue}"/> stored with the bucket. List is limited to 10 items.
         /// </summary>
         public BucketInfo BucketInfo { get; set; }
 
         /// <summary>
-        /// Cors rules for this bucket. 
+        /// Gets or sets the <see cref="CorsRule"/> for this bucket. 
         /// </summary>
         public CorsRules CorsRules { get; set; }
 
         /// <summary>
-        /// Lifecycle rules for this bucket. 
+        /// Gets or sets <see cref="LifecycleRule"/> for this bucket. 
         /// </summary>
         public LifecycleRules LifecycleRules { get; set; }
 
         /// <summary>
-        /// A counter that is updated every time the bucket is modified and can be used with 
+        /// Gets or sets a counter that is updated every time the bucket is modified and can be used with 
         /// the <see cref="UpdateBucketRequest.IfRevisionIs"/> to prevent colliding simultaneous updates. 
         /// </summary>
         public long Revision { get; set; }

@@ -43,7 +43,7 @@ namespace Bytewizer.Backblaze.Client
             {
                 var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{AccountInfo.AuthUrl}b2_authorize_account");
 
-                httpRequest.Headers.Authorization = new BasicAuthenticationHeaderValue(keyId, applicationKey);
+                httpRequest.Headers.Authorization = new BasicAuthentication(keyId, applicationKey);
                 httpRequest.Headers.SetTestMode(Options.TestMode);
 
                 using (var results = await _httpClient.SendAsync(httpRequest, cancellationToken))

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Bytewizer.Backblaze.Agent;
+using Bytewizer.Backblaze.Storage;
 using Bytewizer.Backblaze.Models;
 using System.Security.Cryptography;
 using System.Threading;
@@ -338,7 +338,7 @@ namespace Backblaze.Test
         public async Task Create_And_Delete_Key()
         {
             // Create key
-            var capabilities = new Capabilities { Capability.ListBuckets, Capability.ListFiles, Capability.ReadFiles, Capability.ShareFiles, Capability.WriteFiles, Capability.DeleteFiles };
+            var capabilities = new Capabilities { Capability.ListBuckets, Capability.ListBuckets, Capability.ListFiles, Capability.ReadFiles, Capability.ShareFiles, Capability.WriteFiles, Capability.DeleteFiles };
             var keyName = $"{Guid.NewGuid().ToString()}";
             var createResults = await _storage.Agent.Keys.CreateAsync(capabilities, keyName);
             Assert.AreEqual(typeof(CreateKeyResponse), createResults.Response.GetType());
@@ -398,17 +398,24 @@ namespace Backblaze.Test
                     },
                 };
             request.CorsRules = new CorsRules
-                { new CorsRule()
+                { new CorsRule(
+                     "downloadFromAnyOrigin",
+                     new List<string> { "https" },
+                     new List<string> { "b2_download_file_by_id" , "b2_download_file_by_name" },
+                     3600 )
                     {
-                        CorsRuleName = "downloadFromAnyOrigin",
-                        AllowedOrigins = new List<string> { "https" },
                         AllowedHeaders = new List<string> {"range" },
-                        AllowedOperations = new List<string> { "b2_download_file_by_id" , "b2_download_file_by_name" },
-                        ExposeHeaders = new List<string> {"x-bz-content-sha1" },
-                        MaxAgeSeconds = 3600
+                        ExposeHeaders = new List<string> {"x-bz-content-sha1" },               
                     }
                 };
+
             var createResults = await _storage.Agent.Buckets.CreateAsync(request);
+
+            Debug.WriteLine(request.CorsRules.Equals(createResults.Response.CorsRules));
+
+            //Assert.AreEqual(request.CorsRules, createResults.Response.CorsRules);
+
+
             Assert.AreEqual(typeof(CreateBucketResponse), createResults.Response.GetType());
             Assert.AreEqual(bucketName, createResults.Response.BucketName);
             Assert.AreEqual(request.BucketInfo.Count, createResults.Response.BucketInfo.Count);

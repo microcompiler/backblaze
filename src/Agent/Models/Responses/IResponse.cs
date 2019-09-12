@@ -1,10 +1,7 @@
 ﻿namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// An interface for requests.
+    /// An interface for responses.
     /// </summary>
-    public interface IRequest
-    {
-
-    }
+    public interface IResponse {}
 }
