@@ -29,51 +29,6 @@ namespace Bytewizer.Backblaze.Models
         public const long TeraByte = 1024L * 1024 * 1024 * 1024;
 
         /// <summary>
-        /// Represents the minimum large file size in bytes. This field is constant.
-        /// </summary>
-        public const long MinimumLargeFileSize = 5 * MegaByte;
-
-        /// <summary>
-        /// Represents the maximum large file size in bytes. This field is constant.
-        /// </summary>
-        public const long MaximumLargeFileSize = 10 * TeraByte;
-
-        /// <summary>
-        /// Represents the minimum large file part size in bytes. This field is constant.
-        /// </summary>
-        public const long MinimumLargeFilePartSize = 5 * MegaByte;
-
-        /// <summary>
-        /// Represents the maximum large file part size in bytes. This field is constant.
-        /// </summary>
-        public const long MaximumLargeFilePartSize = 5 * GigaByte;
-
-        /// <summary>
-        /// Represents the recommended large file part size in bytes. This field is constant.
-        /// </summary>
-        public const long RecommendedLargeFilePartSize = 100 * MegaByte;
-
-        /// <summary>
-        /// Represents the default download cutoff size for switching to chunked parts in bytes. This field is constant.
-        /// </summary>
-        public const long DefaultDownloadCutoffSize = 200 * MegaByte;
-
-        /// <summary>
-        /// Represents the default download part size in bytes. This field is constant.
-        /// </summary>
-        public const long DefaultDownloadPartSize = 200 * MegaByte;
-
-        /// <summary>
-        /// Represents the default upload cutoff size for switching to chunked parts in bytes. This field is constant.
-        /// </summary>
-        public const long DefaultUploadCutoffSize = 200 * MegaByte;
-
-        /// <summary>
-        /// Represents the default upload part size in bytes. This field is constant.
-        /// </summary>
-        public const long DefaultUploadPartSize = 200 * MegaByte;
-
-        /// <summary>
         /// Gets the number of bytes that represent the value of this instance. 
         /// </summary>
         public long Bytes { get; private set; }
@@ -259,9 +214,6 @@ namespace Bytewizer.Backblaze.Models
         /// </returns>
         public static FileSize FromMegaBytes(uint value)
         {
-            if ((value * MegaByte) > MaximumLargeFileSize)
-                throw new ArgumentOutOfRangeException();
-
             return new FileSize(value * MegaByte);
         }
 
@@ -274,9 +226,6 @@ namespace Bytewizer.Backblaze.Models
         /// </returns>
         public static FileSize FromGigaBytes(uint value)
         {
-            if ((value * GigaByte) > MaximumLargeFileSize)
-                throw new ArgumentOutOfRangeException();
-
             return new FileSize(value * GigaByte);
         }
 
@@ -289,9 +238,6 @@ namespace Bytewizer.Backblaze.Models
         /// </returns>
         public static FileSize FromTeraBytes(uint value)
         {
-            if ((value * TeraByte) > MaximumLargeFileSize)
-                throw new ArgumentOutOfRangeException();
-
             return new FileSize(value * TeraByte);
         }
 

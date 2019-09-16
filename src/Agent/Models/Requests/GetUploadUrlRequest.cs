@@ -15,7 +15,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
-        /// <param name="bucketId">The ID of the bucket that you want to upload to.</param>
+        /// <param name="bucketId">The bucket id you want to upload to.</param>
         public GetUploadUrlRequest(string bucketId)
         {
             // Validate required arguments

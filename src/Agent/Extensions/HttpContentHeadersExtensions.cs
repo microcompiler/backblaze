@@ -46,7 +46,7 @@ namespace Bytewizer.Backblaze.Extensions
         /// Sets content disposition header.
         /// </summary>
         /// <param name="headers">The http content request header.</param>
-        /// <param name="response">The download file request.</param>
+        /// <param name="response">The <see cref="DownloadFileByIdRequest"/>.</param>
         public static void SetContentDisposition(this HttpContentHeaders headers, DownloadFileByIdRequest request)
         {
             if (request.ContentDisposition != null)
@@ -57,7 +57,7 @@ namespace Bytewizer.Backblaze.Extensions
         /// Sets content disposition header.
         /// </summary>
         /// <param name="headers">The http content request header.</param>
-        /// <param name="response">The download file request.</param>
+        /// <param name="response">The <see cref="DownloadFileByIdRequest"/>.</param>
         public static void ContentDisposition(this HttpContentHeaders headers, DownloadFileByNameRequest request)
         {
             if (request.ContentDisposition != null)

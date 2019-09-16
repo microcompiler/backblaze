@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains information to create a finish large file request.
+    /// Contains information to create a <see cref="FinishLargeFileRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public class FinishLargeFileRequest : IRequest
@@ -16,19 +16,19 @@ namespace Bytewizer.Backblaze.Models
         /// Initializes a new instance of the <see cref="FinishLargeFileRequest"/> class. 
         /// </summary>
         /// <param name="fileId">The file id of the large file to finish.</param>
-        /// <param name="partSha1Array">An array of hex SHA1 checksums for the parts of the large file.</param>
-        public FinishLargeFileRequest(string fileId, List<string> partSha1Array)
+        /// <param name="sha1Parts">A list of hex SHA1 checksums for the parts of the large file.</param>
+        public FinishLargeFileRequest(string fileId, List<string> sha1Parts)
         {
             // Validate required arguments
             if (string.IsNullOrWhiteSpace(fileId))
                 throw new ArgumentException("Argument can not be null, empty, or consist only of white-space characters.", nameof(fileId));
 
-            if (partSha1Array.Count == 0)
+            if (sha1Parts.Count == 0)
                 throw new ArgumentException($"Argument must containe at least 1 SHA1 checksum.");
 
             // Initialize and set required properties
             FileId = fileId;
-            PartSha1Array = partSha1Array;
+            PartSha1Array = sha1Parts;
         }
 
         /// <summary>

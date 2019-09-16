@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains information to create a cancel large file request.
+    /// Contains information to create a <see cref="CancelLargeFileRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public class CancelLargeFileRequest : IRequest

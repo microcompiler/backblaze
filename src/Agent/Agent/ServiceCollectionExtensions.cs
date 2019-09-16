@@ -10,6 +10,7 @@ using Polly.Extensions.Http;
 using Bytewizer.Backblaze.Agent;
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Storage;
+using Bytewizer.Backblaze.Adapters;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

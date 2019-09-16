@@ -5,14 +5,14 @@ using Bytewizer.Backblaze.Client;
 namespace Bytewizer.Backblaze.Agent
 {
     /// <summary>
-    /// Agent options for the Backblaze B2 Cloud Storage service.
+    /// Agent options for Backblaze B2 Cloud Storage.
     /// </summary>
     public class AgentOptions : ClientOptions, IAgentOptions
     {
         #region Constants
 
         /// <summary>
-        /// The default base authentication url of the Backblaze B2 Cloud Storage service.
+        /// The default base authentication url of Backblaze B2 Cloud Storage.
         /// </summary>
         public static Uri DefaultAuthUrl = new Uri("https://api.backblazeb2.com/b2api/v2/");
 
@@ -34,7 +34,7 @@ namespace Bytewizer.Backblaze.Agent
         public string ApplicationKey { get; set; } = string.Empty;
 
         /// <summary>
-        /// The base authentication url of the Backblaze B2 Cloud Storage service.
+        /// The base authentication url of Backblaze B2 Cloud Storage.
         /// </summary>
         public Uri AuthUrl { get; set; } = DefaultAuthUrl;
 

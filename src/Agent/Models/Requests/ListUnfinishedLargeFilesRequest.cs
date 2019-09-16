@@ -25,7 +25,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="ListUnfinishedLargeFilesRequest"/> class.
         /// </summary>
-        /// <param name="bucketId">The bucket id to look for file names in.</param>
+        /// <param name="bucketId">The bucket id to look for unfinished file names in.</param>
         public ListUnfinishedLargeFilesRequest(string bucketId)
         {
             // Validate required arguments
@@ -38,7 +38,7 @@ namespace Bytewizer.Backblaze.Models
         }
 
         /// <summary>
-        /// The bucket id to look for file names in.
+        /// The bucket id to look for unfinished file names in.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string BucketId { get; private set; }

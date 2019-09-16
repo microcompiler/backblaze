@@ -54,7 +54,7 @@ namespace Bytewizer.Backblaze
         /// </summary>
         /// <param name="statusCode">The http status code.</param>
         public ApiException(HttpStatusCode statusCode)
-            : base($"Backblaze B2 Cloud Storage service responded with the following: httpcode={statusCode.ToString().ToLower()}")
+            : base($"Backblaze B2 Cloud Storage.ervice responded with the following: httpcode={statusCode.ToString().ToLower()}")
         {
             StatusCode = statusCode;
         }

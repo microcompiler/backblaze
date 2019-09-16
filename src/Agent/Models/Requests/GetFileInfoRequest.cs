@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains information to create a get file info request.
+    /// Contains information to create a get <see cref="GetFileInfoRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public class GetFileInfoRequest : IRequest
@@ -14,7 +14,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="GetFileInfoRequest"/> class.
         /// </summary>
-        /// <param name="fileId">The file id.</param>
+        /// <param name="fileId">The id of the file to get information about.</param>
         public GetFileInfoRequest(string fileId)
         {
             // Validate required arguments

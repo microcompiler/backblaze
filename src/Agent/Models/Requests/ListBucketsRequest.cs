@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains information to create a list buckets request.
+    /// Contains information to create a <see cref="ListBucketsRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public class ListBucketsRequest : IEquatable<ListBucketsRequest>, IRequest

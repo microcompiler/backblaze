@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains information to create a get upload part url request.
+    /// Contains information to create a get <see cref="GetUploadPartUrlRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public class GetUploadPartUrlRequest : IEquatable<GetUploadPartUrlRequest>, IRequest

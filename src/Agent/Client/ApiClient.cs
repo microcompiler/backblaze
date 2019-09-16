@@ -27,7 +27,7 @@ namespace Bytewizer.Backblaze.Client
         { }
 
         /// <summary>
-        /// Creates an initialized instance of the client connected to the Backblaze B2 Cloud Storage service.
+        /// Creates an initialized instance of the client connected to Backblaze B2 Cloud Storage.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>

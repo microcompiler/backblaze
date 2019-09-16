@@ -5,7 +5,7 @@ using Bytewizer.Backblaze.Models;
 namespace Bytewizer.Backblaze.Client
 {
     /// <summary>
-    /// Represents a <see cref="AuthToken"/> returned from the Backblaze B2 Cloud Storage service.
+    /// Represents a <see cref="AuthToken"/> returned from Backblaze B2 Cloud Storage.
     /// </summary>
     public class AuthToken
     {

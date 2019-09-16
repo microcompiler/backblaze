@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains information to create a list parts request.
+    /// Contains information to create a <see cref="ListPartsRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public class ListPartsRequest : IEquatable<ListPartsRequest>, IRequest
@@ -25,7 +25,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="ListPartsRequest"/> class.
         /// </summary>
-        /// <param name="fileId">The unique identifier for the file.</param>
+        /// <param name="fileId">The large file id whose parts you want to list.</param>
         public ListPartsRequest(string fileId)
         {
             // Validate required arguments

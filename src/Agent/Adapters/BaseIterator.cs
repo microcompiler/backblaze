@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
 
+using Microsoft.Extensions.Logging;
+
 namespace Bytewizer.Backblaze.Adapters
 {
     /// <summary>
@@ -15,14 +17,19 @@ namespace Bytewizer.Backblaze.Adapters
     public abstract class BaseIterator<T> : IEnumerable<T> where T : IItem
     {
         /// <summary>
-        /// Connected client to the Backblaze B2 Cloud Storage service.
+        /// Connected client to Backblaze B2 Cloud Storage.
         /// </summary>
         protected readonly IApiClient _client;
 
         /// <summary>
+        /// Application logging
+        /// </summary>
+        protected readonly ILogger _logger;
+
+        /// <summary>
         /// An absolute cache expiration time to live (TTL) relative to now in seconds.
         /// </summary>
-        protected readonly int _cacheManagerTTL;
+        protected readonly int _cacheTTL;
 
         /// <summary>
         /// The cancellation token to cancel operation.
@@ -32,10 +39,11 @@ namespace Bytewizer.Backblaze.Adapters
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseIterator"/> class.
         /// </summary>
-        public BaseIterator(IApiClient client, int cacheTTL, CancellationToken cancellationToken)
+        public BaseIterator(IApiClient client, ILogger logger, int cacheTTL, CancellationToken cancellationToken)
         {
             _client = client;
-            _cacheManagerTTL = cacheTTL;
+            _logger = logger;
+            _cacheTTL = cacheTTL;
             _cancellationToken = cancellationToken;
         }
 

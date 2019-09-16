@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    ///  Represents a response from the Backblaze B2 Cloud Storage service.
+    ///  Represents a response from Backblaze B2 Cloud Storage.
     /// </summary>
     static class ApiResults
     {
@@ -17,7 +17,7 @@ namespace Bytewizer.Backblaze.Models
     }
 
     /// <summary>
-    /// Represents a response from the Backblaze B2 Cloud Storage service.
+    /// Represents a response from Backblaze B2 Cloud Storage.
     /// </summary>
     /// <typeparam name="T">Payload contained in the response</typeparam>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]

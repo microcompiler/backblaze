@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains information to create a start large file request.
+    /// Contains information to create a <see cref="StartLargeFileRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public class StartLargeFileRequest : IRequest
@@ -18,7 +18,7 @@ namespace Bytewizer.Backblaze.Models
         /// Initializes a new instance of the <see cref="StartLargeFileRequest"/> class.
         /// </summary>
         /// <param name="bucketId">The bucket id the file will go in.</param>
-        /// <param name="fileName">The name of the file.</param>
+        /// <param name="fileName">The name of the large file.</param>
         public StartLargeFileRequest(string bucketId, string fileName)
         {
             // Validate required arguments

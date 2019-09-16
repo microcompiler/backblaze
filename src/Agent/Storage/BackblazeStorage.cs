@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Security.Authentication;
 
 using Microsoft.Extensions.Logging;
 
@@ -11,16 +12,15 @@ using Bytewizer.Backblaze.Models;
 
 namespace Bytewizer.Backblaze.Storage
 {
+    /// <summary>
+    /// Represents a default implementation of the <see cref="BackblazeStorage"/> which uses <see cref="ApiClient"/> for making HTTP requests.
+    /// </summary>
     public partial class BackblazeStorage : DisposableObject, IBackblazeStorage
     {
-
-        //TODO: Backblaze agent class comments.
-        //TODO: Disable checksum option using "do_not_verify" sha1.
-
         #region Lifetime
 
         /// <summary>
-        /// Creates an instance.
+        /// Initializes a new instance of the <see cref="BackblazeStorage"/> class.
         /// </summary>
         public BackblazeStorage(IAgentOptions options, IApiClient client, ILogger<BackblazeStorage> logger)
         {
@@ -97,7 +97,7 @@ namespace Bytewizer.Backblaze.Storage
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Connected client to the Backblaze B2 Cloud Storage service.
+        /// Connected client to Backblaze B2 Cloud Storage.
         /// </summary>
         public readonly IApiClient _client;
 
@@ -131,6 +131,15 @@ namespace Bytewizer.Backblaze.Storage
 
         #region UploadAsync
 
+        /// <summary>
+        /// Upload content stream to Backblaze B2 Cloud Storage. 
+        /// </summary>
+        /// <param name="bucketId">The bucket id you want to upload to.</param>
+        /// <param name="content"> The content stream of the content payload.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<UploadFileResponse>> UploadAsync
             (string bucketId, string fileName, Stream content)
         {
@@ -138,109 +147,37 @@ namespace Bytewizer.Backblaze.Storage
             return await UploadAsync(request, content, null, cancellationToken);
         }
 
-        public async Task<IApiResults<UploadFileResponse>> UploadAsync
-           (string bucketId, string fileName, Stream content, IProgress<ICopyProgress> progress)
-        {
-            var request = new UploadFileByBucketIdRequest(bucketId, fileName);
-            return await UploadAsync(request, content, progress, cancellationToken);
-        }
-
-        public async Task<IApiResults<UploadFileResponse>> UploadAsync
-            (string bucketId, string fileName, Stream content, CancellationToken cancel)
-        {
-            var request = new UploadFileByBucketIdRequest(bucketId, fileName);
-            return await UploadAsync(request, content, null, cancel);
-        }
-
-        public async Task<IApiResults<UploadFileResponse>> UploadAsync
-            (string bucketId, string fileName, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
-        {
-            var request = new UploadFileByBucketIdRequest(bucketId, fileName);
-            return await UploadAsync(request, content, progress, cancel);
-        }
-
-        public async Task<IApiResults<UploadFileResponse>> UploadAsync
-            (UploadFileByBucketIdRequest request, Stream content)
-        {
-            return await UploadAsync(request, content, null, cancellationToken);
-        }
-
-        public async Task<IApiResults<UploadFileResponse>> UploadAsync
-            (UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress)
-        {
-            return await UploadAsync(request, content, progress, cancellationToken);
-        }
-
-        public async Task<IApiResults<UploadFileResponse>> UploadAsync
-            (UploadFileByBucketIdRequest request, Stream content, CancellationToken cancel)
-        {
-            return await UploadAsync(request, content, null, cancel);
-        }
-
+        /// <summary>
+        /// Upload content stream to Backblaze B2 Cloud Storage. 
+        /// </summary>
+        /// <param name="request">The <see cref="UploadFileRequest"/> to send.</param>
+        /// <param name="content"> The content stream of the content payload.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <param name="cancel">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<UploadFileResponse>> UploadAsync
             (UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-                return await _client.UploadAsync(request, content, progress, cancel);   
+            return await _client.UploadAsync(request, content, progress, cancel);   
         }
 
         #endregion
 
         #region DownloadAsync
 
-        // Download by file id
-        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
-            (string fileId, Stream content)
-        {
-            var request = new DownloadFileByIdRequest(fileId);
-            return await DownloadByIdAsync(request, content, null, cancellationToken);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
-            (string fileId, Stream content, IProgress<ICopyProgress> progress)
-        {
-            var request = new DownloadFileByIdRequest(fileId);
-            return await DownloadByIdAsync(request, content, progress, cancellationToken);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
-            (string fileId, Stream content, CancellationToken cancel)
-        {
-            var request = new DownloadFileByIdRequest(fileId);
-            return await DownloadByIdAsync(request, content, null, cancel);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
-            (string fileId, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
-        {
-            var request = new DownloadFileByIdRequest(fileId);
-            return await DownloadByIdAsync(request, content, progress, cancel);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
-            (DownloadFileByIdRequest request, Stream content)
-        {
-            return await DownloadByIdAsync(request, content, null, cancellationToken);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
-            (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress)
-        {
-            return await DownloadByIdAsync(request, content, progress, cancellationToken);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
-            (DownloadFileByIdRequest request, Stream content, CancellationToken cancel)
-        {
-            return await DownloadByIdAsync(request, content, null, cancel);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
-            (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
-        {
-                return await _client.DownloadByIdAsync(request, content, progress, cancel);
-        }
-
-        // Download by bucket name and file name
+        /// <summary>
+        /// Download a specific version of content by bucket and file name from Backblaze B2 Cloud Storage. 
+        /// </summary>
+        /// <param name="bucketName">The unique name of the bucket the file is in.</param>
+        /// <param name="fileName">The name of the file to download.</param>
+        /// <param name="content">The download content to receive.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
             (string bucketName, string fileName, Stream content)
         {
@@ -248,49 +185,54 @@ namespace Bytewizer.Backblaze.Storage
             return await DownloadAsync(request, content, null, cancellationToken);
         }
 
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
-            (string bucketName, string fileName, Stream content, IProgress<ICopyProgress> progress)
-        {
-            var request = new DownloadFileByNameRequest(bucketName, fileName);
-            return await DownloadAsync(request, content, progress, cancellationToken);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
-            (string bucketName, string fileName, Stream content, CancellationToken cancel)
-        {
-            var request = new DownloadFileByNameRequest(bucketName, fileName);
-            return await DownloadAsync(request, content, null, cancel);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
-            (string bucketName, string fileName, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
-        {
-            var request = new DownloadFileByNameRequest(bucketName, fileName);
-            return await DownloadAsync(request, content, progress, cancel);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
-            (DownloadFileByNameRequest request, Stream content)
-        {
-            return await DownloadAsync(request, content, null, cancellationToken);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
-            (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress)
-        {
-            return await DownloadAsync(request, content, progress, cancellationToken);
-        }
-
-        public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
-            (DownloadFileByNameRequest request, Stream content, CancellationToken cancel)
-        {
-            return await DownloadAsync(request, content, null, cancel);
-        }
-
+        /// <summary>
+        /// Download a specific version of content by bucket and file name from Backblaze B2 Cloud Storage. 
+        /// </summary>
+        /// <param name="request">The <see cref="DownloadFileByIdRequest"/> to send.</param>
+        /// <param name="content">The download content to receive.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <param name="cancel">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
             (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-                return await _client.DownloadAsync(request, content, progress, cancel);
+            return await _client.DownloadAsync(request, content, progress, cancel);
+        }
+
+        /// <summary>
+        /// Download a specific version of content by file id from Backblaze B2 Cloud Storage. 
+        /// </summary>
+        /// <param name="fileId">The unique id of the file to download.</param>
+        /// <param name="content">The download content to receive.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
+            (string fileId, Stream content)
+        {
+            var request = new DownloadFileByIdRequest(fileId);
+            return await DownloadByIdAsync(request, content, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Download a specific version of content by file id from Backblaze B2 Cloud Storage. 
+        /// </summary>
+        /// <param name="request">The <see cref="DownloadFileByIdRequest"/> to send.</param>
+        /// <param name="content">The download content to receive.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <param name="cancel">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
+            (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
+        {
+                return await _client.DownloadByIdAsync(request, content, progress, cancel);
         }
 
         #endregion

@@ -14,7 +14,7 @@ namespace Bytewizer.Backblaze.Models
         /// Initializes a new instance of the class for downloading files from <see cref="BucketType.AllPublic"/> buckets.
         /// </summary>
         /// <param name="bucketName">The unique name of the bucket the file is in.</param>
-        /// <param name="fileName">The name of the remote file.</param>
+        /// <param name="fileName">The name of the file to download.</param>
         public DownloadFileByNameRequest(string bucketName, string fileName)
         {
             // Validate required arguments

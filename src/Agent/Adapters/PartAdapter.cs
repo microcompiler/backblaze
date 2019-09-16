@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Collections.Generic;
 
+using Microsoft.Extensions.Logging;
+
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
 
@@ -19,8 +21,8 @@ namespace Bytewizer.Backblaze.Adapters
         /// <summary>
         /// Initializes a new instance of the <see cref="PartAdapter"/> class.
         /// </summary>
-        public PartAdapter(IApiClient client, ListPartsRequest request, int cacheTTL, CancellationToken cancellationToken)
-            : base(client, cacheTTL, cancellationToken)
+        public PartAdapter(IApiClient client, ILogger logger, ListPartsRequest request, int cacheTTL, CancellationToken cancellationToken)
+            : base(client, logger, cacheTTL, cancellationToken)
         {
             _request = request;
         }
@@ -30,7 +32,7 @@ namespace Bytewizer.Backblaze.Adapters
         /// </summary>
         protected override List<PartItem> GetNextPage(out bool isCompleted)
         {
-            var results = _client.ListPartsAsync(_request, _cacheManagerTTL, _cancellationToken).GetAwaiter().GetResult();
+            var results = _client.ListPartsAsync(_request, _cacheTTL, _cancellationToken).GetAwaiter().GetResult();
             if (results.IsSuccessStatusCode)
             {
                 _request.StartPartNumber = results.Response.NextPartNumber;

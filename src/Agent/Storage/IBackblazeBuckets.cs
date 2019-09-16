@@ -1,31 +1,101 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using System.Security.Authentication;
 
 using Bytewizer.Backblaze.Models;
+using System.Collections.Generic;
 
 namespace Bytewizer.Backblaze.Storage
 {
+    /// <summary>
+    /// An interface for <see cref="BackblazeStorage"/>.
+    /// </summary>
     public interface IBackblazeBuckets
     {
-        Task<BucketItem> FirstAsync();
-        Task<BucketItem> FirstAsync(Func<BucketItem, bool> predicate);
+        #region ApiClient
 
-        Task<List<BucketItem>> ListAsync(ListBucketsRequest request, int cacheTTL);
-
-        Task<IApiResults<ListBucketsResponse>> GetAsync();
-        Task<IApiResults<ListBucketsResponse>> GetAsync(ListBucketsRequest request);
-        Task<IApiResults<ListBucketsResponse>> GetAsync(string accountId);
-
-        Task<IApiResults<CreateBucketResponse>> CreateAsync(CreateBucketRequest request);
+        /// <summary>
+        /// Creates a new bucket. 
+        /// </summary>
+        /// <param name="bucketName">The name to give the new bucket.
+        /// <param name="bucketType">The bucket secuirty authorization type.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         Task<IApiResults<CreateBucketResponse>> CreateAsync(string bucketName, BucketType bucketType);
-        Task<IApiResults<CreateBucketResponse>> CreateAsync(string accountId, string bucketName, BucketType bucketType);
 
-        Task<IApiResults<UpdateBucketResponse>> UpdateAsync(UpdateBucketRequest request);
-        Task<IApiResults<UpdateBucketResponse>> UpdateAsync(string bucketId, BucketType bucketType);
-        Task<IApiResults<UpdateBucketResponse>> UpdateAsync(string accountId, string bucketId, BucketType bucketType);
+        /// <summary>
+        /// Creates a new bucket. 
+        /// </summary>
+        /// <param name="request">The <see cref="CreateBucketRequest"/> to send.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<IApiResults<CreateBucketResponse>> CreateAsync(CreateBucketRequest request);
 
+        /// <summary>
+        /// Deletes the bucket specified. Only buckets that contain no version of any files can be deleted. 
+        /// </summary>
+        /// <param name="bucketId">The buckete id to delete.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         Task<IApiResults<DeleteBucketResponse>> DeleteAsync(string bucketId);
-        Task<IApiResults<DeleteBucketResponse>> DeleteAsync(string accountId, string bucketId);
+
+        /// <summary>
+        /// List all buckets in alphabetical order by bucket name.
+        /// </summary>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<IApiResults<ListBucketsResponse>> ListAsync();
+
+        /// <summary>
+        /// List all buckets associated with an account in alphabetical order by bucket name. When using an authorization token
+        /// that is restricted to a bucket you must include the <see cref="ListBucketsRequest.BucketId"/>
+        /// or <see cref="ListBucketsRequest.BucketName"/> of that bucket in the request or the request will be denied. 
+        /// </summary>
+        /// <param name="request">The <see cref="ListBucketsRequest"/> to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<IApiResults<ListBucketsResponse>> ListAsync(ListBucketsRequest request, int cacheTTL = 0);
+
+        /// <summary>
+        /// Update an existing bucket. 
+        /// </summary>
+        /// <param name="bucketId">The buckete id to update.</param>
+        /// <param name="bucketType">The bucket secuirty authorization type.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<IApiResults<UpdateBucketResponse>> UpdateAsync(string bucketId, BucketType bucketType);
+
+        /// <summary>
+        /// Update an existing bucket. 
+        /// </summary>
+        /// <param name="request">The <see cref="UpdateBucketRequest"/> to send.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<IApiResults<UpdateBucketResponse>> UpdateAsync(UpdateBucketRequest request);
+
+        #endregion
+
+        /// <summary>
+        /// Gets all buckets associated with an account in alphabetical order by bucket name. When using an authorization token
+        /// that is restricted to a bucket you must include the <see cref="ListBucketsRequest.BucketId"/>
+        /// or <see cref="ListBucketsRequest.BucketName"/> of that bucket in the request or the request will be denied. 
+        /// </summary>
+        /// <param name="request">The <see cref="ListBucketsRequest"/> to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<IEnumerable<BucketItem>> GetAsync();
+
+        /// <summary>
+        /// Gets all buckets associated with an account in alphabetical order by bucket name. When using an authorization token
+        /// that is restricted to a bucket you must include the <see cref="ListBucketsRequest.BucketId"/>
+        /// or <see cref="ListBucketsRequest.BucketName"/> of that bucket in the request or the request will be denied. 
+        /// </summary>
+        /// <param name="request">The <see cref="ListBucketsRequest"/> to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<IEnumerable<BucketItem>> GetAsync(ListBucketsRequest request, int cacheTTL);
     }
 }

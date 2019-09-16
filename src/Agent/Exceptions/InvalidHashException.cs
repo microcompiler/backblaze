@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Bytewizer.Backblaze.Client
+namespace Bytewizer.Backblaze
 {
     /// <summary>
-    /// The exception that is thrown when a validation hash is not valid.
+    /// The exception that is thrown when a hash is not valid.
     /// </summary>
     [Serializable]
     public class InvalidHashException : Exception

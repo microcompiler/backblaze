@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains information to create a get download authorization request.
+    /// Contains information to create a get <see cref="GetDownloadAuthorizationRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public class GetDownloadAuthorizationRequest : IRequest
@@ -14,7 +14,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="GetDownloadAuthorizationRequest"/> class.
         /// </summary>
-        /// <param name="bucketId">The bucket id.</param>
+        /// <param name="bucketId">The buckete id the download authorization token will allow access.</param>
         /// <param name="fileNamePrefix">The file name prefix of files the download authorization token will allow access.</param>
         /// <param name="validDurationInSeconds">The number of seconds before the authorization token will expire.</param>
         public GetDownloadAuthorizationRequest(string bucketId, string fileNamePrefix, long validDurationInSeconds = 3600)

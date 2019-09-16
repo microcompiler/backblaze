@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains information to create a upload file request.
+    /// Contains information to create a <see cref="UploadFileRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public class UploadFileRequest : IRequest

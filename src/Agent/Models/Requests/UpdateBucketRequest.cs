@@ -16,7 +16,7 @@ namespace Bytewizer.Backblaze.Models
         /// Initializes a new instance of the <see cref="UpdateBucketRequest"/> class.
         /// </summary>
         /// <param name="accountId">The account id that the bucket is in.</param>
-        /// <param name="bucketId">The unique id of the bucket.</param>
+        /// <param name="bucketId">The buckete id to update.</param>
         /// <param name="bucketType">The bucket secuirty authorization type.</param>
         public UpdateBucketRequest(string accountId, string bucketId, BucketType bucketType)
         {

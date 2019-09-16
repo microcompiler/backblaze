@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Contains information to create a delete bucket request.
+    /// Contains information to create a <see cref="DeleteBucketRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public class DeleteBucketRequest : IRequest

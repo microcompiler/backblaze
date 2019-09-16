@@ -3,7 +3,7 @@
 namespace Bytewizer.Backblaze.Client
 {
     /// <summary>
-    /// Client options for the Backblaze B2 Cloud Storage service.
+    /// Client options for Backblaze B2 Cloud Storage.
     /// </summary>
     public class ClientOptions
     {
@@ -215,7 +215,7 @@ namespace Bytewizer.Backblaze.Client
         private long _uploadPartSize = DefaultUploadPartSize;
 
         /// <summary>
-        /// Use the recommended part size returned by the Backblaze B2 Cloud Storage service.
+        /// Use the recommended part size returned by Backblaze B2 Cloud Storage.
         /// </summary>
         public bool AutoSetPartSize { get; set; } = false;
 

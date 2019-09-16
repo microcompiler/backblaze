@@ -3,7 +3,7 @@
 namespace Bytewizer.Backblaze.Agent
 {
     /// <summary>
-    /// Agent options for the Backblaze B2 Cloud Storage service interface.
+    /// Agent options for Backblaze B2 Cloud Storage.interface.
     /// </summary>
     public interface IAgentOptions
     {
@@ -18,7 +18,7 @@ namespace Bytewizer.Backblaze.Agent
         string ApplicationKey { get; set; }
 
         /// <summary>
-        /// The base authentication url of the Backblaze B2 Cloud Storage service.
+        /// The base authentication url of Backblaze B2 Cloud Storage.
         /// </summary>
         Uri AuthUrl { get; set; }
 
@@ -73,7 +73,7 @@ namespace Bytewizer.Backblaze.Agent
         long UploadPartSize { get; set; }
 
         /// <summary>
-        /// Use the recommended part size returned by the Backblaze B2 Cloud Storage service.
+        /// Use the recommended part size returned by Backblaze B2 Cloud Storage.
         /// </summary>
         bool AutoSetPartSize { get; set; }
 

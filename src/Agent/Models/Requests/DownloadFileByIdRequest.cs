@@ -15,7 +15,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="DownloadFileByIdRequest"/> class for downloading files from <see cref="BucketType.AllPublic"/> buckets.
         /// </summary>
-        /// <param name="fileId">The unique identifier for the file.</param>
+        /// <param name="fileId">The unique id of the file to download.</param>
         public DownloadFileByIdRequest(string fileId)
         {
             // Validate required arguments

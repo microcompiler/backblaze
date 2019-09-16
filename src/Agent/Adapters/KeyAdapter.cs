@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Collections.Generic;
 
+using Microsoft.Extensions.Logging;
+
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
 
@@ -19,8 +21,8 @@ namespace Bytewizer.Backblaze.Adapters
         /// <summary>
         /// Initializes a new instance of the <see cref="KeyAdapter"/> class.
         /// </summary>
-        public KeyAdapter(IApiClient client, ListKeysRequest request, int cacheTTL, CancellationToken cancellationToken)
-            : base(client, cacheTTL, cancellationToken)
+        public KeyAdapter(IApiClient client, ILogger logger, ListKeysRequest request, int cacheTTL, CancellationToken cancellationToken)
+            : base(client, logger, cacheTTL, cancellationToken)
         {
             _request = request;
         }
@@ -30,7 +32,7 @@ namespace Bytewizer.Backblaze.Adapters
         /// </summary>
         protected override List<KeyItem> GetNextPage(out bool isCompleted)
         {
-            var results = _client.ListKeysAsync(_request, _cacheManagerTTL, _cancellationToken).GetAwaiter().GetResult();
+            var results = _client.ListKeysAsync(_request, _cacheTTL, _cancellationToken).GetAwaiter().GetResult();
             if (results.IsSuccessStatusCode)
             {
                 _request.StartApplicationKeyId = results.Response.NextApplicationKeyId;

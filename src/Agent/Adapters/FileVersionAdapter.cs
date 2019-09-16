@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Collections.Generic;
 
+using Microsoft.Extensions.Logging;
+
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
 
@@ -19,8 +21,8 @@ namespace Bytewizer.Backblaze.Adapters
         /// <summary>
         /// Initializes a new instance of the <see cref="FileVersionAdapter"/> class.
         /// </summary>
-        public FileVersionAdapter(IApiClient client, ListFileVersionRequest request, int cacheTTL, CancellationToken cancellationToken)
-            : base(client, cacheTTL, cancellationToken)
+        public FileVersionAdapter(IApiClient client, ILogger logger, ListFileVersionRequest request, int cacheTTL, CancellationToken cancellationToken)
+            : base(client, logger, cacheTTL, cancellationToken)
         {
             _request = request;
         }

@@ -112,7 +112,7 @@ namespace Bytewizer.Backblaze.Client
         public ClientOptions Options { get; set; } = new ClientOptions();
 
         /// <summary>
-        /// The account information returned from the Backblaze B2 Cloud Storage service.
+        /// The account information returned from Backblaze B2 Cloud Storage.
         /// </summary>
         public AccountInfo AccountInfo { get; } = new AccountInfo();
 
@@ -129,7 +129,7 @@ namespace Bytewizer.Backblaze.Client
         #region Authorize Account
 
         /// <summary>
-        /// Connect to Backblaze B2 Cloud Storage service and initialize <see cref="AccountInfo"/>.
+        /// Connect to Backblaze B2 Cloud Storage.ervice and initialize <see cref="AccountInfo"/>.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
@@ -139,7 +139,7 @@ namespace Bytewizer.Backblaze.Client
         }
 
         /// <summary>
-        /// Connect to Backblaze B2 Cloud Storage service and initialize <see cref="AccountInfo"/>.
+        /// Connect to Backblaze B2 Cloud Storage.ervice and initialize <see cref="AccountInfo"/>.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
@@ -170,7 +170,7 @@ namespace Bytewizer.Backblaze.Client
                     Options.DownloadCutoffSize = results.Response.RecommendedPartSize;
                 }
 
-                _logger.LogInformation("Agent successfully authenticated to Backblaze B2 Cloud Storage service.");
+                _logger.LogInformation("Agent successfully authenticated to Backblaze B2 Cloud Storage.ervice.");
             }
         }
 
@@ -222,7 +222,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Downloads the most recent version of content by bucket and file name. 
         /// </summary>
-        /// <param name="request">The download file request to send.</param>
+        /// <param name="request">The <see cref="DownloadFileByIdRequest"/> to send.</param>
         /// <param name="content">The download content to receive.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancel">The cancellation token to cancel operation.</param>
@@ -253,7 +253,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Downloads a specific version of content by file id. 
         /// </summary>
-        /// <param name="request">The download file request to send.</param>
+        /// <param name="request">The <see cref="DownloadFileByIdRequest"/> to send.</param>
         /// <param name="content">The download content to receive.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancel">The cancellation token to cancel operation.</param>
@@ -289,7 +289,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Downloads the most recent version of a large file in chunked parts. 
         /// </summary>
-        /// <param name="request">The download file request content to send.</param>
+        /// <param name="request">The <see cref="DownloadFileByIdRequest"/> content to send.</param>
         /// <param name="content">The download content to receive.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
@@ -319,7 +319,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Downloads the most recent version of a large file in chunked parts. 
         /// </summary>
-        /// <param name="request">The download file request content to send.</param>
+        /// <param name="request">The <see cref="DownloadFileByIdRequest"/> content to send.</param>
         /// <param name="content">The download content to receive.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
@@ -349,7 +349,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Uploads a large file in chunked parts. 
         /// </summary>
-        /// <param name="request">The upload file request content to send.</param>
+        /// <param name="request">The <see cref="UploadFileRequest"/> content to send.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         private async Task<IApiResults<UploadFileResponse>> UploadLargeFileAsync

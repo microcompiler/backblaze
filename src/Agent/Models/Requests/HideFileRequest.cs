@@ -15,6 +15,7 @@ namespace Bytewizer.Backblaze.Models
         /// Initializes a new instance of the <see cref="HideFileRequest"/> class.
         /// </summary>
         /// <param name="bucketId">The bucket id containing the file to hide.</param>
+        /// <param name="fileName">The name of the file to hide.</param>
         public HideFileRequest(string bucketId, string fileName)
         {
             // Validate required arguments

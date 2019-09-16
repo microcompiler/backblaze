@@ -30,7 +30,7 @@ namespace Bytewizer.Backblaze.Models
         /// Initializes a new instance of the <see cref="CreateBucketRequest"/> class.
         /// </summary>
         /// <param name="accountId">The account id.</param>
-        /// <param name="bucketName">The name to give the new bucket. Bucket names must be a minimum of 6 and a maximum of 50 characters long, and must be globally unique.</param>
+        /// <param name="bucketName">The name to give the new bucket. Bucket names must be a minimum of <see cref="MinimumBucketNameLength"/> and a maximum of <see cref="MaximumBucketNameLength"/> characters long, and must be globally unique.</param>
         /// <param name="bucketType">The bucket secuirty authorization type.</param>
         public CreateBucketRequest(string accountId, string bucketName, BucketType bucketType)
         {
