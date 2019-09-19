@@ -222,7 +222,7 @@ namespace Bytewizer.Backblaze.Storage
         Task<IEnumerable<FileItem>> GetAsync(ListUnfinishedLargeFilesRequest request, int cacheTTL = 0);
 
         /// <summary>
-        /// Deletes all of the files contained in one bucket. 
+        /// Deletes all of the files contained in bucket. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileVersionRequest"/> to send.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>

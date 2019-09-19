@@ -1,15 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Represents a cors rule and related properties.
+    /// Represents a <see cref="CorsRule"/> and related properties.
     /// </summary>
     public class CorsRule : IEquatable<CorsRule>
     {
+        /// <summary>
+        /// Minimum number of characters in bucket key name.
+        /// </summary>
+        public const int MinimumCorsRuleNameLength = 6;
+
+        /// <summary>
+        /// Maximum number of characters in core rule name.
+        /// </summary>
+        public const int MaximumCorsRuleNameLength = 50;
+
         /// <summary>
         /// Represents the minimum age seconds. 
         /// </summary>
@@ -35,7 +45,27 @@ namespace Bytewizer.Backblaze.Models
         /// Gets cors rule name for this bucket. 
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string CorsRuleName { get; private set; }
+        public string CorsRuleName
+        {
+            get { return _corsRuleName; }
+            set
+            {
+                // Validate required elements
+                if (value.Length < MinimumCorsRuleNameLength || value.Length > MaximumCorsRuleNameLength)
+                    throw new ArgumentOutOfRangeException(
+                        $"Argument must be a minimum of {MinimumCorsRuleNameLength} and a maximum of {MaximumCorsRuleNameLength} characters long.", nameof(CorsRuleName));
+
+                if (!Regex.IsMatch(value, @"^([A-Za-z0-9\-_]+)$"))
+                    throw new ArgumentOutOfRangeException(
+                        "Argument can consist of only letters, digits, dashs and underscore.", nameof(CorsRuleName));
+
+                if (value.StartsWith("b2-"))
+                    throw new ArgumentException("Argument cannot start with 'b2-'. Reserved for internal Backblaze use.", nameof(CorsRuleName));
+
+                _corsRuleName = value;
+            }
+        }
+        private string _corsRuleName;
 
         /// <summary>
         /// Gets a list specifying which origins the rule covers. At least one value must be specified.
@@ -70,21 +100,15 @@ namespace Bytewizer.Backblaze.Models
             get { return _maxAgeSeconds; }
             set
             {
-                if (value > MinimumAgeSeconds || value < MaximumAgeSeconds)
-                    _maxAgeSeconds = value;
-                else
+                if (value < MinimumAgeSeconds || value > MaximumAgeSeconds)
                     throw new ArgumentOutOfRangeException($"Argument must be a minimum of {MinimumAgeSeconds} and a maximum of {MaximumAgeSeconds} duration in seconds.", nameof(MaxAgeSeconds));
+
+                _maxAgeSeconds = value;
             }
         }
         private int _maxAgeSeconds;
 
-        /// <summary>
-        /// Returns the name of this <see cref="CorsRuleName" />.
-        /// </summary>
-        public override string ToString()
-        {
-            return CorsRuleName;
-        }
+        #region IEquatable
 
         /// <summary>
         /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -103,10 +127,10 @@ namespace Bytewizer.Backblaze.Models
         {
             return other != null &&
                    CorsRuleName == other.CorsRuleName &&
-                   EqualityComparer<List<string>>.Default.Equals(AllowedOrigins, other.AllowedOrigins) &&
-                   EqualityComparer<List<string>>.Default.Equals(AllowedOperations, other.AllowedOperations) &&
-                   EqualityComparer<List<string>>.Default.Equals(AllowedHeaders, other.AllowedHeaders) &&
-                   EqualityComparer<List<string>>.Default.Equals(ExposeHeaders, other.ExposeHeaders) &&
+                   ListComparer<string>.Default.Equals(AllowedOrigins, other.AllowedOrigins) &&
+                   ListComparer<string>.Default.Equals(AllowedOperations, other.AllowedOperations) &&
+                   ListComparer<string>.Default.Equals(AllowedHeaders, other.AllowedHeaders) &&
+                   ListComparer<string>.Default.Equals(ExposeHeaders, other.ExposeHeaders) &&
                    MaxAgeSeconds == other.MaxAgeSeconds;
         }
 
@@ -117,10 +141,10 @@ namespace Bytewizer.Backblaze.Models
         {
             var hashCode = -235503683;
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(CorsRuleName);
-            hashCode = hashCode * -1521134295 + EqualityComparer<List<string>>.Default.GetHashCode(AllowedOrigins);
-            hashCode = hashCode * -1521134295 + EqualityComparer<List<string>>.Default.GetHashCode(AllowedOperations);
-            hashCode = hashCode * -1521134295 + EqualityComparer<List<string>>.Default.GetHashCode(AllowedHeaders);
-            hashCode = hashCode * -1521134295 + EqualityComparer<List<string>>.Default.GetHashCode(ExposeHeaders);
+            hashCode = hashCode * -1521134295 + ListComparer<string>.Default.GetHashCode(AllowedOrigins);
+            hashCode = hashCode * -1521134295 + ListComparer<string>.Default.GetHashCode(AllowedOperations);
+            hashCode = hashCode * -1521134295 + ListComparer<string>.Default.GetHashCode(AllowedHeaders);
+            hashCode = hashCode * -1521134295 + ListComparer<string>.Default.GetHashCode(ExposeHeaders);
             hashCode = hashCode * -1521134295 + MaxAgeSeconds.GetHashCode();
             return hashCode;
         }
@@ -130,7 +154,7 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         /// <param name="a">The first <see cref="CorsRule" /> to compare.</param>
         /// <param name="b">The second <see cref="CorsRule" /> to compare.</param>
-        public static bool operator ==(CorsRule a, CorsRule b)
+        public static bool operator == (CorsRule a, CorsRule b)
         {
             return EqualityComparer<CorsRule>.Default.Equals(a, b);
         }
@@ -140,9 +164,11 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         /// <param name="a">The first <see cref="CorsRule" /> to compare.</param>
         /// <param name="b">The second <see cref="CorsRule" /> to compare.</param>
-        public static bool operator !=(CorsRule a, CorsRule b)
+        public static bool operator != (CorsRule a, CorsRule b)
         {
             return !(a == b);
         }
+
+        #endregion
     }
 }

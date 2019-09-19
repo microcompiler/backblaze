@@ -77,12 +77,7 @@ namespace Bytewizer.Backblaze.Storage
         #endregion
 
         /// <summary>
-        /// Gets all buckets associated with an account in alphabetical order by bucket name. When using an authorization token
-        /// that is restricted to a bucket you must include the <see cref="ListBucketsRequest.BucketId"/>
-        /// or <see cref="ListBucketsRequest.BucketName"/> of that bucket in the request or the request will be denied. 
-        /// </summary>
-        /// <param name="request">The <see cref="ListBucketsRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// Gets all buckets associated with an account in alphabetical order by bucket name.
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         Task<IEnumerable<BucketItem>> GetAsync();
@@ -96,6 +91,24 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IEnumerable<BucketItem>> GetAsync(ListBucketsRequest request, int cacheTTL);
+        Task<IEnumerable<BucketItem>> GetAsync(ListBucketsRequest request, int cacheTTL = 0);
+
+        /// <summary>
+        /// Finds a bucket by id.
+        /// </summary>
+        /// <param name="bucketId">The bucket id to retrive.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<BucketItem> FindByIdAsync(string bucketId, int cacheTTL = 0);
+
+        /// <summary>
+        /// Finds a bucket by name.
+        /// </summary>
+        /// <param name="bucketName">The bucket name to retrive.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<BucketItem> FindByNameAsync(string bucketName, int cacheTTL = 0);
     }
 }

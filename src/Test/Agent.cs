@@ -144,8 +144,7 @@ namespace Backblaze.Test
         private async Task InitializeAsync()
         {
             // Get test bucket
-            var bucketList = await _storage.Agent.Buckets.GetAsync();
-            var testBucket = bucketList.ToList().Find(x => x.BucketName == BucketName);
+            var testBucket = await _storage.Agent.Buckets.FindByNameAsync(BucketName);
 
             // If test bucket doesn't exist try to create
             if (testBucket == null)
@@ -204,6 +203,20 @@ namespace Backblaze.Test
             var request = new CopyFileRequest(_fileId, "copyfile2.bin");
             request.Range = range;
             var results2 = await _storage.Agent.Files.CopyAsync(request);
+        }
+
+        [TestMethod]
+        public async Task Bucket_Find_By_Id()
+        {
+            var results = await _storage.Agent.Buckets.FindByIdAsync(_bucketId);
+            Assert.IsNotNull(results);
+        }
+
+        [TestMethod]
+        public async Task Bucket_Find_By_Name()
+        {
+            var results = await _storage.Agent.Buckets.FindByNameAsync(BucketName);
+            Assert.IsNotNull(results);
         }
 
         [TestMethod]
@@ -419,16 +432,18 @@ namespace Backblaze.Test
 
             var createResults = await _storage.Agent.Buckets.CreateAsync(request);
 
-            Debug.WriteLine(request.CorsRules.Equals(createResults.Response.CorsRules));
-
-            //Assert.AreEqual(request.CorsRules, createResults.Response.CorsRules);
-
-
             Assert.AreEqual(typeof(CreateBucketResponse), createResults.Response.GetType());
             Assert.AreEqual(bucketName, createResults.Response.BucketName);
             Assert.AreEqual(request.BucketInfo.Count, createResults.Response.BucketInfo.Count);
             Assert.AreEqual(request.LifecycleRules.Count, createResults.Response.LifecycleRules.Count);
             Assert.AreEqual(request.CorsRules.Count, createResults.Response.CorsRules.Count);
+
+            Assert.IsTrue(createResults.Response.CorsRules.Equals(request.CorsRules));
+            CollectionAssert.AreEqual(request.CorsRules.ToList(), createResults.Response.CorsRules.ToList());
+
+            Assert.IsTrue(createResults.Response.LifecycleRules.Equals(request.LifecycleRules));
+            CollectionAssert.AreEqual(request.LifecycleRules.ToList(), createResults.Response.LifecycleRules.ToList());
+
 
             // Delete bucket
             var deleteResults = await _storage.Agent.Buckets.DeleteAsync(createResults.Response.BucketId);

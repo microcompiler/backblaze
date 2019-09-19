@@ -20,7 +20,6 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public const int MaximumBucketInfoLength = 50;
 
-
         public readonly Dictionary<string, string> _bucketInfo;
 
         /// <summary>

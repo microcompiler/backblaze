@@ -383,7 +383,7 @@ namespace Bytewizer.Backblaze.Storage
         }
 
         /// <summary>
-        /// Deletes all of the files contained in one bucket. 
+        /// Deletes all of the files contained in bucket. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileVersionRequest"/> to send.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
