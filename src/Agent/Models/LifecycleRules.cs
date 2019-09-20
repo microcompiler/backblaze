@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Represents a <see cref="LifecycleRules"/> limited to 100 rules.
+    /// Represents a collection of <see cref="LifecycleRule"/> limited to 100 rules.
     /// </summary>
     public class LifecycleRules : IList<LifecycleRule>, IEquatable<LifecycleRules>
     {
@@ -26,6 +26,8 @@ namespace Bytewizer.Backblaze.Models
         {
             _lifecycleRules = new List<LifecycleRule>();
         }
+
+        #region IList
 
         /// <summary>
         /// Gets the <see cref="LifecycleRule" /> at the specified index.
@@ -93,35 +95,6 @@ namespace Bytewizer.Backblaze.Models
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="object" /> is equal to this instance.
-        /// </summary>
-        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as LifecycleRules);
-        }
-
-        /// <summary>
-        /// Determines whether this instance is equal to another <see cref="LifecycleRules" />.
-        /// </summary>
-        /// <param name="other">The <see cref="LifecycleRules" /> to compare to this instance.</param>
-        public bool Equals(LifecycleRules other)
-        {
-            return other != null &&
-                ListComparer<LifecycleRule>.Default.Equals(this, other);
-        }
-
-        /// <summary>
-        /// Returns a hash code for this <see cref="LifecycleRules" />.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            var hashCode = -235947683;
-            hashCode = hashCode * -1528764295 + ListComparer<LifecycleRule>.Default.GetHashCode(this);
-            return hashCode;
-        }
-
-        /// <summary>
         /// Returns an enumerator that iterates through the <see cref="LifecycleRules"/>.
         /// </summary>
         public IEnumerator<LifecycleRule> GetEnumerator()
@@ -175,6 +148,39 @@ namespace Bytewizer.Backblaze.Models
             return ((IList<LifecycleRule>)_lifecycleRules).GetEnumerator();
         }
 
+        #endregion
+
+        #region IEquatable
+
+        /// <summary>
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as LifecycleRules);
+        }
+
+        /// <summary>
+        /// Determines whether this instance is equal to another <see cref="LifecycleRules" />.
+        /// </summary>
+        /// <param name="other">The <see cref="LifecycleRules" /> to compare to this instance.</param>
+        public bool Equals(LifecycleRules other)
+        {
+            return other != null &&
+                ListComparer<LifecycleRule>.Default.Equals(this, other);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this <see cref="LifecycleRules" />.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            var hashCode = -235947683;
+            hashCode = hashCode * -1528764295 + ListComparer<LifecycleRule>.Default.GetHashCode(this);
+            return hashCode;
+        }
+
         /// <summary>
         /// Compares two <see cref="LifecycleRules" /> instances for equality.
         /// </summary>
@@ -194,5 +200,7 @@ namespace Bytewizer.Backblaze.Models
         {
             return !(a == b);
         }
+
+        #endregion
     }
 }

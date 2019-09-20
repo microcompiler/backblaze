@@ -9,6 +9,9 @@ namespace Bytewizer.Backblaze.Models
     /// </summary>
     public class Capabilities :  ICollection<Capability>
     {
+        /// <summary>
+        /// The hashlist used to store elements.
+        /// </summary>
         private readonly HashSet<Capability> _capability;
 
         /// <summary>
@@ -19,6 +22,8 @@ namespace Bytewizer.Backblaze.Models
             _capability = new HashSet<Capability>();
         }
 
+        #region ICollection
+
         /// <summary>
         /// Gets the number of elements contained in the <see cref="Capabilities" />.
         /// </summary>
@@ -27,7 +32,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Gets a value indicating whether the <see cref="Capabilities" /> is read-only.
         /// </summary>
-        public bool IsReadOnly => false;
+        public bool IsReadOnly => ((ICollection<Capability>)_capability).IsReadOnly;
 
         /// <summary>
 		/// Adds the specified <see cref="Capability" /> to this <see cref="Capabilities" />.
@@ -64,6 +69,12 @@ namespace Bytewizer.Backblaze.Models
             return _capability.Remove(item);
         }
 
+        /// <summary>
+        /// Copies the elements of the <see cref="Capabilities"/> to an <see cref="Array"/>,
+        /// starting at a particular <see cref="Array"/> index.
+        /// </summary>
+        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from <see cref="Capabilities"/>. The <see cref="Array"/> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         public void CopyTo(Capability[] array, int arrayIndex)
         {
             _capability.CopyTo(array, arrayIndex);
@@ -84,5 +95,60 @@ namespace Bytewizer.Backblaze.Models
         {
             return _capability.GetEnumerator();
         }
+
+        #endregion
+
+        #region IEquatable
+
+        /// <summary>
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Capabilities);
+        }
+
+        /// <summary>
+        /// Determines whether this instance is equal to another <see cref="Capabilities" />.
+        /// </summary>
+        /// <param name="other">The <see cref="Capabilities" /> to compare to this instance.</param>
+        public bool Equals(Capabilities other)
+        {
+            return other != null &&
+                ListComparer<Capability>.Default.Equals(this, other);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this <see cref="Capabilities" />.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            var hashCode = -124993683;
+            hashCode = hashCode * -842234295 + ListComparer<Capability>.Default.GetHashCode(this);
+            return hashCode;
+        }
+
+        /// <summary>
+        /// Compares two <see cref="Capabilities" /> instances for equality.
+        /// </summary>
+        /// <param name="a">The first <see cref="Capabilities" /> to compare.</param>
+        /// <param name="b">The second <see cref="Capabilities" /> to compare.</param>
+        public static bool operator ==(Capabilities a, Capabilities b)
+        {
+            return EqualityComparer<Capabilities>.Default.Equals(a, b);
+        }
+
+        /// <summary>
+        /// Compares two <see cref="Capabilities" /> instances for inequality.
+        /// </summary>
+        /// <param name="a">The first <see cref="Capabilities" /> to compare.</param>
+        /// <param name="b">The second <see cref="Capabilities" /> to compare.</param>
+        public static bool operator !=(Capabilities a, Capabilities b)
+        {
+            return !(a == b);
+        }
+
+        #endregion
     }
 }

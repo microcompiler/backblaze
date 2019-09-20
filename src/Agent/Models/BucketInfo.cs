@@ -6,10 +6,15 @@ using System.Text.RegularExpressions;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Represents custom bucket information which uses <see cref="Dictionary{string, string}"/> limited to 10 items.
+    /// Represents a <see cref="BucketInfo"/> dictionary limited to 10 items.
     /// </summary>
-    public class BucketInfo : IDictionary<string, string>
+    public class BucketInfo : IDictionary<string, string>, IEquatable<BucketInfo>
     {
+        /// <summary>
+        /// Maximum number of bucket items allowed.
+        /// </summary>
+        public const int MaximumBucketItemsAllowed = 10;
+
         /// <summary>
         /// Minimum number of characters in bucket key name.
         /// </summary>
@@ -20,7 +25,10 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public const int MaximumBucketInfoLength = 50;
 
-        public readonly Dictionary<string, string> _bucketInfo;
+        /// <summary>
+        /// The dictionary used to store elements.
+        /// </summary>
+        private readonly Dictionary<string, string> _bucketInfo;
 
         /// <summary>
 		/// Initializes a new instance of the <see cref="BucketInfo" /> class.
@@ -30,21 +38,23 @@ namespace Bytewizer.Backblaze.Models
             _bucketInfo = new Dictionary<string, string>();
         }
 
+        #region IDictionary
+
         /// <summary>
-		/// Gets the <see cref="BucketInfo" /> at the specified index.
-		/// </summary>
-		/// <param name="key">The kay at which to retrieve the <see cref="BucketInfo" />.</param>
+        /// Gets the <see cref="BucketInfo" /> at the specified index.
+        /// </summary>
+        /// <param name="key">The kay at which to retrieve the <see cref="BucketInfo" />.</param>
         public string this[string key] { get => _bucketInfo[key]; set => _bucketInfo[key] = value; }
 
         /// <summary>
         /// Gets a collection containing the keys in the <see cref="BucketInfo"/>.
         /// </summary>
-        public ICollection<string> Keys => _bucketInfo.Keys;
+        public ICollection<string> Keys => ((IDictionary<string, string>)_bucketInfo).Keys;
 
         /// <summary>
         /// Gets a collection containing the values in the <see cref="BucketInfo" />.
         /// </summary>
-        public ICollection<string> Values => _bucketInfo.Values;
+        public ICollection<string> Values => ((IDictionary<string, string>)_bucketInfo).Values;
 
         /// <summary>
         /// Gets the number of key/value pairs contained in the <see cref="BucketInfo" />.
@@ -54,7 +64,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Gets a value indicating whether the <see cref="BucketInfo" /> is read-only.
         /// </summary>
-        public bool IsReadOnly => false;
+        public bool IsReadOnly => ((IDictionary<string, string>)_bucketInfo).IsReadOnly;
 
         /// <summary>
         /// Adds the specified key and value to the <see cref="BucketInfo" />.
@@ -64,9 +74,9 @@ namespace Bytewizer.Backblaze.Models
         public void Add(string key, string value)
         {
             // Validate required elements
-            if (Count >= 10)
+            if (Count >= MaximumBucketItemsAllowed)
                 throw new InvalidOperationException(
-                    "This list is limited to 10 items. You cannot add more items.");
+                    $"This list is limited to {MaximumBucketItemsAllowed} items. You cannot add more items.");
 
             if (key.Length < MinimumBucketInfoLength || key.Length > MaximumBucketInfoLength)
                 throw new ArgumentOutOfRangeException(
@@ -175,5 +185,60 @@ namespace Bytewizer.Backblaze.Models
         {
             return ((IDictionary<string, string>)_bucketInfo).GetEnumerator();
         }
+
+        #endregion
+
+        #region IEquatable
+
+        /// <summary>
+        /// Compares two <see cref="BucketInfo" /> instances for equality.
+        /// </summary>
+        /// <param name="a">The first <see cref="BucketInfo" /> to compare.</param>
+        /// <param name="b">The second <see cref="BucketInfo" /> to compare.</param>
+        public static bool operator ==(BucketInfo a, BucketInfo b)
+        {
+            return EqualityComparer<BucketInfo>.Default.Equals(a, b);
+        }
+
+        /// <summary>
+        /// Compares two <see cref="BucketInfo" /> instances for inequality.
+        /// </summary>
+        /// <param name="a">The first <see cref="BucketInfo" /> to compare.</param>
+        /// <param name="b">The second <see cref="BucketInfo" /> to compare.</param>
+        public static bool operator !=(BucketInfo a, BucketInfo b)
+        {
+            return !(a == b);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as BucketInfo);
+        }
+
+        /// <summary>
+        /// Determines whether this instance is equal to another <see cref="BucketInfo" />.
+        /// </summary>
+        /// <param name="other">The <see cref="BucketInfo" /> to compare to this instance.</param>
+        public bool Equals(BucketInfo other)
+        {
+            return other != null &&
+                DictionaryComparer<string, string>.Default.Equals(this, other);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this <see cref="BucketInfo" />.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            var hashCode = -245693683;
+            hashCode = hashCode * -1522297595 + DictionaryComparer<string, string>.Default.GetHashCode(this);
+            return hashCode;
+        }
+
+        #endregion
     }
 }

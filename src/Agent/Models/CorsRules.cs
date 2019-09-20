@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Represents a <see cref="CorsRules"/> limited to 100 rules.
+    /// Represents a collection of <see cref="CorsRule"/> limited to 100 rules.
     /// </summary>
     public class CorsRules : IList<CorsRule>, IEquatable<CorsRules>
     {
@@ -26,6 +26,8 @@ namespace Bytewizer.Backblaze.Models
         {
             _corsRules = new List<CorsRule>();
         }
+
+        #region IList
 
         /// <summary>
         /// Gets the <see cref="CorsRule" /> at the specified index.
@@ -93,35 +95,6 @@ namespace Bytewizer.Backblaze.Models
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="object" /> is equal to this instance.
-        /// </summary>
-        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as CorsRules);
-        }
-
-        /// <summary>
-        /// Determines whether this instance is equal to another <see cref="CorsRules" />.
-        /// </summary>
-        /// <param name="other">The <see cref="CorsRules" /> to compare to this instance.</param>
-        public bool Equals(CorsRules other)
-        {
-            return other != null &&
-                ListComparer<CorsRule>.Default.Equals(this, other);
-        }
-
-        /// <summary>
-        /// Returns a hash code for this <see cref="CorsRules" />.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            var hashCode = -235993683;
-            hashCode = hashCode * -1522234295 + ListComparer<CorsRule>.Default.GetHashCode(this);
-            return hashCode;
-        }
-
-        /// <summary>
         /// Returns an enumerator that iterates through the <see cref="CorsRules"/>.
         /// </summary>
         public IEnumerator<CorsRule> GetEnumerator()
@@ -175,6 +148,39 @@ namespace Bytewizer.Backblaze.Models
             return ((IList<CorsRule>)_corsRules).GetEnumerator();
         }
 
+        #endregion
+
+        #region IEquatable
+
+        /// <summary>
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as CorsRules);
+        }
+
+        /// <summary>
+        /// Determines whether this instance is equal to another <see cref="CorsRules" />.
+        /// </summary>
+        /// <param name="other">The <see cref="CorsRules" /> to compare to this instance.</param>
+        public bool Equals(CorsRules other)
+        {
+            return other != null &&
+                ListComparer<CorsRule>.Default.Equals(this, other);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this <see cref="CorsRules" />.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            var hashCode = -235993683;
+            hashCode = hashCode * -1522234295 + ListComparer<CorsRule>.Default.GetHashCode(this);
+            return hashCode;
+        }
+
         /// <summary>
         /// Compares two <see cref="CorsRules" /> instances for equality.
         /// </summary>
@@ -194,5 +200,7 @@ namespace Bytewizer.Backblaze.Models
         {
             return !(a == b);
         }
+
+        #endregion
     }
 }

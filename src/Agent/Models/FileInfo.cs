@@ -6,10 +6,15 @@ using System.Text.RegularExpressions;
 namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
-    /// Represents custom file information which uses <see cref="Dictionary{string, string}"/> limited to 10 items.
+    /// Represents a <see cref="FileInfo"/> dictionary limited to 10 items.
     /// </summary>
-    public class FileInfo : IDictionary<string, string>
+    public class FileInfo : IDictionary<string, string>, IEquatable<FileInfo>
     {
+        /// <summary>
+        /// Maximum number of file info items allowed.
+        /// </summary>
+        public const int MaximumFileInfoItemsAllowed = 10;
+
         /// <summary>
         /// Minimum number of characters in file info key name.
         /// </summary>
@@ -20,6 +25,9 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public const int MaximumFileInfoLength = 50;
 
+        /// <summary>
+        /// The dictionary used to store elements.
+        /// </summary>
         private readonly Dictionary<string, string> _fileInfo;
 
         /// <summary>
@@ -30,6 +38,8 @@ namespace Bytewizer.Backblaze.Models
             _fileInfo = new Dictionary<string, string>();
         }
 
+        #region IDictionary
+
         /// <summary>
         /// Gets the <see cref="FileInfo" /> at the specified index.
         /// </summary>
@@ -39,12 +49,12 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Gets a collection containing the keys in the <see cref="FileInfo"/>.
         /// </summary>
-        public ICollection<string> Keys => _fileInfo.Keys;
+        public ICollection<string> Keys => ((IDictionary<string, string>)_fileInfo).Keys;
 
         /// <summary>
         /// Gets a collection containing the values in the <see cref="FileInfo" />.
         /// </summary>
-        public ICollection<string> Values => _fileInfo.Values;
+        public ICollection<string> Values => ((IDictionary<string, string>)_fileInfo).Values;
 
         /// <summary>
         /// Gets the number of key/value pairs contained in the <see cref="FileInfo" />.
@@ -54,7 +64,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Gets a value indicating whether the <see cref="FileInfo" /> is read-only.
         /// </summary>
-        public bool IsReadOnly => false;
+        public bool IsReadOnly => ((IDictionary<string, string>)_fileInfo).IsReadOnly;
 
         /// <summary>
         /// Adds the specified key and value to the <see cref="FileInfo" />.
@@ -64,13 +74,9 @@ namespace Bytewizer.Backblaze.Models
         public void Add(string key, string value)
         {
             // Validate required elements
-            if (Count >= 10)
+            if (Count >= MaximumFileInfoItemsAllowed)
                 throw new InvalidOperationException(
-                    "This list is limited to 10 items. You cannot add more items.");
-
-            if (Count >= 10)
-                throw new InvalidOperationException(
-                    "This list is limited to 10 items. You cannot add more items.");
+                    $"This list is limited to {MaximumFileInfoItemsAllowed} items. You cannot add more items.");
 
             if (key.Length < MinimumFileInfoLength || key.Length > MaximumFileInfoLength)
                 throw new ArgumentOutOfRangeException(
@@ -179,5 +185,60 @@ namespace Bytewizer.Backblaze.Models
         {
             return ((IDictionary<string, string>)_fileInfo).GetEnumerator();
         }
+
+        #endregion
+
+        #region IEquatable
+
+        /// <summary>
+        /// Compares two <see cref="FileInfo" /> instances for equality.
+        /// </summary>
+        /// <param name="a">The first <see cref="FileInfo" /> to compare.</param>
+        /// <param name="b">The second <see cref="FileInfo" /> to compare.</param>
+        public static bool operator ==(FileInfo a, FileInfo b)
+        {
+            return EqualityComparer<FileInfo>.Default.Equals(a, b);
+        }
+
+        /// <summary>
+        /// Compares two <see cref="FileInfo" /> instances for inequality.
+        /// </summary>
+        /// <param name="a">The first <see cref="FileInfo" /> to compare.</param>
+        /// <param name="b">The second <see cref="FileInfo" /> to compare.</param>
+        public static bool operator !=(FileInfo a, FileInfo b)
+        {
+            return !(a == b);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as FileInfo);
+        }
+
+        /// <summary>
+        /// Determines whether this instance is equal to another <see cref="FileInfo" />.
+        /// </summary>
+        /// <param name="other">The <see cref="FileInfo" /> to compare to this instance.</param>
+        public bool Equals(FileInfo other)
+        {
+            return other != null &&
+                DictionaryComparer<string, string>.Default.Equals(this, other);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this <see cref="FileInfo" />.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            var hashCode = -147993683;
+            hashCode = hashCode * -975397595 + DictionaryComparer<string, string>.Default.GetHashCode(this);
+            return hashCode;
+        }
+
+        #endregion
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Bytewizer.Backblaze.Models
 {
@@ -31,7 +31,6 @@ namespace Bytewizer.Backblaze.Models
             }
         }
 
-        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="ListComparer{T}"/> class.
         /// </summary>
@@ -50,26 +49,25 @@ namespace Bytewizer.Backblaze.Models
 
             _elementComparer = elementComparer;
         }
-        #endregion
 
         /// <summary>
         /// Determines whether the specified object instances are considered equal.
         /// </summary>
         /// <param name="objA">The first object to compare.</param>
-        /// <param name="ObjB">The second object to compare.</param>
+        /// <param name="objB">The second object to compare.</param>
         /// <returns>true if the objects are considered equal; otherwise, false. If both objA and objB are null, the method returns true.</returns>
-        public bool Equals(IEnumerable<T> objA, IEnumerable<T> ObjB)
+        public bool Equals(IEnumerable<T> objA, IEnumerable<T> objB)
         {
             if (objA == null)
-                return ObjB == null;
+                return objB == null;
 
-            if (ObjB == null)
+            if (objB == null)
                 return false;
 
-            if (Object.ReferenceEquals(objA, ObjB))
+            if (Object.ReferenceEquals(objA, objB))
                 return true;
 
-            return objA.SequenceEqual(ObjB, _elementComparer);
+            return objA.SequenceEqual(objB, _elementComparer);
         }
 
         /// <summary>
@@ -80,12 +78,12 @@ namespace Bytewizer.Backblaze.Models
             if (enumerable == null)
                 return 0;
 
-            int hash = 17;
+            int hash = 257698343;
             unchecked
             {
                 foreach (T value in enumerable)
                 {
-                    hash = hash * 29 + (value != null ? _elementComparer.GetHashCode(value) : 42);
+                    hash = hash * 559998327 + (value != null ? _elementComparer.GetHashCode(value) : 967398343);
                 }
             }
             return hash;

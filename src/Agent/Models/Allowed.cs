@@ -33,9 +33,9 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public string NamePrefix { get; set; }
 
-        ///	<summary>
-        ///	Debugger display for this object.
-        ///	</summary>
+        /// <summary>
+        /// Debugger display for this object.
+        /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay
         {

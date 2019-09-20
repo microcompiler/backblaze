@@ -366,6 +366,9 @@ namespace Backblaze.Test
             Assert.AreEqual(keyName, createResults.Response.KeyName);
             // Assert.AreEqual(capabilities, createResults.Response.Capabilities);
 
+            Assert.IsTrue(createResults.Response.Capabilities.Equals(capabilities));
+            CollectionAssert.AreEqual(createResults.Response.Capabilities.ToList(), capabilities.ToList());
+
             // Delete key
             var deleteResults = await _storage.Agent.Keys.DeleteAsync(createResults.Response.ApplicationKeyId);
             Assert.AreEqual(typeof(DeleteKeyResponse), deleteResults.Response.GetType());
@@ -429,6 +432,7 @@ namespace Backblaze.Test
                         ExposeHeaders = new List<string> {"x-bz-content-sha1" },               
                     }
                 };
+            
 
             var createResults = await _storage.Agent.Buckets.CreateAsync(request);
 
@@ -443,7 +447,6 @@ namespace Backblaze.Test
 
             Assert.IsTrue(createResults.Response.LifecycleRules.Equals(request.LifecycleRules));
             CollectionAssert.AreEqual(request.LifecycleRules.ToList(), createResults.Response.LifecycleRules.ToList());
-
 
             // Delete bucket
             var deleteResults = await _storage.Agent.Buckets.DeleteAsync(createResults.Response.BucketId);
