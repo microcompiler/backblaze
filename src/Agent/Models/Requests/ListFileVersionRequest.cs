@@ -10,7 +10,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains information to create a list file version request.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class ListFileVersionRequest : IEquatable<ListFileVersionRequest>, IRequest
+    public class ListFileVersionRequest : IRequest
     {
         /// <summary>
         /// Represents the default number of files per transaction.
@@ -103,32 +103,8 @@ namespace Bytewizer.Backblaze.Models
             get { return $"{{{nameof(BucketId)}: {BucketId}}}"; }
         }
 
-        #region IEquatable
-
         /// <summary>
-        /// Determines whether this object is equal <paramref name="obj"/>.
-        /// </summary>
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as ListFileVersionRequest);
-        }
-
-        /// <summary>
-        /// Determines whether this object is equal <paramref name="other"/>.
-        /// </summary>
-        public bool Equals(ListFileVersionRequest other)
-        {
-            return other != null &&
-                   BucketId == other.BucketId &&
-                   StartFileName == other.StartFileName &&
-                   StartFileId == other.StartFileId &&
-                   MaxFileCount == other.MaxFileCount &&
-                   Prefix == other.Prefix &&
-                   Delimiter == other.Delimiter;
-        }
-
-        /// <summary>
-        /// Provides hash code for the request.
+        /// Returns a hash code for this object.
         /// </summary>
         public override int GetHashCode()
         {
@@ -141,23 +117,5 @@ namespace Bytewizer.Backblaze.Models
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Delimiter);
             return hashCode;
         }
-
-        /// <summary>
-        /// Determines whether the given <paramref name="left"/> is equal <paramref name="right"/>.
-        /// </summary>
-        public static bool operator ==(ListFileVersionRequest left, ListFileVersionRequest right)
-        {
-            return EqualityComparer<ListFileVersionRequest>.Default.Equals(left, right);
-        }
-
-        /// <summary>
-        /// Determines whether the given <paramref name="left"/> is not equal <paramref name="right"/>.
-        /// </summary>
-        public static bool operator !=(ListFileVersionRequest left, ListFileVersionRequest right)
-        {
-            return !(left == right);
-        }
-
-        #endregion
     }
 }

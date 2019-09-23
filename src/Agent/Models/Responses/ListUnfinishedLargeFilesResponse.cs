@@ -15,14 +15,14 @@ namespace Bytewizer.Backblaze.Models
         /// A part objects each one describing one unfinished file.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public List<FileItem> Files { get; internal set; }
+        public List<FileItem> Files { get; set; }
 
         /// <summary>
         /// What to pass in to <see cref="ListUnfinishedLargeFilesRequest.StartFileId"/> for the next search to continue where this one left off 
         /// or null if there are no more files. Note this this may not be the id of an 
         /// actual upload but using it is guaranteed to find the next upload.  
         /// </summary>
-        public string NextFileId { get; internal set; }
+        public string NextFileId { get; set; }
 
         ///	<summary>
         ///	Debugger display for this object.

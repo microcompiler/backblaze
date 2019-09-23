@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,7 @@ using Bytewizer.Backblaze.Models;
 namespace Bytewizer.Backblaze.Adapters
 {
     /// <summary>
-    /// Iterates sequentially through the <see cref="ListKeysResponse"/> response elements.
+    /// Iterates sequentially through the <see cref="ListKeysResponse"/> elements.
     /// </summary>
     public class KeyAdapter : BaseIterator<KeyItem>
     {
@@ -21,7 +22,7 @@ namespace Bytewizer.Backblaze.Adapters
         /// <summary>
         /// Initializes a new instance of the <see cref="KeyAdapter"/> class.
         /// </summary>
-        public KeyAdapter(IApiClient client, ILogger logger, ListKeysRequest request, int cacheTTL, CancellationToken cancellationToken)
+        public KeyAdapter(IApiClient client, ILogger logger, ListKeysRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
             : base(client, logger, cacheTTL, cancellationToken)
         {
             _request = request;
@@ -35,12 +36,14 @@ namespace Bytewizer.Backblaze.Adapters
             var results = _client.ListKeysAsync(_request, _cacheTTL, _cancellationToken).GetAwaiter().GetResult();
             if (results.IsSuccessStatusCode)
             {
+                _logger.LogDebug($"Key adapter sent request for {_request.MaxKeyCount} keys including a next application key id of '{_request.StartApplicationKeyId}'");
                 _request.StartApplicationKeyId = results.Response.NextApplicationKeyId;
                 isCompleted = string.IsNullOrEmpty(results.Response.NextApplicationKeyId);
                 return results.Response.Keys;
             }
             else
             {
+                _logger.LogError($"Key adapter failed sending request with error: {results.Error.Message}");
                 isCompleted = true;
                 return new List<KeyItem>();
             }

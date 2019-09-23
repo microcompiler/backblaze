@@ -104,7 +104,7 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="bucketId">The bucket id you want to upload to.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<GetUploadUrlResponse>> GetUploadUrlAsync(string bucketId, int cacheTTL = 0);
+        Task<IApiResults<GetUploadUrlResponse>> GetUploadUrlAsync(string bucketId, TimeSpan cacheTTL = default);
 
         /// <summary>
         /// Hides a file so that <see cref="DownloadAsync"/> by name will not find the file but previous versions of the file are still stored.   
@@ -127,10 +127,10 @@ namespace Bytewizer.Backblaze.Storage
         /// List the names of files in a bucket starting at a given name. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileNamesRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListFileNamesResponse>> ListNamesAsync(ListFileNamesRequest request, int cacheTTL = 0);
+        Task<IApiResults<ListFileNamesResponse>> ListNamesAsync(ListFileNamesRequest request, TimeSpan cacheTTL = default);
 
         /// <summary>
         /// List versions of the files contained in one bucket in alphabetical order by file name
@@ -146,10 +146,10 @@ namespace Bytewizer.Backblaze.Storage
         /// and by reverse of date/time uploaded for versions of files with the same name. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileVersionRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListFileVersionResponse>> ListVersionsAsync(ListFileVersionRequest request, int cacheTTL = 0);
+        Task<IApiResults<ListFileVersionResponse>> ListVersionsAsync(ListFileVersionRequest request, TimeSpan cacheTTL = default);
 
         /// <summary>
         /// List information about large file uploads that have been started but have not been finished or canceled. 
@@ -163,10 +163,10 @@ namespace Bytewizer.Backblaze.Storage
         /// List information about large file uploads that have been started but have not been finished or canceled. 
         /// </summary>
         /// <param name="request">The <see cref="ListUnfinishedLargeFilesRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListUnfinishedLargeFilesResponse>> ListUnfinishedAsync(ListUnfinishedLargeFilesRequest request, int cacheTTL = 0);
+        Task<IApiResults<ListUnfinishedLargeFilesResponse>> ListUnfinishedAsync(ListUnfinishedLargeFilesRequest request, TimeSpan cacheTTL = default);
 
         #endregion
 
@@ -197,29 +197,40 @@ namespace Bytewizer.Backblaze.Storage
         /// Gets the names of all files in a bucket.
         /// </summary>
         /// <param name="request">The <see cref="ListFileNamesRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IEnumerable<FileItem>> GetAsync(ListFileNamesRequest request, int cacheTTL = 0);
+        Task<IEnumerable<FileItem>> GetAsync(ListFileNamesRequest request, TimeSpan cacheTTL = default);
 
         /// <summary>
         /// Gets all versions of the files contained in one bucket in alphabetical order by file name
         /// and by reverse of date/time uploaded for versions of files with the same name. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileVersionRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IEnumerable<FileItem>> GetAsync(ListFileVersionRequest request, int cacheTTL = 0);
+        Task<IEnumerable<FileItem>> GetAsync(ListFileVersionRequest request, TimeSpan cacheTTL = default);
 
         /// <summary>
         /// Gets all large file uploads that have been started but have not been finished or canceled. 
         /// </summary>
         /// <param name="request">The <see cref="ListUnfinishedLargeFilesRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IEnumerable<FileItem>> GetAsync(ListUnfinishedLargeFilesRequest request, int cacheTTL = 0);
+        Task<IEnumerable<FileItem>> GetAsync(ListUnfinishedLargeFilesRequest request, TimeSpan cacheTTL = default);
+
+        /// <summary>
+        /// Returns the first file item that satisfies a specified condition.
+        /// </summary>
+        /// <param name="request">The list of file name request to send.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
+        /// <exception cref="InvalidOperationException">No element satisfies the condition in predicate. -or- The source sequence is empty</exception>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<FileItem> FirstAsync(ListFileNamesRequest request, Func<FileItem, bool> predicate, TimeSpan cacheTTL = default);
 
         /// <summary>
         /// Deletes all of the files contained in bucket. 

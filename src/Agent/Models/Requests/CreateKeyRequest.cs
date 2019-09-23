@@ -37,16 +37,16 @@ namespace Bytewizer.Backblaze.Models
         /// Initializes a new instance of the <see cref="CreateKeyRequest"/> class.
         /// </summary>
         /// <param name="accountId">The account id.</param>
-        /// <param name="capabilities">A list of <see cref="Capability"/> each one naming a capability the new key should have.</param>
         /// <param name="keyName">The name for this key.</param>
-        public CreateKeyRequest(string accountId, Capabilities capabilities, string keyName)
+        /// <param name="capabilities">A list of <see cref="Capability"/> each one naming a capability the new key should have.</param>
+        public CreateKeyRequest(string accountId, string keyName, Capabilities capabilities)
         {
             // Validate required arguments
             if (string.IsNullOrWhiteSpace(accountId))
                 throw new ArgumentException("Argument can not be null, empty, or consist only of white-space characters.", nameof(accountId));
 
-            //if (capabilities.Length == 0)
-            //    throw new ArgumentException("Argument must containe at least one capabilitiy.", nameof(capabilities));
+            if (capabilities.Count <= 0)
+                throw new ArgumentException("Argument must containe at least one capabilitiy.", nameof(capabilities));
 
             if (string.IsNullOrWhiteSpace(keyName))
                 throw new ArgumentException("Argument can not be null, empty, or consist only of white-space characters.", nameof(keyName));
@@ -59,8 +59,8 @@ namespace Bytewizer.Backblaze.Models
 
             // Initialize and set required properties
             AccountId = accountId;
-            Capabilities = capabilities;
             KeyName = keyName;
+            Capabilities = capabilities;
         }
 
         /// <summary>

@@ -24,14 +24,10 @@ namespace Bytewizer.Backblaze.Agent
         public UserAgentHandler(string applicationName, string applicationVersion)
         {
             if (applicationName == null)
-            {
                 throw new ArgumentNullException(nameof(applicationName));
-            }
 
             if (applicationVersion == null)
-            {
                 throw new ArgumentNullException(nameof(applicationVersion));
-            }
 
             this.UserAgentValues = new List<ProductInfoHeaderValue>()
             {

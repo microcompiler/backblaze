@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,7 @@ using Bytewizer.Backblaze.Models;
 namespace Bytewizer.Backblaze.Adapters
 {
     /// <summary>
-    /// Iterates sequentially through the <see cref="ListPartsResponse"/> response elements.
+    /// Iterates sequentially through the <see cref="ListPartsResponse"/> elements.
     /// </summary>
     public class PartAdapter : BaseIterator<PartItem>
     {
@@ -21,7 +22,7 @@ namespace Bytewizer.Backblaze.Adapters
         /// <summary>
         /// Initializes a new instance of the <see cref="PartAdapter"/> class.
         /// </summary>
-        public PartAdapter(IApiClient client, ILogger logger, ListPartsRequest request, int cacheTTL, CancellationToken cancellationToken)
+        public PartAdapter(IApiClient client, ILogger logger, ListPartsRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
             : base(client, logger, cacheTTL, cancellationToken)
         {
             _request = request;
@@ -35,12 +36,14 @@ namespace Bytewizer.Backblaze.Adapters
             var results = _client.ListPartsAsync(_request, _cacheTTL, _cancellationToken).GetAwaiter().GetResult();
             if (results.IsSuccessStatusCode)
             {
+                _logger.LogDebug($"Part adapter sent request for {_request.MaxPartCount} file parts including a next part number of '{_request.StartPartNumber}'");
                 _request.StartPartNumber = results.Response.NextPartNumber;
                 isCompleted = string.IsNullOrEmpty(results.Response.NextPartNumber);
                 return results.Response.Parts;
             }
             else
             {
+                _logger.LogError($"Part adapter failed sending request with error: {results.Error.Message}");
                 isCompleted = true;
                 return new List<PartItem>();
             }

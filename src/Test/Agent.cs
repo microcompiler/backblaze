@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Bytewizer.Backblaze;
 using Bytewizer.Backblaze.Storage;
 using Bytewizer.Backblaze.Models;
 using System.Security.Cryptography;
@@ -16,7 +17,7 @@ using System.Threading;
 using System.IO.Compression;
 using System.Diagnostics;
 
-namespace Backblaze.Test
+namespace Backblaze
 {
     [TestClass]
     public class Agent
@@ -110,6 +111,9 @@ namespace Backblaze.Test
 
             // Create service provider
             var serviceProvider = serviceCollection.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<Agent>>();
+
+            logger.LogDebug("Woo Hooo");
 
             // Run application
             _storage = serviceProvider.GetService<Storage>();
@@ -134,6 +138,9 @@ namespace Backblaze.Test
                 builder.AddConfiguration(config.GetSection("Logging"));
                 builder.AddDebug();
             }).Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Debug);
+
+            // Add memory cache
+            services.AddMemoryCache();
 
             // Add services
             services.AddBackblazeAgent(config.GetSection("Agent"));
@@ -163,7 +170,7 @@ namespace Backblaze.Test
 
                 // Create a test key
                 var capabilities = new Capabilities { Capability.ListBuckets, Capability.ListFiles, Capability.ReadFiles, Capability.ShareFiles, Capability.WriteFiles, Capability.DeleteFiles };
-                var keyResults = await _storage.Agent.Keys.CreateAsync(capabilities, KeyName);
+                var keyResults = await _storage.Agent.Keys.CreateAsync(KeyName, capabilities);
             }
             else
             {
@@ -171,9 +178,9 @@ namespace Backblaze.Test
                 _bucketId = testBucket.BucketId;
 
                 // Set file id
-                var fileList = await _storage.Agent.Files.ListNamesAsync(_bucketId);
-                var testFile = fileList.Response.Files.Find(x => x.FileName == SmallStreamName);
-                _fileId = testFile.FileId;
+                var request = new ListFileNamesRequest(_bucketId);
+                var file = await _storage.Agent.Files.FirstAsync(request, x => x.FileName == SmallStreamName);
+                _fileId = file.FileId;
             }
 
             //Assert.IsNotNull(_bucketId);
@@ -293,6 +300,24 @@ namespace Backblaze.Test
         }
 
         [TestMethod]
+        public async Task Get_First_File()
+        {
+            var request = new ListFileNamesRequest(_bucketId);
+            var file = await _storage.Agent.Files.FirstAsync(request, x => x.FileName == SmallStreamName); 
+
+            Assert.AreEqual(SmallStreamName, file.FileName);
+        }
+
+        //[TestMethod]
+        //public async Task Delete_All_Files_In_Bucket()
+        //{
+        //    //var request = new ListFileVersionRequest(_bucketId);
+        //    //var files = await _storage.Agent.Files.DeleteAllAsync(request);
+
+        //    //Assert.AreEqual(SmallStreamName, file.FileName);
+        //}
+
+        [TestMethod]
         public async Task Upload_And_Download_Stream()
         {
             // Upload stream
@@ -361,7 +386,7 @@ namespace Backblaze.Test
             // Create key
             var capabilities = new Capabilities { Capability.ListBuckets, Capability.ListBuckets, Capability.ListFiles, Capability.ReadFiles, Capability.ShareFiles, Capability.WriteFiles, Capability.DeleteFiles };
             var keyName = $"{Guid.NewGuid().ToString()}";
-            var createResults = await _storage.Agent.Keys.CreateAsync(capabilities, keyName);
+            var createResults = await _storage.Agent.Keys.CreateAsync(keyName, capabilities);
             Assert.AreEqual(typeof(CreateKeyResponse), createResults.Response.GetType());
             Assert.AreEqual(keyName, createResults.Response.KeyName);
             // Assert.AreEqual(capabilities, createResults.Response.Capabilities);
@@ -382,7 +407,7 @@ namespace Backblaze.Test
             Assert.AreEqual(typeof(ListKeysResponse), results.Response.GetType());
             Assert.IsTrue(results.Response.Keys.Count >= 1, "The actual count was not greater than one");
 
-            var filelist2 = await _storage.Agent.Keys.GetAsync(new ListKeysRequest(_accountId) { MaxKeyCount = 5 }, 0);
+            var filelist2 = await _storage.Agent.Keys.GetAsync(new ListKeysRequest(_accountId) { MaxKeyCount = 5 }, TimeSpan.Zero);
 
             foreach (var file in filelist2)
             {
@@ -393,7 +418,7 @@ namespace Backblaze.Test
         [TestMethod]
         public async Task List_Parts()
         {
-            var results = await _storage.Agent.Parts.GetAsync(new ListPartsRequest(_fileId), 60);
+            var results = await _storage.Agent.Parts.GetAsync(new ListPartsRequest(_fileId), TimeSpan.FromSeconds(60));
         }
 
         [TestMethod]
@@ -480,38 +505,42 @@ namespace Backblaze.Test
         public async Task FileNames_Iterator()
         {
             var request = new ListFileNamesRequest(_bucketId) { MaxFileCount = 10 };
-            var filelist = await _storage.Agent.Files.GetAsync(request, 10);
+            var filelist = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
 
             Debug.WriteLine("First Run");
             foreach (var file in filelist)
             {
-                Debug.WriteLine(file.FileName);
+                //Debug.WriteLine(file.FileName);
             }
 
-            var filelist2 = await _storage.Agent.Files.GetAsync(request, 10);
+            var filelist2 = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
             Debug.WriteLine("Second Run");
             foreach (var file in filelist2)
             {
-                Debug.WriteLine(file.FileName);
+                //Debug.WriteLine(file.FileName);
             }
+
+            
+            
+
         }
 
         [TestMethod]
         public async Task FileVersions_Iterator()
         {
             var request = new ListFileVersionRequest(_bucketId);
-            var filelist = await _storage.Agent.Files.GetAsync(request, 10);
+            var filelist = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
 
             foreach (var file in filelist)
             {
-                Debug.WriteLine(file.FileName);
+                //Debug.WriteLine(file.FileName);
             }
 
-            var filelist2 = await _storage.Agent.Files.GetAsync(request, 0);
+            var filelist2 = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
 
             foreach (var file in filelist2)
             {
-                Debug.WriteLine(file.FileName);
+                //Debug.WriteLine(file.FileName);
             }
         }
 
@@ -519,14 +548,14 @@ namespace Backblaze.Test
         public async Task UnfinishedLargeFiles_Iterator()
         {
             var request = new ListUnfinishedLargeFilesRequest(_bucketId);
-            var filelist = await _storage.Agent.Files.GetAsync(request, 10);
+            var filelist = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
 
             foreach (var file in filelist)
             {
                 Debug.WriteLine(file.FileName);
             }
 
-            var filelist2 = await _storage.Agent.Files.GetAsync(request, 0);
+            var filelist2 = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
 
             foreach (var file in filelist2)
             {
@@ -534,6 +563,13 @@ namespace Backblaze.Test
             }
         }
 
+        [TestMethod]
+        public async Task Copy_Tester()
+        {
+            //var results = await _storage.Agent.Directories.CopyToAsync(_bucketId, @"C:\Python27", "*.*", SearchOption.AllDirectories);
+
+
+        }
 
         [TestMethod]
         public async Task List_Buckets()

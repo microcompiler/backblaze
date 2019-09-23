@@ -2,7 +2,7 @@
 using Bytewizer.Backblaze.Client;
 using Microsoft.Extensions.Logging;
 
-namespace Backblaze.Test
+namespace Backblaze
 {
     public class Storage
     {

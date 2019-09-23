@@ -191,26 +191,6 @@ namespace Bytewizer.Backblaze.Models
         #region IEquatable
 
         /// <summary>
-        /// Compares two <see cref="FileInfo" /> instances for equality.
-        /// </summary>
-        /// <param name="a">The first <see cref="FileInfo" /> to compare.</param>
-        /// <param name="b">The second <see cref="FileInfo" /> to compare.</param>
-        public static bool operator ==(FileInfo a, FileInfo b)
-        {
-            return EqualityComparer<FileInfo>.Default.Equals(a, b);
-        }
-
-        /// <summary>
-        /// Compares two <see cref="FileInfo" /> instances for inequality.
-        /// </summary>
-        /// <param name="a">The first <see cref="FileInfo" /> to compare.</param>
-        /// <param name="b">The second <see cref="FileInfo" /> to compare.</param>
-        public static bool operator !=(FileInfo a, FileInfo b)
-        {
-            return !(a == b);
-        }
-
-        /// <summary>
         /// Determines whether the specified <see cref="object" /> is equal to this instance.
         /// </summary>
         /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
@@ -237,6 +217,26 @@ namespace Bytewizer.Backblaze.Models
             var hashCode = -147993683;
             hashCode = hashCode * -975397595 + DictionaryComparer<string, string>.Default.GetHashCode(this);
             return hashCode;
+        }
+
+        /// <summary>
+        /// Compares two <see cref="FileInfo" /> instances for equality.
+        /// </summary>
+        /// <param name="a">The first <see cref="FileInfo" /> to compare.</param>
+        /// <param name="b">The second <see cref="FileInfo" /> to compare.</param>
+        public static bool operator ==(FileInfo a, FileInfo b)
+        {
+            return EqualityComparer<FileInfo>.Default.Equals(a, b);
+        }
+
+        /// <summary>
+        /// Compares two <see cref="FileInfo" /> instances for inequality.
+        /// </summary>
+        /// <param name="a">The first <see cref="FileInfo" /> to compare.</param>
+        /// <param name="b">The second <see cref="FileInfo" /> to compare.</param>
+        public static bool operator !=(FileInfo a, FileInfo b)
+        {
+            return !(a == b);
         }
 
         #endregion

@@ -25,7 +25,7 @@ namespace Bytewizer.Backblaze.Models
         public string AuthorizationToken { get; internal set; }
 
         /// <summary>
-        /// An object <see cref="Models.Allowed"/> containing the capabilities of this auth token and any restrictions on using it.
+        /// The capabilities of this auth token and any restrictions on using it.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public Allowed Allowed { get; internal set; }

@@ -50,7 +50,7 @@ namespace Bytewizer.Backblaze.Client
         #region Public Methods
 
         /// <summary>
-        /// Connect to Backblaze B2 Cloud Storage.ervice and initialize <see cref="AccountInfo"/>.
+        /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
@@ -59,7 +59,7 @@ namespace Bytewizer.Backblaze.Client
         void Connect(string keyId, string applicationKey);
 
         /// <summary>
-        /// Connect to Backblaze B2 Cloud Storage.ervice and initialize <see cref="AccountInfo"/>.
+        /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
@@ -279,11 +279,11 @@ namespace Bytewizer.Backblaze.Client
         /// Gets a url for uploading parts of a large file from memory cache. 
         /// </summary>
         /// <param name="request">The <see cref="GetUploadPartUrlRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<GetUploadPartUrlResponse>> GetUploadPartUrlAsync(GetUploadPartUrlRequest request, int cacheTTL, CancellationToken cancellationToken);
+        Task<IApiResults<GetUploadPartUrlResponse>> GetUploadPartUrlAsync(GetUploadPartUrlRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets a url for uploading files. 
@@ -298,11 +298,11 @@ namespace Bytewizer.Backblaze.Client
         /// Gets a url for uploading files from memory cache. 
         /// </summary>
         /// <param name="request">The get <see cref="GetUploadUrlRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<GetUploadUrlResponse>> GetUploadUrlAsync(GetUploadUrlRequest request, int cacheTTL, CancellationToken cancellationToken);
+        Task<IApiResults<GetUploadUrlResponse>> GetUploadUrlAsync(GetUploadUrlRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken);
 
         /// <summary>
         /// Hides a file so that <see cref="DownloadFileByNameAsync"/> will not find the file but previous versions of the file are still stored.   
@@ -330,11 +330,11 @@ namespace Bytewizer.Backblaze.Client
         /// or <see cref="ListBucketsRequest.BucketName"/> of that bucket in the request or the request will be denied. 
         /// </summary>
         /// <param name="request">The <see cref="ListBucketsRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListBucketsResponse>> ListBucketsAsync(ListBucketsRequest request, int cacheTTL, CancellationToken cancellationToken);
+        Task<IApiResults<ListBucketsResponse>> ListBucketsAsync(ListBucketsRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken);
 
         /// <summary>
         /// List the names of all files in a bucket starting at a given name.
@@ -349,11 +349,11 @@ namespace Bytewizer.Backblaze.Client
         /// List the names of all files in a bucket starting at a given name from memory cache. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileNamesRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListFileNamesResponse>> ListFileNamesAsync(ListFileNamesRequest request, int cacheTTL, CancellationToken cancellationToken);
+        Task<IApiResults<ListFileNamesResponse>> ListFileNamesAsync(ListFileNamesRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken);
 
         /// <summary>
         /// List all versions of the files contained in one bucket in alphabetical order by file name
@@ -370,11 +370,11 @@ namespace Bytewizer.Backblaze.Client
         /// and by reverse of date/time uploaded for versions of files with the same name from memory cache. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileVersionRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListFileVersionResponse>> ListFileVersionsAsync(ListFileVersionRequest request, int cacheTTL, CancellationToken cancellationToken);
+        Task<IApiResults<ListFileVersionResponse>> ListFileVersionsAsync(ListFileVersionRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken);
 
         /// <summary>
         /// List application keys associated with an account. 
@@ -389,11 +389,11 @@ namespace Bytewizer.Backblaze.Client
         /// List application keys associated with an account from memory cache. 
         /// </summary>
         /// <param name="request">The <see cref="ListKeysRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListKeysResponse>> ListKeysAsync(ListKeysRequest request, int cacheTTL, CancellationToken cancellationToken);
+        Task<IApiResults<ListKeysResponse>> ListKeysAsync(ListKeysRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken);
 
         /// <summary>
         /// List parts that have been uploaded for a large file that has not been finished yet. 
@@ -408,11 +408,11 @@ namespace Bytewizer.Backblaze.Client
         /// List parts that have been uploaded for a large file that has not been finished yet from memory cache. 
         /// </summary>
         /// <param name="request">The <see cref="ListPartsRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListPartsResponse>> ListPartsAsync(ListPartsRequest request, int cacheTTL, CancellationToken cancellationToken);
+        Task<IApiResults<ListPartsResponse>> ListPartsAsync(ListPartsRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken);
 
         /// <summary>
         /// List information about large file uploads that have been started but have not been finished or canceled. 
@@ -427,11 +427,11 @@ namespace Bytewizer.Backblaze.Client
         /// List information about large file uploads that have been started but have not been finished or canceled from memory cache. 
         /// </summary>
         /// <param name="request">The <see cref="ListUnfinishedLargeFilesRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListUnfinishedLargeFilesResponse>> ListUnfinishedLargeFilesAsync(ListUnfinishedLargeFilesRequest request, int cacheTTL, CancellationToken cancellationToken);
+        Task<IApiResults<ListUnfinishedLargeFilesResponse>> ListUnfinishedLargeFilesAsync(ListUnfinishedLargeFilesRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken);
 
         /// <summary>
         /// Prepares for uploading parts of a large file. 

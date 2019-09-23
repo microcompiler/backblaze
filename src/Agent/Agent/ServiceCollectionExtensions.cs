@@ -11,6 +11,10 @@ using Bytewizer.Backblaze.Agent;
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Storage;
 using Bytewizer.Backblaze.Adapters;
+using System.Net;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -57,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds the repository agent services to the collection.
+        /// Adds the Backblaze client agent services to the collection.
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <param name="options">The agent options.</param>
@@ -71,33 +75,52 @@ namespace Microsoft.Extensions.DependencyInjection
 
             options.Validate();
 
-            services.AddSingleton(options);
+            var policy = HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(response => (int)response.StatusCode == 429)
+                .WaitAndRetryAsync(6,
+                        retryAttempt => PolicyManager.GetSleepDuration(retryAttempt),
+                        onRetry: (exception, timeSpan, count, context) =>
+                        {
+                            Debug.WriteLine($"Status Code: {exception.Result?.StatusCode} Request Message: {exception.Result?.RequestMessage} Retry attempt {count} waiting {timeSpan.TotalSeconds} seconds before next retry.");
+                        });
 
-            services.AddMemoryCache();
+            services.AddSingleton(options);
             services.AddSingleton<ICacheManager, CacheManager>();
+            services.AddSingleton<IPolicyManager, PolicyManager>();
 
             services.AddTransient<UserAgentHandler>();
-
             services.AddHttpClient<IApiClient, ApiClient>(client =>
             {
                 client.Timeout = TimeSpan.FromSeconds(options.Timeout);
             })
             .AddHttpMessageHandler<UserAgentHandler>()
             .SetHandlerLifetime(TimeSpan.FromSeconds(options.HandlerLifetime))
-            .AddPolicyHandler(RetryPolicy(options.RetryCount));
+            .AddPolicyHandler(policy);
 
             services.AddSingleton<IBackblazeStorage, BackblazeStorage>();
 
             return new BackblazeAgentBuilder(services);
         }
 
+
         private static IAsyncPolicy<HttpResponseMessage> RetryPolicy(int retryCount)
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
+                .OrResult(response => (int)response.StatusCode == 429)
                 .Or<IOException>()
                 .WaitAndRetryAsync(retryCount,
                     retryAttempt => PolicyManager.GetSleepDuration(retryAttempt));
         }
+
+        //private static IAsyncPolicy<HttpResponseMessage> RetryPolicy(int retryCount)
+        //{
+        //    return HttpPolicyExtensions
+        //        .HandleTransientHttpError()
+        //        .Or<IOException>()
+        //        .WaitAndRetryAsync(retryCount,
+        //            retryAttempt => PolicyManager.GetSleepDuration(retryAttempt));
+        //}
     }
 }

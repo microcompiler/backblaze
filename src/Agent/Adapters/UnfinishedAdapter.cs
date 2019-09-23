@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,7 @@ using Bytewizer.Backblaze.Models;
 namespace Bytewizer.Backblaze.Adapters
 {
     /// <summary>
-    /// Iterates sequentially through the <see cref="ListUnfinishedLargeFilesRequest"/> response elements.
+    /// Iterates sequentially through the <see cref="ListUnfinishedLargeFilesRequest"/> elements.
     /// </summary>
     public class UnfinishedAdapter : BaseIterator<FileItem>
     {
@@ -21,7 +22,7 @@ namespace Bytewizer.Backblaze.Adapters
         /// <summary>
         /// Initializes a new instance of the <see cref="UnfinishedAdapter"/> class.
         /// </summary>
-        public UnfinishedAdapter(IApiClient client, ILogger logger, ListUnfinishedLargeFilesRequest request, int cacheTTL, CancellationToken cancellationToken)
+        public UnfinishedAdapter(IApiClient client, ILogger logger, ListUnfinishedLargeFilesRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
             : base(client, logger, cacheTTL, cancellationToken)
         {
             _request = request;
@@ -35,12 +36,14 @@ namespace Bytewizer.Backblaze.Adapters
             var results = _client.ListUnfinishedLargeFilesAsync(_request, _cacheTTL, _cancellationToken).GetAwaiter().GetResult();
             if (results.IsSuccessStatusCode)
             {
+                _logger.LogDebug($"Unfinished part adapter sent request for {_request.MaxFileCount} unfinished parts including a next file id of '{_request.StartFileId}'");
                 _request.StartFileId = results.Response.NextFileId;
                 isCompleted = string.IsNullOrEmpty(results.Response.NextFileId);
                 return results.Response.Files;
             }
             else
             {
+                _logger.LogError($"Unfinished part adapter failed sending request with error: {results.Error.Message}");
                 isCompleted = true;
                 return new List<FileItem>();
             }

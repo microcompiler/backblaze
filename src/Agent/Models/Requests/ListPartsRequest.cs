@@ -10,7 +10,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains information to create a <see cref="ListPartsRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class ListPartsRequest : IEquatable<ListPartsRequest>, IRequest
+    public class ListPartsRequest : IRequest
     {
         /// <summary>
         /// Represents the default number of keys per transaction.
@@ -69,14 +69,6 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public string StartPartNumber { get; set; }
 
-        /// <summary>
-        /// Converts the value of this instance to a memory cache key.
-        /// </summary>
-        public string ToCacheKey()
-        {
-            return $"{GetType().Name}--{GetHashCode().ToString()}";
-        }
-
         ///	<summary>
         ///	Debugger display for this object.
         ///	</summary>
@@ -87,29 +79,8 @@ namespace Bytewizer.Backblaze.Models
             get { return $"{{{nameof(FileId)}: {FileId}}}"; }
         }
 
-        #region IEquatable
-
         /// <summary>
-        /// Determines whether this object is equal <paramref name="obj"/>.
-        /// </summary>
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as ListPartsRequest);
-        }
-
-        /// <summary>
-        /// Determines whether this object is equal <paramref name="other"/>.
-        /// </summary>
-        public bool Equals(ListPartsRequest other)
-        {
-            return other != null &&
-                   FileId == other.FileId &&
-                   MaxPartCount == other.MaxPartCount &&
-                   StartPartNumber == other.StartPartNumber;
-        }
-
-        /// <summary>
-        /// Provides hash code for the request.
+        /// Returns a hash code for this object.
         /// </summary>
         public override int GetHashCode()
         {
@@ -119,23 +90,5 @@ namespace Bytewizer.Backblaze.Models
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(StartPartNumber);
             return hashCode;
         }
-
-        /// <summary>
-        /// Determines whether the given <paramref name="left"/> is equal <paramref name="right"/>.
-        /// </summary>
-        public static bool operator ==(ListPartsRequest left, ListPartsRequest right)
-        {
-            return EqualityComparer<ListPartsRequest>.Default.Equals(left, right);
-        }
-
-        /// <summary>
-        /// Determines whether the given <paramref name="left"/> is not equal <paramref name="right"/>.
-        /// </summary>
-        public static bool operator !=(ListPartsRequest left, ListPartsRequest right)
-        {
-            return !(left == right);
-        }
-
-        #endregion
     }
 }

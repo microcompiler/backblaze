@@ -32,21 +32,7 @@ namespace Bytewizer.Backblaze.Storage
                 _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
                 // Sets client options 
-                _client.Options = new ClientOptions()
-                {
-                    Timeout = _options.Timeout,
-                    RetryCount = _options.RetryCount,
-                    RequestMaxParallel = _options.RequestMaxParallel,
-                    DownloadMaxParallel = _options.DownloadMaxParallel,
-                    DownloadCutoffSize = _options.DownloadCutoffSize,
-                    DownloadPartSize = _options.DownloadPartSize,
-                    UploadMaxParallel = _options.UploadMaxParallel,
-                    UploadCutoffSize = _options.UploadCutoffSize,
-                    UploadPartSize = _options.UploadPartSize,
-                    AutoSetPartSize = _options.AutoSetPartSize,
-                    ChecksumDisabled = _options.ChecksumDisabled,
-                    TestMode = _options.TestMode
-                };
+                _client.Options = _options as ClientOptions;
 
                 // Connect to the Backblaze B2 API server
                 _client.Connect(_options.KeyId, _options.ApplicationKey);
@@ -87,17 +73,17 @@ namespace Bytewizer.Backblaze.Storage
         #region Private Fields
 
         /// <summary>
-        /// Application options
+        /// The <see cref="IAgentOptions"/> used for application options.
         /// </summary>
         private readonly IAgentOptions _options;
 
         /// <summary>
-        /// Application logging
+        /// The <see cref="ILogger"/> used for application logging.
         /// </summary>
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Connected client to Backblaze B2 Cloud Storage.
+        /// The <see cref="IApiClient"/> connected client to Backblaze B2 Cloud Storage.
         /// </summary>
         public readonly IApiClient _client;
 

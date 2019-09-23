@@ -18,23 +18,16 @@ namespace Bytewizer.Backblaze.Client
     /// </summary>
     public abstract partial class Storage : DisposableObject
     {
-        //TODO: Multithreading uploads/download for large file parts.
-
         #region Constants
 
         /// <summary>
         /// Represents the default cache time to live (TTL) in seconds.
         /// </summary>
-        public const int DefaultCacheTTL = 3600;
+        public readonly TimeSpan DefaultCacheTTL = TimeSpan.FromSeconds(3600);
 
         #endregion
 
         #region Lifetime
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Storage"/> class.
-        /// </summary>
-        public Storage() : this(null, null, null) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiClient"/> class.
@@ -43,14 +36,12 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="logger">The <see cref="ILogger"/> used for application logging.</param>
         /// <param name="cache">The <see cref="ICacheManager"/> used for application caching.</param>
         /// <param name="policy">The <see cref="IPolicyManager"/> used for application resilience.</param>
-        public Storage(HttpClient httpClient, ILogger<Storage> logger, ICacheManager cache)
+        public Storage(HttpClient httpClient, ILogger<Storage> logger, ICacheManager cache, IPolicyManager policy)
         {
-            _httpClient = httpClient ?? new HttpClient();
-            _logger = logger ?? new LoggerFactory().CreateLogger<Storage>();
-            _cacheManager = cache;
-
-            // Initialize policy manager
-            _policyManager = new PolicyManager(_logger, Options);
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            _policy = policy ?? throw new ArgumentNullException(nameof(cache));
         }
 
         #region IDisposable
@@ -90,12 +81,12 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// The <see cref="ICacheManager"/> used for application caching.
         /// </summary>
-        private readonly ICacheManager _cacheManager;
+        private readonly ICacheManager _cache;
 
         /// <summary>
         /// The <see cref="IPolicyManager"/> used for application resilience.
         /// </summary>
-        private readonly IPolicyManager _policyManager;
+        private readonly IPolicyManager _policy;
 
         #endregion
 
@@ -129,7 +120,7 @@ namespace Bytewizer.Backblaze.Client
         #region Authorize Account
 
         /// <summary>
-        /// Connect to Backblaze B2 Cloud Storage.ervice and initialize <see cref="AccountInfo"/>.
+        /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
@@ -139,16 +130,14 @@ namespace Bytewizer.Backblaze.Client
         }
 
         /// <summary>
-        /// Connect to Backblaze B2 Cloud Storage.ervice and initialize <see cref="AccountInfo"/>.
+        /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
         public async Task ConnectAsync(string keyId, string applicationKey)
         {
-            _policyManager.ConnectAsync = () => ConnectAsync(keyId, applicationKey);
-
-            //ClearCache(CacheKey.UploadUrl);
-            //ClearCache(CacheKey.UploadPartUrl);
+            _policy.ConnectAsync = () => ConnectAsync(keyId, applicationKey);
+            _cache.Clear();
 
             var results = await AuthorizeAccountAync(keyId, applicationKey, CancellationToken.None);
             if (results.IsSuccessStatusCode)
@@ -170,7 +159,7 @@ namespace Bytewizer.Backblaze.Client
                     Options.DownloadCutoffSize = results.Response.RecommendedPartSize;
                 }
 
-                _logger.LogInformation("Agent successfully authenticated to Backblaze B2 Cloud Storage.ervice.");
+                _logger.LogInformation("Agent successfully authenticated to Backblaze B2 Cloud Storage.");
             }
         }
 
@@ -181,7 +170,7 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<UploadFileResponse>> UploadAsync
             (UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await _policyManager.UploadPolicy.ExecuteAsync(async () =>
+            return await _policy.UploadPolicy.ExecuteAsync(async () =>
             {
                 if (content.Length < Options.UploadCutoffSize)
                 {
@@ -229,7 +218,7 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
             (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await _policyManager.DownloadPolicy.ExecuteAsync(async () =>
+            return await _policy.DownloadPolicy.ExecuteAsync(async () =>
             {
                 var fileRequest = new DownloadFileByNameRequest(request.BucketName, request.FileName);
                 var fileResults = await DownloadFileByNameAsync(fileRequest, null, null, cancel);
@@ -260,7 +249,7 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await _policyManager.DownloadPolicy.ExecuteAsync(async () =>
+            return await _policy.DownloadPolicy.ExecuteAsync(async () =>
             {
                 var fileRequest = new DownloadFileByIdRequest(request.FileId);
                 var fileResults = await DownloadFileByIdAsync(fileRequest, cancel);

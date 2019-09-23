@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,9 +28,9 @@ namespace Bytewizer.Backblaze.Adapters
         protected readonly ILogger _logger;
 
         /// <summary>
-        /// An absolute cache expiration time to live (TTL) relative to now in seconds.
+        /// An absolute cache expiration time to live (TTL) relative to now.
         /// </summary>
-        protected readonly int _cacheTTL;
+        protected readonly TimeSpan _cacheTTL;
 
         /// <summary>
         /// The cancellation token to cancel operation.
@@ -39,7 +40,7 @@ namespace Bytewizer.Backblaze.Adapters
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseIterator"/> class.
         /// </summary>
-        public BaseIterator(IApiClient client, ILogger logger, int cacheTTL, CancellationToken cancellationToken)
+        public BaseIterator(IApiClient client, ILogger logger, TimeSpan cacheTTL, CancellationToken cancellationToken)
         {
             _client = client;
             _logger = logger;
@@ -71,7 +72,7 @@ namespace Bytewizer.Backblaze.Adapters
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection>.
+        /// Returns an enumerator that iterates through the collection.
         /// </summary>
         IEnumerator IEnumerable.GetEnumerator()
         {

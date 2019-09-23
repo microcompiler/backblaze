@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -156,7 +157,7 @@ namespace Bytewizer.Backblaze.Storage
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<GetUploadUrlResponse>> IBackblazeFiles.GetUploadUrlAsync
-            (string bucketId, int cacheTTL)
+            (string bucketId, TimeSpan cacheTTL)
         {
             var request = new GetUploadUrlRequest(bucketId);
             return await _client.GetUploadUrlAsync(request, cacheTTL, cancellationToken);
@@ -193,11 +194,11 @@ namespace Bytewizer.Backblaze.Storage
         /// List the names of files in a bucket starting at a given name. 
         /// </summary>
         /// <param name="request">The list of file name request to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<ListFileNamesResponse>> IBackblazeFiles.ListNamesAsync
-            (ListFileNamesRequest request, int cacheTTL)
+            (ListFileNamesRequest request, TimeSpan cacheTTL)
         {
             return await _client.ListFileNamesAsync(request, cacheTTL, cancellationToken);
         }
@@ -222,11 +223,11 @@ namespace Bytewizer.Backblaze.Storage
         /// and by reverse of date/time uploaded for versions of files with the same name. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileVersionRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<ListFileVersionResponse>> IBackblazeFiles.ListVersionsAsync
-            (ListFileVersionRequest request, int cacheTTL)
+            (ListFileVersionRequest request, TimeSpan cacheTTL)
         {
             return await _client.ListFileVersionsAsync(request, cacheTTL, cancellationToken);
         }
@@ -248,11 +249,11 @@ namespace Bytewizer.Backblaze.Storage
         /// List information about large file uploads that have been started but have not been finished or canceled. 
         /// </summary>
         /// <param name="request">The <see cref="ListUnfinishedLargeFilesRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<ListUnfinishedLargeFilesResponse>> IBackblazeFiles.ListUnfinishedAsync
-            (ListUnfinishedLargeFilesRequest request, int cacheTTL)
+            (ListUnfinishedLargeFilesRequest request, TimeSpan cacheTTL)
         {
             return await _client.ListUnfinishedLargeFilesAsync(request, cacheTTL, cancellationToken);
         }
@@ -300,11 +301,11 @@ namespace Bytewizer.Backblaze.Storage
                 var results = await _client.UploadAsync(request, content, progress, cancel);
                 if (results.IsSuccessStatusCode)
                 {
-                    _logger.LogInformation($"Successfuly uploaded {localPath}");
+                    _logger.LogInformation($"Successfully uploaded '{localPath}' file to '{bucketId}' bucket id.");
                 }
                 else
                 {
-                    _logger.LogError($"Failed uploading file {localPath} with th following error - {results.Error?.Message}");
+                    _logger.LogWarning($"Failed uploading '{localPath}' file with error: {results.Error?.Message}");
                 }
 
                 return results;
@@ -346,10 +347,11 @@ namespace Bytewizer.Backblaze.Storage
         /// Gets the names of all files in a bucket.
         /// </summary>
         /// <param name="request">The list of file name request to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IEnumerable<FileItem>> IBackblazeFiles.GetAsync(ListFileNamesRequest request, int cacheTTL)
+        async Task<IEnumerable<FileItem>> IBackblazeFiles.GetAsync
+            (ListFileNamesRequest request, TimeSpan cacheTTL)
         {
             var adapter = new FileNameAdapter(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
             return await Task.FromResult(adapter);
@@ -360,12 +362,13 @@ namespace Bytewizer.Backblaze.Storage
         /// and by reverse of date/time uploaded for versions of files with the same name. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileVersionRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IEnumerable<FileItem>> IBackblazeFiles.GetAsync(ListFileVersionRequest request, int cacheTTL)
+        async Task<IEnumerable<FileItem>> IBackblazeFiles.GetAsync
+            (ListFileVersionRequest request, TimeSpan cacheTTL)
         {
-            var  adapter = new FileVersionAdapter(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
+            var adapter = new FileVersionAdapter(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
             return await Task.FromResult(adapter);
         }
 
@@ -373,40 +376,66 @@ namespace Bytewizer.Backblaze.Storage
         /// Gets all large file uploads that have been started but have not been finished or canceled. 
         /// </summary>
         /// <param name="request">The <see cref="ListUnfinishedLargeFilesRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IEnumerable<FileItem>> IBackblazeFiles.GetAsync(ListUnfinishedLargeFilesRequest request, int cacheTTL)
+        async Task<IEnumerable<FileItem>> IBackblazeFiles.GetAsync
+            (ListUnfinishedLargeFilesRequest request, TimeSpan cacheTTL)
         {
             var adapter = new UnfinishedAdapter(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
             return await Task.FromResult(adapter);
         }
 
         /// <summary>
-        /// Deletes all of the files contained in bucket. 
+        /// Returns the first file item that satisfies a specified condition.
+        /// </summary>
+        /// <param name="request">The list of file name request to send.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
+        /// <exception cref="InvalidOperationException">No element satisfies the condition in predicate or the source sequence is empty.</exception>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        async Task<FileItem> IBackblazeFiles.FirstAsync
+            (ListFileNamesRequest request, Func<FileItem, bool> predicate, TimeSpan cacheTTL)
+        {
+            return await Task.Run(() =>
+            {
+                var adapter = new FileNameAdapter(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
+                return adapter.First(predicate);
+            });
+        }
+
+        /// <summary>
+        /// Deletes all files contained in bucket. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileVersionRequest"/> to send.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IList<DeleteFileVersionResponse>> IBackblazeFiles.DeleteAllAsync(ListFileVersionRequest request)
+        async Task<IList<DeleteFileVersionResponse>> IBackblazeFiles.DeleteAllAsync
+            (ListFileVersionRequest request)
         {
             var response = new List<DeleteFileVersionResponse>();
+            var parallelTasks = new List<Task>();
 
             var files = await Files.GetAsync(request);
             foreach (var file in files)
             {
-                var deleteRequest = new DeleteFileVersionRequest(file.FileId, file.FileName);
-                var results = await _client.DeleteFileVersionAsync(deleteRequest, cancellationToken);
-                if (results.IsSuccessStatusCode)
+                parallelTasks.Add(Task.Run(async () =>
                 {
-                    //log
-                    response.Add(results.Response);
-                }
-                else
-                {
-                    //log
-                }
+                    var deleteRequest = new DeleteFileVersionRequest(file.FileId, file.FileName);
+                    var results = await _client.DeleteFileVersionAsync(deleteRequest, cancellationToken);
+                    if (results.IsSuccessStatusCode)
+                    {
+                        _logger.LogInformation($"Successfully deleted '{file.FileName}' file from '{request.BucketId}' bucket id.");
+                        response.Add(results.Response);
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Failed deleting '{file.FileName}' file with error: {results.Error.Message}");
+                    }
+                }));
             }
+            await Task.WhenAll(parallelTasks);
 
             return response;
         }

@@ -13,7 +13,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiClient"/> class.
         /// </summary>
-        public ApiClient() : base(null, null, null) { }
+        public ApiClient() : base(null, null, null, null) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiClient"/> class.
@@ -22,8 +22,8 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="logger">The <see cref="ILogger"/> used for application logging.</param>
         /// <param name="cache">The <see cref="ICacheManager"/> used for application caching.</param>
         /// <param name="policy">The <see cref="IPolicyManager"/> used for application resilience.</param>
-        public ApiClient(HttpClient httpClient, ILogger<Storage> logger, ICacheManager cache)
-            : base(httpClient, logger, cache)
+        public ApiClient(HttpClient httpClient, ILogger<Storage> logger, ICacheManager cache, IPolicyManager policy)
+            : base(httpClient, logger, cache, policy)
         { }
 
         /// <summary>

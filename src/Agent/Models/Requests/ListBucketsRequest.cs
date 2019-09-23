@@ -10,7 +10,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains information to create a <see cref="ListBucketsRequest"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class ListBucketsRequest : IEquatable<ListBucketsRequest>, IRequest
+    public class ListBucketsRequest : IRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ListBucketsRequest"/> class.
@@ -54,14 +54,6 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public string BucketType { get; set; }
 
-        /// <summary>
-        /// Converts the value of this instance to a memory cache key.
-        /// </summary>
-        public string ToCacheKey()
-        {
-            return $"{GetType().Name}--{GetHashCode().ToString()}";
-        }
-
         ///	<summary>
         ///	Debugger display for this object.
         ///	</summary>
@@ -72,20 +64,9 @@ namespace Bytewizer.Backblaze.Models
             get { return $"{{{nameof(AccountId)}: {AccountId}}}"; }
         }
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as ListBucketsRequest);
-        }
-
-        public bool Equals(ListBucketsRequest other)
-        {
-            return other != null &&
-                   AccountId == other.AccountId &&
-                   BucketId == other.BucketId &&
-                   BucketName == other.BucketName &&
-                   BucketType == other.BucketType;
-        }
-
+        /// <summary>
+        /// Returns a hash code for this object.
+        /// </summary>
         public override int GetHashCode()
         {
             var hashCode = 248776742;
@@ -94,16 +75,6 @@ namespace Bytewizer.Backblaze.Models
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(BucketName);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(BucketType);
             return hashCode;
-        }
-
-        public static bool operator ==(ListBucketsRequest left, ListBucketsRequest right)
-        {
-            return EqualityComparer<ListBucketsRequest>.Default.Equals(left, right);
-        }
-
-        public static bool operator !=(ListBucketsRequest left, ListBucketsRequest right)
-        {
-            return !(left == right);
         }
     }
 }

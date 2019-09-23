@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Bytewizer.Backblaze.Models;
@@ -62,10 +63,10 @@ namespace Bytewizer.Backblaze.Storage
         /// Gets a url for uploading parts of a large file. 
         /// </summary>
         /// <param name="fileId">The large file id whose parts you want to upload.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<GetUploadPartUrlResponse>> GetUploadUrlAsync(string fileId, int cacheTTL = 0);
+        Task<IApiResults<GetUploadPartUrlResponse>> GetUploadUrlAsync(string fileId, TimeSpan cacheTTL = default);
 
         /// <summary>
         /// List parts that have been uploaded for a large file that has not been finished yet. 
@@ -79,11 +80,11 @@ namespace Bytewizer.Backblaze.Storage
         /// List parts that have been uploaded for a large file that has not been finished yet. 
         /// </summary>
         /// <param name="request">The <see cref="ListPartsRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListPartsResponse>> ListAsync(ListPartsRequest request, int cacheTTL = 0);
+        Task<IApiResults<ListPartsResponse>> ListAsync(ListPartsRequest request, TimeSpan cacheTTL = default);
 
         /// <summary>
         /// Prepares for uploading parts of a large file. 
@@ -108,9 +109,9 @@ namespace Bytewizer.Backblaze.Storage
         /// Gets all parts that have been uploaded for a large file that has not been finished yet. 
         /// </summary>
         /// <param name="request">The <see cref="ListPartsRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IEnumerable<PartItem>> GetAsync(ListPartsRequest request, int cacheTTL = 0);
+        Task<IEnumerable<PartItem>> GetAsync(ListPartsRequest request, TimeSpan cacheTTL = default);
     }
 }

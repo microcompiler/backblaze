@@ -191,26 +191,6 @@ namespace Bytewizer.Backblaze.Models
         #region IEquatable
 
         /// <summary>
-        /// Compares two <see cref="BucketInfo" /> instances for equality.
-        /// </summary>
-        /// <param name="a">The first <see cref="BucketInfo" /> to compare.</param>
-        /// <param name="b">The second <see cref="BucketInfo" /> to compare.</param>
-        public static bool operator ==(BucketInfo a, BucketInfo b)
-        {
-            return EqualityComparer<BucketInfo>.Default.Equals(a, b);
-        }
-
-        /// <summary>
-        /// Compares two <see cref="BucketInfo" /> instances for inequality.
-        /// </summary>
-        /// <param name="a">The first <see cref="BucketInfo" /> to compare.</param>
-        /// <param name="b">The second <see cref="BucketInfo" /> to compare.</param>
-        public static bool operator !=(BucketInfo a, BucketInfo b)
-        {
-            return !(a == b);
-        }
-
-        /// <summary>
         /// Determines whether the specified <see cref="object" /> is equal to this instance.
         /// </summary>
         /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
@@ -237,6 +217,26 @@ namespace Bytewizer.Backblaze.Models
             var hashCode = -245693683;
             hashCode = hashCode * -1522297595 + DictionaryComparer<string, string>.Default.GetHashCode(this);
             return hashCode;
+        }
+
+        /// <summary>
+        /// Compares two <see cref="BucketInfo" /> instances for equality.
+        /// </summary>
+        /// <param name="a">The first <see cref="BucketInfo" /> to compare.</param>
+        /// <param name="b">The second <see cref="BucketInfo" /> to compare.</param>
+        public static bool operator ==(BucketInfo a, BucketInfo b)
+        {
+            return EqualityComparer<BucketInfo>.Default.Equals(a, b);
+        }
+
+        /// <summary>
+        /// Compares two <see cref="BucketInfo" /> instances for inequality.
+        /// </summary>
+        /// <param name="a">The first <see cref="BucketInfo" /> to compare.</param>
+        /// <param name="b">The second <see cref="BucketInfo" /> to compare.</param>
+        public static bool operator !=(BucketInfo a, BucketInfo b)
+        {
+            return !(a == b);
         }
 
         #endregion

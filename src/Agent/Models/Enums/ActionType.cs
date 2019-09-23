@@ -12,17 +12,17 @@ namespace Bytewizer.Backblaze.Models
         Start,
 
         /// <summary>
-        /// Indicates a file that was uploaded to B2 Cloud Storage.
+        /// Indicates a file that was uploaded to cloud storage.
         /// </summary>
         Upload,
 
         /// <summary>
-        /// Marking the file as hidden it will not show up in list file names.
+        /// Indicates the file as hidden it will not show up in list file names.
         /// </summary>
         Hide,
 
         /// <summary>
-        /// Virtual folder when listing files.
+        /// Indicates a virtual folder when listing files.
         /// </summary>
         Folder,
 

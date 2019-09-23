@@ -3,7 +3,7 @@
 namespace Bytewizer.Backblaze.Agent
 {
     /// <summary>
-    /// Backblaze B2 Cloud Storage.ervice agent builder interface
+    /// Backblaze B2 Cloud Storage agent builder interface
     /// </summary>
     public interface IBackblazeAgentBuilder
     {

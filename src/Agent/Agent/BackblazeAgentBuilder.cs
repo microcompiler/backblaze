@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Bytewizer.Backblaze.Agent
 {
     /// <summary>
-    /// Backblaze B2 Cloud Storage.ervice agent helper class for DI configuration.
+    /// Backblaze B2 Cloud Storage agent helper class for DI configuration.
     /// </summary>
     public class BackblazeAgentBuilder : IBackblazeAgentBuilder
     {

@@ -6,28 +6,33 @@ using Microsoft.Extensions.Logging;
 
 using Polly;
 
+using Bytewizer.Backblaze.Agent;
+using System.Net.Http;
+using System.Net;
+using System.Linq;
+
 namespace Bytewizer.Backblaze.Client
 {
     public class PolicyManager : IPolicyManager
     {
+        /// <summary>
+        /// The <see cref="IAgentOptions"/> used for application options.
+        /// </summary>
+        private readonly IAgentOptions _options;
+
         /// <summary>
         /// The <see cref="ILogger"/> used for application logging.
         /// </summary>
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Client configuration options.
-        /// </summary>
-        private readonly ClientOptions _options;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="PolicyManager"/> class.
         /// </summary>
         /// <param name="logger">Logger for application caching.</param>
-        public PolicyManager(ILogger logger, ClientOptions options)
+        public PolicyManager(IAgentOptions options, ILogger<PolicyManager> logger)
         {
-            _logger = logger;
-            _options = options;
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             // Initialize policies
             InvokePolicy = CreateInvokePolicy();
@@ -37,6 +42,9 @@ namespace Bytewizer.Backblaze.Client
 
         #region Public Properties
 
+        /// <summary>
+        /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
+        /// </summary>
         public Func<Task> ConnectAsync { get; set; }
 
         /// <summary>
@@ -77,7 +85,7 @@ namespace Bytewizer.Backblaze.Client
         {
             var auth = CreateAuthenticationPolicy();
             var hash = CreateInvalidHashPolicy();
-            var bulk = Policy.BulkheadAsync(_options.UploadMaxParallel, int.MaxValue);
+            var bulk = Policy.BulkheadAsync(10, int.MaxValue);
 
             return Policy.WrapAsync(auth, hash, bulk);
         }

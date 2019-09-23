@@ -8,10 +8,10 @@ using Bytewizer.Backblaze.Models;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Backblaze.Test
+namespace Backblaze
 {
     [TestClass]
-    public class ModelObjects
+    public class Model
     {
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]

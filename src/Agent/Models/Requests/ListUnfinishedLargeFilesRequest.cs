@@ -10,7 +10,7 @@ namespace Bytewizer.Backblaze.Models
     /// Contains information to create a list unfinished large file request.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class ListUnfinishedLargeFilesRequest : IRequest, IEquatable<ListUnfinishedLargeFilesRequest>
+    public class ListUnfinishedLargeFilesRequest : IRequest
     {
         /// <summary>
         /// Represents the default number of file names per transaction.
@@ -71,14 +71,6 @@ namespace Bytewizer.Backblaze.Models
         }
         private long _maxFileCount;
 
-        /// <summary>
-        /// Converts the value of this instance to a memory cache key.
-        /// </summary>
-        public string ToCacheKey()
-        {
-            return $"{GetType().Name}--{GetHashCode().ToString()}";
-        }
-
         ///	<summary>
         ///	Debugger display for this object.
         ///	</summary>
@@ -89,20 +81,9 @@ namespace Bytewizer.Backblaze.Models
             get { return $"{{{nameof(BucketId)}: {BucketId}}}"; }
         }
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as ListUnfinishedLargeFilesRequest);
-        }
-
-        public bool Equals(ListUnfinishedLargeFilesRequest other)
-        {
-            return other != null &&
-                   BucketId == other.BucketId &&
-                   NamePrefix == other.NamePrefix &&
-                   StartFileId == other.StartFileId &&
-                   MaxFileCount == other.MaxFileCount;
-        }
-
+        /// <summary>
+        /// Returns a hash code for this object.
+        /// </summary>
         public override int GetHashCode()
         {
             var hashCode = -1971292434;
@@ -111,16 +92,6 @@ namespace Bytewizer.Backblaze.Models
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(StartFileId);
             hashCode = hashCode * -1521134295 + MaxFileCount.GetHashCode();
             return hashCode;
-        }
-
-        public static bool operator ==(ListUnfinishedLargeFilesRequest left, ListUnfinishedLargeFilesRequest right)
-        {
-            return EqualityComparer<ListUnfinishedLargeFilesRequest>.Default.Equals(left, right);
-        }
-
-        public static bool operator !=(ListUnfinishedLargeFilesRequest left, ListUnfinishedLargeFilesRequest right)
-        {
-            return !(left == right);
         }
     }
 }

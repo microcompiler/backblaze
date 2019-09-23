@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Security.Authentication;
 
@@ -24,14 +25,14 @@ namespace Bytewizer.Backblaze.Storage
         /// <summary>
         /// Creates a new application key. There is a limit of 100 million key creations per account.
         /// </summary>
-        /// <param name="capabilities">A list of <see cref="Capability"/> each one naming a capability the new key should have.</param>
         /// <param name="keyName">The name for this key.</param>
+        /// <param name="capabilities">A list of <see cref="Capability"/> each one naming a capability the new key should have.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<CreateKeyResponse>> IBackblazeKeys.CreateAsync
-            (Capabilities capabilities, string keyName)
+            (string keyName, Capabilities capabilities)
         {
-            var request = new CreateKeyRequest(AccountId, capabilities, keyName);
+            var request = new CreateKeyRequest(AccountId, keyName, capabilities);
             return await _client.CreateKeyAsync(request, cancellationToken);
         }
 
@@ -75,11 +76,11 @@ namespace Bytewizer.Backblaze.Storage
         /// List application keys associated with an account. 
         /// </summary>
         /// <param name="request">The <see cref="ListKeysRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<ListKeysResponse>> IBackblazeKeys.ListAsync
-            (ListKeysRequest request, int cacheTTL)
+            (ListKeysRequest request, TimeSpan cacheTTL)
         {
             return await _client.ListKeysAsync(request, cacheTTL, cancellationToken);
         }
@@ -90,10 +91,10 @@ namespace Bytewizer.Backblaze.Storage
         /// Gets all application keys associated with an account. 
         /// </summary>
         /// <param name="request">The <see cref="ListKeysRequest"/> to send.</param>
-        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now in seconds.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IEnumerable<KeyItem>> IBackblazeKeys.GetAsync(ListKeysRequest request, int cacheTTL)
+        async Task<IEnumerable<KeyItem>> IBackblazeKeys.GetAsync(ListKeysRequest request, TimeSpan cacheTTL)
         {
             var adapter = new KeyAdapter(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<KeyItem>;
             return await Task.FromResult(adapter);
