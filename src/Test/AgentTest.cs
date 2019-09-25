@@ -9,30 +9,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Bytewizer.Backblaze;
-using Bytewizer.Backblaze.Storage;
+
 using Bytewizer.Backblaze.Models;
 using System.Security.Cryptography;
-using System.Threading;
+
 using System.IO.Compression;
 using System.Diagnostics;
+using Bytewizer.Backblaze.Agent;
+using System.Collections.Concurrent;
 
 namespace Backblaze
 {
     [TestClass]
-    public class Agent
+    public class AgentTest
     {
         #region Constants
-
-        /// <summary>
-        /// The key identifier used to log in to the Backblaze B2 Cloud Storage service.
-        /// </summary>
-        public const string KeyId = "e14ecff4c2db";
-
-        /// <summary>
-        /// The secret part of the key used to log in to the Backblaze B2 Cloud Storage service.
-        /// </summary>
-        public const string ApplicationKey = "0007eb0f509d3f8d7b40f8594b10ea501dd48303e8";
 
         /// <summary>
         /// The default test bucket created to run test methods.
@@ -103,7 +94,7 @@ namespace Backblaze
 
         #region Lifetime
 
-        public Agent()
+        public AgentTest()
         {
             // Create service collection
             var serviceCollection = new ServiceCollection();
@@ -111,7 +102,7 @@ namespace Backblaze
 
             // Create service provider
             var serviceProvider = serviceCollection.BuildServiceProvider();
-            var logger = serviceProvider.GetService<ILogger<Agent>>();
+            var logger = serviceProvider.GetService<ILogger<AgentTest>>();
 
             logger.LogDebug("Woo Hooo");
 
@@ -145,6 +136,7 @@ namespace Backblaze
             // Add services
             services.AddBackblazeAgent(config.GetSection("Agent"));
 
+            services.Configure<IAgentOptions>(config);
             services.AddSingleton<Storage>();
         }
 
@@ -205,8 +197,6 @@ namespace Backblaze
             Assert.AreEqual("copyfile.bin", results.Response.FileName, "The file name did not match");
 
             var range = new System.Net.Http.Headers.RangeHeaderValue(1, 1000);
-            Debug.WriteLine(range.ToString());
-
             var request = new CopyFileRequest(_fileId, "copyfile2.bin");
             request.Range = range;
             var results2 = await _storage.Agent.Files.CopyAsync(request);
@@ -232,62 +222,6 @@ namespace Backblaze
             var results = await _storage.Agent.Directories.CopyToAsync(_bucketId, @"C:\SourceFolder", "*.*", SearchOption.AllDirectories);
         }
 
-
-        //[TestMethod]
-        //public async Task Copy_Part()
-        //{
-
-            //}
-
-            //[TestMethod]
-            //public async Task Parallel_Uploads()
-            //{
-            //    var source = new DirectoryInfo("C:/TestSrc");
-            //    var files = source.EnumerateFiles("*.*", SearchOption.AllDirectories);
-
-            //    await _storage.Agent.Directories.CopyToAsync(files, _bucketId);
-
-            //}
-
-            //[TestMethod]
-            //public async Task TestCase5()
-            //{
-            //    foreach (var filepath in Directory.GetFiles(@"c:\my\directory"))
-            //    {
-            //        using (var stream = File.OpenRead(filepath))
-            //            await _storage.Agent.UploadAsync(new UploadFileByBucketIdRequest(_bucketId, new System.IO.FileInfo(filepath).Name), stream);
-            //    }
-            //}
-
-            //[TestMethod]
-            //public async Task Parallel_Downloads()
-            //{
-            //    await _storage.Agent.Directories.CopyFromAsync(_bucketId, "C:/TestSrc");
-            //}
-
-            //[TestMethod]
-            //public async Task Tester()
-            //{
-            //    await _storage.Agent.Directories.Tester();
-            //}
-
-            //[TestMethod]
-            //public async Task Parallel_Downloads()
-            //{
-            //    var parallelTasks = new List<Task>();
-
-            //    var results = await _storage.Agent.Files.GetNamesAsync(_bucketId, "C:/TestSrc", null, null, 10000);
-
-            //    foreach (var file in results.Response.Files)
-            //    {
-            //        parallelTasks.Add(Task.Run(async () =>
-            //        {
-            //            await _storage.Agent.Files.DownloadAsync(BucketName, file.FileName, file.FileName, null);
-            //        }));
-            //    }
-            //    await Task.WhenAll(parallelTasks);
-            //}
-
         [TestMethod]
         public async Task Get_First_Bucket()
         {
@@ -308,15 +242,6 @@ namespace Backblaze
             Assert.AreEqual(SmallStreamName, file.FileName);
         }
 
-        //[TestMethod]
-        //public async Task Delete_All_Files_In_Bucket()
-        //{
-        //    //var request = new ListFileVersionRequest(_bucketId);
-        //    //var files = await _storage.Agent.Files.DeleteAllAsync(request);
-
-        //    //Assert.AreEqual(SmallStreamName, file.FileName);
-        //}
-
         [TestMethod]
         public async Task Upload_And_Download_Stream()
         {
@@ -330,54 +255,6 @@ namespace Backblaze
             Assert.AreEqual(typeof(DownloadFileResponse), downloadResults.Response.GetType());
             Assert.AreEqual(SmallStream.Length, download.Length);
             //Assert.AreEqual(SmallStream.ToSha1(), download.ToSha1());
-        }
-
-        //[TestMethod]
-        //public async Task Upload_Encrypted_Stream()
-        //{
-            //using (var aes = new AesCryptoServiceProvider())
-            //{
-            //    ICryptoTransform encryptor = aes.CreateEncryptor();
-            //    ICryptoTransform decryptor = aes.CreateDecryptor();
-
-            //    var outputFileStream = new MemoryStream();
-            //    var inputFileStream = new FileStream("c:/copyto/tester.json", FileMode.Open, FileAccess.Read);
-            //    var cryptoStream = new CryptoStream(outputFileStream, encryptor, CryptoStreamMode.Write);
-            //    var gZipStream = new GZipStream(cryptoStream, CompressionMode.Compress);
-
-            //    inputFileStream.CopyTo(gZipStream);
-
-            //    var uploadResults = await _storage.Agent.UploadAsync(_bucketId, "c:/copyto/tester.bin", cryptoStream);
-
-
-            //    //using (var inputFileStream = new FileStream("c:/copyto/tester.bin", FileMode.Open, FileAccess.Read))
-            //    //{
-            //    //    using (var outputFileStream = new FileStream("c:/copyto/tester-decrypted.json", FileMode.Create, FileAccess.Write))
-            //    //    {
-            //    //        DecryptThenDecompress(inputFileStream, outputFileStream, decryptor);
-            //    //    }
-            //    //}
-            //}
-        //}
-
-        private static void CompressThenEncrypt(Stream inputFileStream, Stream outputFileStream, ICryptoTransform encryptor)
-        {
-            using (var cryptoStream = new CryptoStream(outputFileStream, encryptor, CryptoStreamMode.Write))
-            using (var gZipStream = new GZipStream(cryptoStream, CompressionMode.Compress))
-            {
-                inputFileStream.CopyTo(gZipStream);
-            }
-        }
-
-        private static void DecryptThenDecompress(Stream inputFileStream, Stream outputFileStream, ICryptoTransform decryptor)
-        {
-            using (var cryptoStream = new CryptoStream(inputFileStream, decryptor, CryptoStreamMode.Read))
-            {
-                using (var gZipStream = new GZipStream(cryptoStream, CompressionMode.Decompress))
-                {
-                    gZipStream.CopyTo(outputFileStream);
-                }
-            }
         }
 
         [TestMethod]
@@ -407,7 +284,7 @@ namespace Backblaze
             Assert.AreEqual(typeof(ListKeysResponse), results.Response.GetType());
             Assert.IsTrue(results.Response.Keys.Count >= 1, "The actual count was not greater than one");
 
-            var filelist2 = await _storage.Agent.Keys.GetAsync(new ListKeysRequest(_accountId) { MaxKeyCount = 5 }, TimeSpan.Zero);
+            var filelist2 = await _storage.Agent.Keys.GetEnumerableAsync(new ListKeysRequest(_accountId) { MaxKeyCount = 5 }, TimeSpan.Zero);
 
             foreach (var file in filelist2)
             {
@@ -418,7 +295,7 @@ namespace Backblaze
         [TestMethod]
         public async Task List_Parts()
         {
-            var results = await _storage.Agent.Parts.GetAsync(new ListPartsRequest(_fileId), TimeSpan.FromSeconds(60));
+            var results = await _storage.Agent.Files.GetEnumerableAsync(new ListFileNamesRequest(_bucketId), TimeSpan.FromSeconds(60));
         }
 
         [TestMethod]
@@ -500,76 +377,66 @@ namespace Backblaze
             Assert.AreEqual(bucketName, deleteResults.Response.BucketName);
         }
 
-
         [TestMethod]
-        public async Task FileNames_Iterator()
+        public async Task Keys_Enumerable()
         {
-            var request = new ListFileNamesRequest(_bucketId) { MaxFileCount = 10 };
-            var filelist = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
+            var request = new ListKeysRequest(_accountId);
+            var enumerable = await _storage.Agent.Keys.GetEnumerableAsync(request);
+            var filelist = enumerable.ToList();
 
-            Debug.WriteLine("First Run");
-            foreach (var file in filelist)
-            {
-                //Debug.WriteLine(file.FileName);
-            }
-
-            var filelist2 = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
-            Debug.WriteLine("Second Run");
-            foreach (var file in filelist2)
-            {
-                //Debug.WriteLine(file.FileName);
-            }
-
-            
-            
-
+            Assert.IsTrue(filelist.Count > 0);
+            CollectionAssert.AllItemsAreInstancesOfType(filelist, typeof(KeyItem));
         }
 
         [TestMethod]
-        public async Task FileVersions_Iterator()
+        public async Task Parts_Enumerable()
+        {
+            var request = new ListPartsRequest(_fileId);
+            var enumerable = await _storage.Agent.Parts.GetEnumerableAsync(request);
+            var filelist = enumerable.ToList();
+
+            //Assert.IsTrue(filelist.Count > 0);
+            CollectionAssert.AllItemsAreInstancesOfType(filelist, typeof(KeyItem));
+        }
+
+        [TestMethod]
+        public async Task FileNames_Enumerable()
+        {
+            var request = new ListFileNamesRequest(_bucketId);
+            var enumerable = await _storage.Agent.Files.GetEnumerableAsync(request);
+            var filelist = enumerable.ToList();
+
+            Assert.IsTrue(filelist.Count > 0);
+            CollectionAssert.AllItemsAreInstancesOfType(filelist, typeof(FileItem));
+        }
+
+        [TestMethod]
+        public async Task FileVersions_Enumerable()
         {
             var request = new ListFileVersionRequest(_bucketId);
-            var filelist = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
+            var enumerable = await _storage.Agent.Files.GetEnumerableAsync(request, TimeSpan.FromSeconds(10));
+            var filelist = enumerable.ToList();
 
-            foreach (var file in filelist)
-            {
-                //Debug.WriteLine(file.FileName);
-            }
-
-            var filelist2 = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
-
-            foreach (var file in filelist2)
-            {
-                //Debug.WriteLine(file.FileName);
-            }
+            Assert.IsTrue(filelist.Count > 0);
+            CollectionAssert.AllItemsAreInstancesOfType(filelist, typeof(FileItem));
         }
 
         [TestMethod]
-        public async Task UnfinishedLargeFiles_Iterator()
+        public async Task UnfinishedLargeFiles_Enumerable()
         {
             var request = new ListUnfinishedLargeFilesRequest(_bucketId);
-            var filelist = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
+            var enumerable = await _storage.Agent.Files.GetEnumerableAsync(request, TimeSpan.FromSeconds(10));
+            var filelist = enumerable.ToList();
 
-            foreach (var file in filelist)
-            {
-                Debug.WriteLine(file.FileName);
-            }
-
-            var filelist2 = await _storage.Agent.Files.GetAsync(request, TimeSpan.FromSeconds(10));
-
-            foreach (var file in filelist2)
-            {
-                Debug.WriteLine(file.FileName);
-            }
+            //Assert.IsTrue(filelist.Count > 0);
+            CollectionAssert.AllItemsAreInstancesOfType(filelist, typeof(FileItem));
         }
 
-        [TestMethod]
-        public async Task Copy_Tester()
-        {
-            //var results = await _storage.Agent.Directories.CopyToAsync(_bucketId, @"C:\Python27", "*.*", SearchOption.AllDirectories);
-
-
-        }
+        //[TestMethod]
+        //public async Task Copy_Tester()
+        //{
+        //    //var results = await _storage.Agent.Directories.CopyToAsync(_bucketId, @"C:\Python27", "*.*", SearchOption.AllDirectories);
+        //}
 
         [TestMethod]
         public async Task List_Buckets()
@@ -591,15 +458,20 @@ namespace Backblaze
             Assert.AreEqual(streamName, fileResults.Response.FileName, "The file name did not match");
 
             // Check before hideing
-            var resultsCheck1 = await _storage.Agent.Files.ListNamesAsync(_bucketId);
+            var request1 = new ListFileNamesRequest(_bucketId);
+            var enumerable1 = await _storage.Agent.Files.GetEnumerableAsync(request1);
+            var resultsCheck1 = enumerable1.ToList();
 
             // Hide test file
             var hideResults = await _storage.Agent.Files.HideAsync(_bucketId, streamName);
             Assert.AreEqual(typeof(HideFileResponse), hideResults.Response.GetType());
 
             // Check it's hidden
-            var resultsCheck2 = await _storage.Agent.Files.ListNamesAsync(_bucketId);
-            Assert.IsTrue(resultsCheck1.Response.Files.Count > resultsCheck2.Response.Files.Count);
+            var request2 = new ListFileNamesRequest(_bucketId);
+            var enumerable2 = await _storage.Agent.Files.GetEnumerableAsync(request2);
+            var resultsCheck2 = enumerable2.ToList();
+
+            Assert.IsTrue(resultsCheck1.Count > resultsCheck2.Count);
 
             // Delete test file
             var deleteResutls = await _storage.Agent.Files.DeleteAsync(fileResults.Response.FileId, streamName);
@@ -631,13 +503,43 @@ namespace Backblaze
             Assert.AreEqual(SmallStreamSize, results.Response.ContentLength, "The file size did not match");
             Assert.AreEqual(SmallStreamName, results.Response.FileName, "The file name did not match");
         }
-    }
 
-    public static class AgentExtensions
-    {
-        public static Task ForEachAsync<T>(this IEnumerable<T> sequence, Func<T, Task> action)
+        [TestMethod]
+        public async Task Case_5_Test()
         {
-            return Task.WhenAll(sequence.Select(action));
+            foreach (var filepath in Directory.GetFiles(@"c:\my\directory"))
+            {
+                using (var stream = File.OpenRead(filepath))
+                    await _storage.Agent.UploadAsync(_bucketId, new System.IO.FileInfo(filepath).Name, stream);
+            }
         }
     }
+
+    //public static class AgentExtensions
+    //{
+    //    public static Task ForEachAsync<T>(this IEnumerable<T> sequence, Func<T, Task> action)
+    //    {
+    //        return Task.WhenAll(sequence.Select(action));
+    //    }
+        
+    //    public static Task ForEachAsync<T>(this IEnumerable<T> source, int dop, Func<T, Task> body)
+    //    {
+    //        return Task.WhenAll(
+    //            from partition in Partitioner.Create(source).GetPartitions(dop)
+    //            select Task.Run(async delegate {
+    //                using (partition)
+    //                    while (partition.MoveNext())
+    //                        await body(partition.Current);
+    //            }));
+    //    }
+
+    //    //public static Task ForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body)
+    //    //{
+    //    //    return Task.WhenAll(
+    //    //        from item in source
+    //    //        select Task.Run(() => body(item)));
+    //    //}
+    //}
+
+
 }

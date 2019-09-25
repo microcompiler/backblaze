@@ -1,3 +1,12 @@
+0.8.3 - September 24 2019
+* Fixed #5 - UriFormatExceptionSystem thrown when calling UploadAsync
+* Fixed several know issues
+* Added caching for ListBuckets, ListFileNames, ListFileVersions, ListKeys and ListParts methods
+* Added iterator adapters for ListBuckets(), ListFileNames(), ListFileVersions(), ListKeys() and ListParts() methods
+* Added code comments for all interfaces
+* Added configuration support for AddBackblazeAgent()
+* Added error checking support for several models
+
 0.8.2 - August 18 2019
 * General code cleanup and documentation
 * Added caching for upload_url and upload_part_url

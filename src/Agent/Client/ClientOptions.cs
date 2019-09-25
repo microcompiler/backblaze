@@ -82,7 +82,7 @@ namespace Bytewizer.Backblaze.Client
         public double Timeout
         {
             get { return _timeout; }
-            set { if (value <= 0) _timeout = DefaultTimeout; }
+            set { _timeout = (value <= 0) ? DefaultTimeout: value; }
         }
         private double _timeout = DefaultTimeout;
 
@@ -92,7 +92,7 @@ namespace Bytewizer.Backblaze.Client
         public int RetryCount
         {
             get { return _retryCount; }
-            set { if (value <= 0) _retryCount = DefaultRetryCount; }
+            set { _retryCount = (value <= 0) ? DefaultRetryCount : value; }
         }
         private int _retryCount = DefaultRetryCount;
 
@@ -102,7 +102,7 @@ namespace Bytewizer.Backblaze.Client
         public int RequestMaxParallel
         {
             get { return _RequestMaxParallel; }
-            set { if (value <= 0) _RequestMaxParallel = DefaultRequestMaxParallel; }
+            set { _RequestMaxParallel = (value <= 0) ? DefaultRequestMaxParallel : value; }
         }
         private int _RequestMaxParallel = DefaultRequestMaxParallel;
 
@@ -112,7 +112,7 @@ namespace Bytewizer.Backblaze.Client
         public int DownloadMaxParallel
         {
             get { return _downloadMaxParallel; }
-            set { if (value <= 0) _downloadMaxParallel = DefaultDownloadMaxParallel; }
+            set { _downloadMaxParallel = (value <= 0) ? DefaultDownloadMaxParallel : value; }
         }
         private int _downloadMaxParallel = DefaultDownloadMaxParallel;
 
@@ -166,7 +166,7 @@ namespace Bytewizer.Backblaze.Client
         public int UploadMaxParallel
         {
             get { return _uploadMaxParallel; }
-            set { if (value <= 0) _uploadMaxParallel = DefaultUploadMaxParallel; }
+            set { _uploadMaxParallel = (value <= 0) ? DefaultUploadMaxParallel : value; }
         }
         public int _uploadMaxParallel = DefaultUploadMaxParallel;
 

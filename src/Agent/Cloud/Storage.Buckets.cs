@@ -1,17 +1,21 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Security.Authentication;
 
+using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
-using System.Collections.Generic;
 
-namespace Bytewizer.Backblaze.Storage
+namespace Bytewizer.Backblaze.Cloud
 {
     /// <summary>
-    /// An interface for <see cref="BackblazeStorage"/>.
+    /// Represents a default implementation of the <see cref="Storage"/> which uses <see cref="ApiClient"/> for making HTTP requests.
     /// </summary>
-    public interface IBackblazeBuckets
+    public partial class Storage : IStorageBuckets
     {
+        public IStorageBuckets Buckets { get { return this; } }
+
         #region ApiClient
 
         /// <summary>
@@ -21,7 +25,12 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="bucketType">The bucket secuirty authorization type.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<CreateBucketResponse>> CreateAsync(string bucketName, BucketType bucketType);
+        async Task<IApiResults<CreateBucketResponse>> IStorageBuckets.CreateAsync
+            (string bucketName, BucketType bucketType)
+        {
+            var request = new CreateBucketRequest(AccountId, bucketName, bucketType);
+            return await _client.CreateBucketAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// Creates a new bucket. 
@@ -29,7 +38,11 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="request">The <see cref="CreateBucketRequest"/> to send.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<CreateBucketResponse>> CreateAsync(CreateBucketRequest request);
+        async Task<IApiResults<CreateBucketResponse>> IStorageBuckets.CreateAsync
+            (CreateBucketRequest request)
+        {
+            return await _client.CreateBucketAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// Deletes the bucket specified. Only buckets that contain no version of any files can be deleted. 
@@ -37,14 +50,22 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="bucketId">The buckete id to delete.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<DeleteBucketResponse>> DeleteAsync(string bucketId);
+        async Task<IApiResults<DeleteBucketResponse>> IStorageBuckets.DeleteAsync(string bucketId)
+        {
+            var request = new DeleteBucketRequest(AccountId, bucketId);
+            return await _client.DeleteBucketAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// List all buckets in alphabetical order by bucket name.
         /// </summary>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListBucketsResponse>> ListAsync();
+        async Task<IApiResults<ListBucketsResponse>> IStorageBuckets.ListAsync()
+        {
+            var request = new ListBucketsRequest(AccountId);
+            return await _client.ListBucketsAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// List all buckets associated with an account in alphabetical order by bucket name. When using an authorization token
@@ -55,7 +76,10 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListBucketsResponse>> ListAsync(ListBucketsRequest request, TimeSpan cacheTTL = default);
+        async Task<IApiResults<ListBucketsResponse>> IStorageBuckets.ListAsync(ListBucketsRequest request, TimeSpan cacheTTL)
+        {
+            return await _client.ListBucketsAsync(request, cacheTTL, cancellationToken);
+        }
 
         /// <summary>
         /// Update an existing bucket. 
@@ -64,7 +88,12 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="bucketType">The bucket secuirty authorization type.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<UpdateBucketResponse>> UpdateAsync(string bucketId, BucketType bucketType);
+        async Task<IApiResults<UpdateBucketResponse>> IStorageBuckets.UpdateAsync
+            (string bucketId, BucketType bucketType)
+        {
+            var request = new UpdateBucketRequest(AccountId, bucketId, bucketType);
+            return await _client.UpdateBucketAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// Update an existing bucket. 
@@ -72,15 +101,23 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="request">The <see cref="UpdateBucketRequest"/> to send.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<UpdateBucketResponse>> UpdateAsync(UpdateBucketRequest request);
+        async Task<IApiResults<UpdateBucketResponse>> IStorageBuckets.UpdateAsync
+            (UpdateBucketRequest request)
+        {
+            return await _client.UpdateBucketAsync(request, cancellationToken);
+        }
 
         #endregion
 
         /// <summary>
-        /// Gets all buckets associated with an account in alphabetical order by bucket name.
+        /// Gets all buckets associated with an account in alphabetical order by bucket name. 
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IEnumerable<BucketItem>> GetAsync();
+        async Task<IEnumerable<BucketItem>> IStorageBuckets.GetAsync()
+        {
+            var request = new ListBucketsRequest(AccountId);
+            return await Buckets.GetAsync(request);
+        }
 
         /// <summary>
         /// Gets all buckets associated with an account in alphabetical order by bucket name. When using an authorization token
@@ -91,24 +128,53 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IEnumerable<BucketItem>> GetAsync(ListBucketsRequest request, TimeSpan cacheTTL = default);
+        async Task<IEnumerable<BucketItem>> IStorageBuckets.GetAsync(ListBucketsRequest request, TimeSpan cacheTTL)
+        {
+            var results = await _client.ListBucketsAsync(request, cacheTTL, cancellationToken);
+            if (results.IsSuccessStatusCode)
+            {
+                return results.Response.Buckets;
+            }
+
+            return new List<BucketItem>();
+        }
 
         /// <summary>
-        /// Finds a bucket by id.
+        /// Finds bucket by id.
         /// </summary>
         /// <param name="bucketId">The bucket id to retrive.</param>
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<BucketItem> FindByIdAsync(string bucketId, TimeSpan cacheTTL = default);
+        async Task<BucketItem> IStorageBuckets.FindByIdAsync(string bucketId, TimeSpan cacheTTL)
+        {
+            var request = new ListBucketsRequest(AccountId) { BucketId = bucketId };
+            var results = await _client.ListBucketsAsync(request, cacheTTL, cancellationToken);
+            if (results.IsSuccessStatusCode & results.Response.Buckets.Count > 0)
+            {
+                return results.Response.Buckets.First();
+            }
+
+            return null;
+        }
 
         /// <summary>
-        /// Finds a bucket by name.
+        /// Find bucket by name.
         /// </summary>
-        /// <param name="bucketName">The bucket name to retrive.</param>
+        /// <param name="bucketName">The bucket id to retrive.</param>
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<BucketItem> FindByNameAsync(string bucketName, TimeSpan cacheTTL = default);
+        async Task<BucketItem> IStorageBuckets.FindByNameAsync(string bucketName, TimeSpan cacheTTL)
+        {
+            var request = new ListBucketsRequest(AccountId) { BucketName = bucketName };
+            var results = await _client.ListBucketsAsync(request, cacheTTL, cancellationToken);
+            if (results.IsSuccessStatusCode & results.Response.Buckets.Count > 0)
+            {
+                return results.Response.Buckets.First();
+            }
+
+            return null;
+        }
     }
 }

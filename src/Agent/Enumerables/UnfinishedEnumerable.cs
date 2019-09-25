@@ -12,7 +12,7 @@ namespace Bytewizer.Backblaze.Adapters
     /// <summary>
     /// Iterates sequentially through the <see cref="ListUnfinishedLargeFilesRequest"/> elements.
     /// </summary>
-    public class UnfinishedAdapter : BaseIterator<FileItem>
+    public class UnfinishedEnumerable : BaseIterator<FileItem>
     {
         /// <summary>
         /// The request to send.
@@ -20,9 +20,9 @@ namespace Bytewizer.Backblaze.Adapters
         private readonly ListUnfinishedLargeFilesRequest _request;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UnfinishedAdapter"/> class.
+        /// Initializes a new instance of the <see cref="UnfinishedEnumerable"/> class.
         /// </summary>
-        public UnfinishedAdapter(IApiClient client, ILogger logger, ListUnfinishedLargeFilesRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
+        public UnfinishedEnumerable(IApiClient client, ILogger logger, ListUnfinishedLargeFilesRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
             : base(client, logger, cacheTTL, cancellationToken)
         {
             _request = request;

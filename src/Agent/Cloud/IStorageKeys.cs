@@ -5,12 +5,12 @@ using System.Security.Authentication;
 
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Storage
+namespace Bytewizer.Backblaze.Cloud
 {
     /// <summary>
-    /// An interface for <see cref="BackblazeStorage"/>.
+    /// An interface for <see cref="Storage"/>.
     /// </summary>
-    public interface IBackblazeKeys
+    public interface IStorageKeys
     {
         #region ApiClient
 
@@ -58,12 +58,12 @@ namespace Bytewizer.Backblaze.Storage
         #endregion
 
         /// <summary>
-        /// Gets all application keys associated with an account. 
+        /// Returns an enumerator that iterates through all application keys associated with an account. 
         /// </summary>
         /// <param name="request">The <see cref="ListKeysRequest"/> to send.</param>
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IEnumerable<KeyItem>> GetAsync(ListKeysRequest request, TimeSpan cacheTTL = default);
+        Task<IEnumerable<KeyItem>> GetEnumerableAsync(ListKeysRequest request, TimeSpan cacheTTL = default);
     }
 }

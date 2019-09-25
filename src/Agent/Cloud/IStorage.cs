@@ -6,39 +6,39 @@ using System.Security.Authentication;
 
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Storage
+namespace Bytewizer.Backblaze.Cloud
 {
     /// <summary>
-    /// An interface for <see cref="BackblazeStorage"/>.
+    /// An interface for <see cref="Storage"/>.
     /// </summary>
-    public interface IBackblazeStorage
+    public interface IStorage
     {
         #region Lifetime
 
         /// <summary>
         /// Provides methods to access file operations.
         /// </summary>
-        IBackblazeFiles Files { get; }
+        IStorageFiles Files { get; }
 
         /// <summary>
         /// Provides methods to access directory operations.
         /// </summary>
-        IBackblazeDirectories Directories { get; }
+        IStorageDirectories Directories { get; }
 
         /// <summary>
         /// Provides methods to access bucket operations.
         /// </summary>
-        IBackblazeBuckets Buckets { get; }
+        IStorageBuckets Buckets { get; }
 
         /// <summary>
         /// Provides methods to access key operations.
         /// </summary>
-        IBackblazeKeys Keys { get; }
+        IStorageKeys Keys { get; }
 
         /// <summary>
         /// Provides methods to access large file part operations.
         /// </summary>
-        IBackblazeParts Parts { get; }
+        IStorageParts Parts { get; }
 
         /// <summary>
         /// Indicates this instance has been disposed.

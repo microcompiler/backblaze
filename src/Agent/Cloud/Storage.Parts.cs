@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Security.Authentication;
 
+using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
+using Bytewizer.Backblaze.Adapters;
 
-namespace Bytewizer.Backblaze.Storage
+namespace Bytewizer.Backblaze.Cloud
 {
     /// <summary>
-    /// An interface for <see cref="BackblazeStorage"/>.
+    /// Represents a default implementation of the <see cref="Storage"/> which uses <see cref="ApiClient"/> for making HTTP requests.
     /// </summary>
-    public interface IBackblazeParts
+    public partial class Storage : IStorageParts
     {
+        /// <summary>
+        /// Provides methods to access large file part operations.
+        /// </summary>
+        public IStorageParts Parts { get { return this; } }
+
         #region ApiClient
 
         /// <summary>
@@ -19,8 +27,11 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="fileId">The file id to cancel.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<CancelLargeFileResponse>> CancelLargeFileAsync(string fileId);
-
+        async Task<IApiResults<CancelLargeFileResponse>> IStorageParts.CancelLargeFileAsync(string fileId)
+        {
+            var request = new CancelLargeFileRequest(fileId);
+            return await _client.CancelLargeFileAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// Creates a new file part by copying from an existing file and storing it as a part of a large file which has already been started.
@@ -29,7 +40,10 @@ namespace Bytewizer.Backblaze.Storage
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<CopyPartResponse>> CopyAsync(CopyPartRequest request);
+        async Task<IApiResults<CopyPartResponse>> IStorageParts.CopyAsync(CopyPartRequest request)
+        {
+            return await _client.CopyPartAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// Creates a new file part by copying from an existing file and storing it as a part of a large file which has already been started.
@@ -40,7 +54,11 @@ namespace Bytewizer.Backblaze.Storage
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<CopyPartResponse>> CopyAsync(string sourceFileId, string largeFileId, int partNumber);
+        async Task<IApiResults<CopyPartResponse>> IStorageParts.CopyAsync(string sourceFileId, string largeFileId, int partNumber)
+        {
+            var request = new CopyPartRequest(sourceFileId, largeFileId, partNumber);
+            return await _client.CopyPartAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// Converts file parts that have been uploaded into a single file. 
@@ -49,7 +67,11 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="sha1Parts">A list of hex SHA1 checksums for the parts of the large file.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<UploadFileResponse>> FinishLargeFileAsync(string fileId, List<string> sha1Parts);
+        async Task<IApiResults<UploadFileResponse>> IStorageParts.FinishLargeFileAsync(string fileId, List<string> sha1Parts)
+        {
+            var request = new FinishLargeFileRequest(fileId, sha1Parts);
+            return await _client.FinishLargeFileAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// Gets a url for uploading parts of a large file. 
@@ -57,7 +79,11 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="fileId">The large file id whose parts you want to upload.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<GetUploadPartUrlResponse>> GetUploadUrlAsync(string fileId);
+        async Task<IApiResults<GetUploadPartUrlResponse>> IStorageParts.GetUploadUrlAsync(string fileId)
+        {
+            var request = new GetUploadPartUrlRequest(fileId);
+            return await _client.GetUploadPartUrlAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// Gets a url for uploading parts of a large file. 
@@ -66,7 +92,11 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<GetUploadPartUrlResponse>> GetUploadUrlAsync(string fileId, TimeSpan cacheTTL = default);
+        async Task<IApiResults<GetUploadPartUrlResponse>> IStorageParts.GetUploadUrlAsync(string fileId, TimeSpan cacheTTL)
+        {
+            var request = new GetUploadPartUrlRequest(fileId);
+            return await _client.GetUploadPartUrlAsync(request, cacheTTL, cancellationToken);
+        }
 
         /// <summary>
         /// List parts that have been uploaded for a large file that has not been finished yet. 
@@ -74,17 +104,25 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="fileId">The large file id whose parts you want to list.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListPartsResponse>> ListAsync(string fileId);
+        async Task<IApiResults<ListPartsResponse>> IStorageParts.ListAsync
+            (string fileId)
+        {
+            var request = new ListPartsRequest(fileId);
+            return await _client.ListPartsAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// List parts that have been uploaded for a large file that has not been finished yet. 
         /// </summary>
         /// <param name="request">The <see cref="ListPartsRequest"/> to send.</param>
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
-        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<ListPartsResponse>> ListAsync(ListPartsRequest request, TimeSpan cacheTTL = default);
+        async Task<IApiResults<ListPartsResponse>> IStorageParts.ListAsync
+            (ListPartsRequest request, TimeSpan cacheTTL)
+        {
+            return await _client.ListPartsAsync(request, cacheTTL, cancellationToken);
+        }
 
         /// <summary>
         /// Prepares for uploading parts of a large file. 
@@ -93,7 +131,11 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="fileName">The name of the large file.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<StartLargeFileResponse>> StartLargeFileAsync(string bucketId, string fileName);
+        async Task<IApiResults<StartLargeFileResponse>> IStorageParts.StartLargeFileAsync(string bucketId, string fileName)
+        {
+            var request = new StartLargeFileRequest(bucketId, fileName);
+            return await _client.StartLargeFileAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// Prepares for uploading parts of a large file. 
@@ -101,17 +143,24 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="request">The <see cref="StartLargeFileRequest"/> to send.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<StartLargeFileResponse>> StartLargeFileAsync(StartLargeFileRequest request);
+        async Task<IApiResults<StartLargeFileResponse>> IStorageParts.StartLargeFileAsync(StartLargeFileRequest request)
+        {
+            return await _client.StartLargeFileAsync(request, cancellationToken);
+        }
 
         #endregion
 
         /// <summary>
-        /// Gets all parts that have been uploaded for a large file that has not been finished yet. 
+        /// Returns an enumerable that iterates through all parts that have been uploaded for a large file that has not been finished yet. 
         /// </summary>
         /// <param name="request">The <see cref="ListPartsRequest"/> to send.</param>
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IEnumerable<PartItem>> GetAsync(ListPartsRequest request, TimeSpan cacheTTL = default);
+        async Task<IEnumerable<PartItem>> IStorageParts.GetEnumerableAsync(ListPartsRequest request, TimeSpan cacheTTL)
+        {
+            var enumerable = new PartEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<PartItem>;
+            return await Task.FromResult(enumerable);
+        }
     }
 }

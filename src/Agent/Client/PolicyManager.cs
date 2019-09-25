@@ -85,7 +85,7 @@ namespace Bytewizer.Backblaze.Client
         {
             var auth = CreateAuthenticationPolicy();
             var hash = CreateInvalidHashPolicy();
-            var bulk = Policy.BulkheadAsync(10, int.MaxValue);
+            var bulk = Policy.BulkheadAsync(_options.UploadMaxParallel, int.MaxValue);
 
             return Policy.WrapAsync(auth, hash, bulk);
         }

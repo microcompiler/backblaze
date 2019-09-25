@@ -10,19 +10,19 @@ using Bytewizer.Backblaze.Agent;
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Storage
+namespace Bytewizer.Backblaze.Cloud
 {
     /// <summary>
-    /// Represents a default implementation of the <see cref="BackblazeStorage"/> which uses <see cref="ApiClient"/> for making HTTP requests.
+    /// Represents a default implementation of the <see cref="Storage"/> which uses <see cref="ApiClient"/> for making HTTP requests.
     /// </summary>
-    public partial class BackblazeStorage : DisposableObject, IBackblazeStorage
+    public partial class Storage : DisposableObject, IStorage
     {
         #region Lifetime
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BackblazeStorage"/> class.
+        /// Initializes a new instance of the <see cref="Storage"/> class.
         /// </summary>
-        public BackblazeStorage(IAgentOptions options, IApiClient client, ILogger<BackblazeStorage> logger)
+        public Storage(IAgentOptions options, IApiClient client, ILogger<Storage> logger)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace Bytewizer.Backblaze.Storage
         public string AccountId => _client?.AccountInfo.AccountId;
 
         /// <summary>
-        /// The cancellation token associated with this <see cref="BackblazeStorage"/> instance.
+        /// The cancellation token associated with this <see cref="Storage"/> instance.
         /// </summary>
         public CancellationToken CancellationToken
         {

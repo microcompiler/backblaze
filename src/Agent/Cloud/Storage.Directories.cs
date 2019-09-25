@@ -3,23 +3,20 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Security.Authentication;
 
-using Microsoft.Extensions.Logging;
-
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
-using System;
 
-namespace Bytewizer.Backblaze.Storage
+namespace Bytewizer.Backblaze.Cloud
 {
     /// <summary>
-    /// Represents a default implementation of the <see cref="BackblazeStorage"/> which uses <see cref="ApiClient"/> for making HTTP requests.
+    /// Represents a default implementation of the <see cref="Storage"/> which uses <see cref="ApiClient"/> for making HTTP requests.
     /// </summary>
-    public partial class BackblazeStorage : IBackblazeDirectories
+    public partial class Storage : IStorageDirectories
     {
         /// <summary>
         /// Provides methods to access directory operations.
         /// </summary>
-        public IBackblazeDirectories Directories { get { return this; } }
+        public IStorageDirectories Directories { get { return this; } }
 
         #region ApiClient
 
@@ -37,7 +34,7 @@ namespace Bytewizer.Backblaze.Storage
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IList<UploadFileResponse>> IBackblazeDirectories.CopyToAsync(string bucketId, string localPath, string searchPattern, SearchOption searchOption)
+        async Task<IList<UploadFileResponse>> IStorageDirectories.CopyToAsync(string bucketId, string localPath, string searchPattern, SearchOption searchOption)
         {
             var response = new List<UploadFileResponse>();
             var parallelTasks = new List<Task>();

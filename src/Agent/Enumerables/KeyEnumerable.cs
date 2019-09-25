@@ -12,7 +12,7 @@ namespace Bytewizer.Backblaze.Adapters
     /// <summary>
     /// Iterates sequentially through the <see cref="ListKeysResponse"/> elements.
     /// </summary>
-    public class KeyAdapter : BaseIterator<KeyItem>
+    public class KeyEnumerable : BaseIterator<KeyItem>
     {
         /// <summary>
         /// The request to send.
@@ -20,9 +20,9 @@ namespace Bytewizer.Backblaze.Adapters
         private readonly ListKeysRequest _request;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="KeyAdapter"/> class.
+        /// Initializes a new instance of the <see cref="KeyEnumerable"/> class.
         /// </summary>
-        public KeyAdapter(IApiClient client, ILogger logger, ListKeysRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
+        public KeyEnumerable(IApiClient client, ILogger logger, ListKeysRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
             : base(client, logger, cacheTTL, cancellationToken)
         {
             _request = request;

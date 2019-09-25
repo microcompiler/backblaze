@@ -5,12 +5,12 @@ using System.Security.Authentication;
 
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Storage
+namespace Bytewizer.Backblaze.Cloud
 {
     /// <summary>
-    /// An interface for <see cref="BackblazeStorage"/>.
+    /// An interface for <see cref="Storage"/>.
     /// </summary>
-    public interface IBackblazeDirectories
+    public interface IStorageDirectories
     {
         /// <summary>
         /// Copies local files to a bucket that match a search pattern in a specified directory path, and optionally searches subdirectories.

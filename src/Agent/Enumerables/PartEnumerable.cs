@@ -12,7 +12,7 @@ namespace Bytewizer.Backblaze.Adapters
     /// <summary>
     /// Iterates sequentially through the <see cref="ListPartsResponse"/> elements.
     /// </summary>
-    public class PartAdapter : BaseIterator<PartItem>
+    public class PartEnumerable : BaseIterator<PartItem>
     {
         /// <summary>
         /// The request to send.
@@ -20,9 +20,9 @@ namespace Bytewizer.Backblaze.Adapters
         private readonly ListPartsRequest _request;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PartAdapter"/> class.
+        /// Initializes a new instance of the <see cref="PartEnumerable"/> class.
         /// </summary>
-        public PartAdapter(IApiClient client, ILogger logger, ListPartsRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
+        public PartEnumerable(IApiClient client, ILogger logger, ListPartsRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken)
             : base(client, logger, cacheTTL, cancellationToken)
         {
             _request = request;

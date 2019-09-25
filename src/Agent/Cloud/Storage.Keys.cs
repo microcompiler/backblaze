@@ -8,17 +8,17 @@ using Bytewizer.Backblaze.Models;
 
 using Bytewizer.Backblaze.Adapters;
 
-namespace Bytewizer.Backblaze.Storage
+namespace Bytewizer.Backblaze.Cloud
 {
     /// <summary>
-    /// Represents a default implementation of the <see cref="BackblazeStorage"/> which uses <see cref="ApiClient"/> for making HTTP requests.
+    /// Represents a default implementation of the <see cref="Storage"/> which uses <see cref="ApiClient"/> for making HTTP requests.
     /// </summary>
-    public partial class BackblazeStorage : IBackblazeKeys
+    public partial class Storage : IStorageKeys
     {
         /// <summary>
         /// Provides methods to access key operations.
         /// </summary>
-        public IBackblazeKeys Keys { get { return this; } }
+        public IStorageKeys Keys { get { return this; } }
 
         #region ApiClient
 
@@ -29,7 +29,7 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="capabilities">A list of <see cref="Capability"/> each one naming a capability the new key should have.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IApiResults<CreateKeyResponse>> IBackblazeKeys.CreateAsync
+        async Task<IApiResults<CreateKeyResponse>> IStorageKeys.CreateAsync
             (string keyName, Capabilities capabilities)
         {
             var request = new CreateKeyRequest(AccountId, keyName, capabilities);
@@ -42,7 +42,7 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="request">The <see cref="CreateKeyRequest"/> to send.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IApiResults<CreateKeyResponse>> IBackblazeKeys.CreateAsync
+        async Task<IApiResults<CreateKeyResponse>> IStorageKeys.CreateAsync
             (CreateKeyRequest request)
         {
             return await _client.CreateKeyAsync(request, cancellationToken);
@@ -54,7 +54,7 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="applicationKeyId">The application key id to delete.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IApiResults<DeleteKeyResponse>> IBackblazeKeys.DeleteAsync
+        async Task<IApiResults<DeleteKeyResponse>> IStorageKeys.DeleteAsync
             (string applicationKeyId)
         {
             var request = new DeleteKeyRequest(applicationKeyId);
@@ -66,7 +66,7 @@ namespace Bytewizer.Backblaze.Storage
         /// </summary>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IApiResults<ListKeysResponse>> IBackblazeKeys.ListAsync()
+        async Task<IApiResults<ListKeysResponse>> IStorageKeys.ListAsync()
         {
             var request = new ListKeysRequest(AccountId);
             return await _client.ListKeysAsync(request, cancellationToken);
@@ -79,7 +79,7 @@ namespace Bytewizer.Backblaze.Storage
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IApiResults<ListKeysResponse>> IBackblazeKeys.ListAsync
+        async Task<IApiResults<ListKeysResponse>> IStorageKeys.ListAsync
             (ListKeysRequest request, TimeSpan cacheTTL)
         {
             return await _client.ListKeysAsync(request, cacheTTL, cancellationToken);
@@ -88,39 +88,16 @@ namespace Bytewizer.Backblaze.Storage
         #endregion
 
         /// <summary>
-        /// Gets all application keys associated with an account. 
+        /// Returns an enumerator that iterates through all application keys associated with an account. 
         /// </summary>
         /// <param name="request">The <see cref="ListKeysRequest"/> to send.</param>
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IEnumerable<KeyItem>> IBackblazeKeys.GetAsync(ListKeysRequest request, TimeSpan cacheTTL)
+        async Task<IEnumerable<KeyItem>> IStorageKeys.GetEnumerableAsync(ListKeysRequest request, TimeSpan cacheTTL)
         {
-            var adapter = new KeyAdapter(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<KeyItem>;
-            return await Task.FromResult(adapter);
+            var enumerable = new KeyEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<KeyItem>;
+            return await Task.FromResult(enumerable);
         }
-
-
-        //public Task<List<KeyItem>> ListAsync(ListKeysRequest request, int cacheTTL)
-        //{
-        //    return Task.FromResult(new KeyAdapter(_client, request, cacheTTL, cancellationToken).ToList());
-        //}
-
-        //async Task<IApiResults<ListKeysResponse>> IBackblazeKeys.GetAsync()
-        //{
-        //    var request = new ListKeysRequest(AccountId);
-        //    return await _client.ListKeysAsync(request, cancellationToken);
-        //}
-
-        //async Task<IApiResults<ListKeysResponse>> IBackblazeKeys.GetAsync(ListKeysRequest request)
-        //{
-        //    return await _client.ListKeysAsync(request, cancellationToken);
-        //}
-
-        //async Task<IApiResults<CreateKeyResponse>> IBackblazeKeys.CreateAsync(string accountId, Capabilities capabilities, string keyName)
-        //{
-        //    var request = new CreateKeyRequest(AccountId, capabilities, keyName);
-        //    return await _client.CreateKeyAsync(request, cancellationToken);
-        //}
     }
 }

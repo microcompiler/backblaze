@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
+using System.Diagnostics;
 
 using Microsoft.Extensions.Configuration;
 
@@ -9,12 +11,7 @@ using Polly.Extensions.Http;
 
 using Bytewizer.Backblaze.Agent;
 using Bytewizer.Backblaze.Client;
-using Bytewizer.Backblaze.Storage;
-using Bytewizer.Backblaze.Adapters;
-using System.Net;
-using System.Linq;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics;
+using Bytewizer.Backblaze.Cloud;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -46,7 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <param name="setupBuilder">Delegate to define the configuration.</param>
-        public static IBackblazeAgentBuilder AddBackblazeAgent(this IServiceCollection services, Action<AgentOptions> setupBuilder)
+        public static IBackblazeAgentBuilder AddBackblazeAgent(this IServiceCollection services, Action<IAgentOptions> setupBuilder)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
@@ -75,16 +72,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             options.Validate();
 
-            var policy = HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .OrResult(response => (int)response.StatusCode == 429)
-                .WaitAndRetryAsync(6,
-                        retryAttempt => PolicyManager.GetSleepDuration(retryAttempt),
-                        onRetry: (exception, timeSpan, count, context) =>
-                        {
-                            Debug.WriteLine($"Status Code: {exception.Result?.StatusCode} Request Message: {exception.Result?.RequestMessage} Retry attempt {count} waiting {timeSpan.TotalSeconds} seconds before next retry.");
-                        });
-
             services.AddSingleton(options);
             services.AddSingleton<ICacheManager, CacheManager>();
             services.AddSingleton<IPolicyManager, PolicyManager>();
@@ -96,31 +83,25 @@ namespace Microsoft.Extensions.DependencyInjection
             })
             .AddHttpMessageHandler<UserAgentHandler>()
             .SetHandlerLifetime(TimeSpan.FromSeconds(options.HandlerLifetime))
-            .AddPolicyHandler(policy);
+            .AddPolicyHandler(RetryPolicy(options.RetryCount));
 
-            services.AddSingleton<IBackblazeStorage, BackblazeStorage>();
+            services.AddSingleton<IStorage, Bytewizer.Backblaze.Cloud.Storage>();
 
             return new BackblazeAgentBuilder(services);
         }
-
 
         private static IAsyncPolicy<HttpResponseMessage> RetryPolicy(int retryCount)
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
-                .OrResult(response => (int)response.StatusCode == 429)
                 .Or<IOException>()
+                .OrResult(r => r.StatusCode == (HttpStatusCode)429)
                 .WaitAndRetryAsync(retryCount,
-                    retryAttempt => PolicyManager.GetSleepDuration(retryAttempt));
+                        retryAttempt => PolicyManager.GetSleepDuration(retryAttempt),
+                        onRetry: (exception, timeSpan, count, context) =>
+                        {
+                            Debug.WriteLine($"Status Code: {exception.Result?.StatusCode} Request Message: {exception.Result?.RequestMessage} Retry attempt {count} waiting {timeSpan.TotalSeconds} seconds before next retry.");
+                        });
         }
-
-        //private static IAsyncPolicy<HttpResponseMessage> RetryPolicy(int retryCount)
-        //{
-        //    return HttpPolicyExtensions
-        //        .HandleTransientHttpError()
-        //        .Or<IOException>()
-        //        .WaitAndRetryAsync(retryCount,
-        //            retryAttempt => PolicyManager.GetSleepDuration(retryAttempt));
-        //}
     }
 }

@@ -11,7 +11,7 @@ using System.Linq;
 namespace Backblaze
 {
     [TestClass]
-    public class Model
+    public class ModelTest
     {
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
