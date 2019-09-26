@@ -17,7 +17,7 @@ namespace Bytewizer.Backblaze.Cloud
         /// <summary>
         /// Creates a new bucket. 
         /// </summary>
-        /// <param name="bucketName">The name to give the new bucket.
+        /// <param name="bucketName">The name to give the new bucket.</param>
         /// <param name="bucketType">The bucket secuirty authorization type.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
@@ -78,6 +78,7 @@ namespace Bytewizer.Backblaze.Cloud
 
         /// <summary>
         /// Gets all buckets associated with an account in alphabetical order by bucket name.
+        /// </summary>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         Task<IEnumerable<BucketItem>> GetAsync();

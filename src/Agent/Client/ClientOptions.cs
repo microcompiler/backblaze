@@ -168,7 +168,7 @@ namespace Bytewizer.Backblaze.Client
             get { return _uploadMaxParallel; }
             set { _uploadMaxParallel = (value <= 0) ? DefaultUploadMaxParallel : value; }
         }
-        public int _uploadMaxParallel = DefaultUploadMaxParallel;
+        private int _uploadMaxParallel = DefaultUploadMaxParallel;
 
         /// <summary>
         /// Upload cutoff size for switching to chunked parts in bytes.

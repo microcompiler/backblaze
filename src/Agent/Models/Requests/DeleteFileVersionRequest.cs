@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 
+using Bytewizer.Backblaze.Extensions;
+
 using Newtonsoft.Json;
 
 namespace Bytewizer.Backblaze.Models
@@ -34,7 +36,12 @@ namespace Bytewizer.Backblaze.Models
         /// The name of the file to delete. 
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string FileName { get; private set; }
+        public string FileName
+        {
+            get { return _fileName.ToPath(); }
+            private set { _fileName = new Uri(value, UriKind.RelativeOrAbsolute); }
+        }
+        private Uri _fileName;
 
         /// <summary>
         /// The id of the file to delete.

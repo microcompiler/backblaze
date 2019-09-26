@@ -15,7 +15,7 @@ using Bytewizer.Backblaze.Extensions;
 
 namespace Bytewizer.Backblaze.Client
 {
-    public abstract partial class Storage : DisposableObject
+    public abstract partial class ApiRest : DisposableObject
     {
         #region Client Endpoints
 
@@ -29,7 +29,7 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        /// <returns>The <see cref="AuthorizeAccountResponse" /> of this <see cref="IApiResults{T}.Response"/> value, or <see cref="null"/>, if the response was was error data.</returns>
+        /// <returns>The <see cref="AuthorizeAccountResponse" /> of this <see cref="IApiResults{T}.Response"/> value, or <c>null</c>, if the response was was error data.</returns>
         public async Task<IApiResults<AuthorizeAccountResponse>> AuthorizeAccountAync
         (string keyId, string applicationKey, CancellationToken cancellationToken)
         {
@@ -443,7 +443,7 @@ namespace Bytewizer.Backblaze.Client
             }
             else
             {
-                return await _cache.GetOrCreateAsync(request.ToCacheKey(), async (entry) =>
+                return await _cache.GetOrCreateAsync(request, async (entry) =>
                 {
                     entry.AbsoluteExpirationRelativeToNow = cacheTTL;
                         return await GetUploadPartUrlAsync(request, cancellationToken);
@@ -489,7 +489,7 @@ namespace Bytewizer.Backblaze.Client
             }
             else
             {
-                return await _cache.GetOrCreateAsync(request.ToCacheKey(), async (entry) =>
+                return await _cache.GetOrCreateAsync(request, async (entry) =>
                 {
                     entry.AbsoluteExpirationRelativeToNow = cacheTTL;
                     return await GetUploadUrlAsync(request, cancellationToken);
@@ -502,7 +502,7 @@ namespace Bytewizer.Backblaze.Client
         #region b2_hide_file
 
         /// <summary>
-        /// Hides a file so that <see cref="DownloadFileByNameAsync"/> will not find the file but previous versions of the file are still stored.   
+        /// Hides a file so that <see cref="DownloadFileByNameAsync(DownloadFileByNameRequest, Stream, IProgress{ICopyProgress}, CancellationToken)"/> will not find the file but previous versions of the file are still stored.   
         /// </summary>
         /// <param name="request">The <see cref="HideFileRequest"/> content to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
@@ -1027,7 +1027,7 @@ namespace Bytewizer.Backblaze.Client
         /// Handle a HTTP response operation from Backblaze B2 Cloud Storage.
         /// </summary>
         /// <typeparam name="TResponse">Response resource type.</typeparam>
-        /// <param name="content">A instance implementing <see cref="HttpResponseMessage"/>.</param>
+        /// <param name="response">A instance implementing <see cref="HttpResponseMessage"/>.</param>
         private async Task<IApiResults<TResponse>> HandleResponseAsync<TResponse>(HttpResponseMessage response)
             where TResponse : IResponse
         {
@@ -1047,6 +1047,7 @@ namespace Bytewizer.Backblaze.Client
         /// Handle a HTTP response operation from Backblaze B2 Cloud Storage.
         /// </summary>
         /// <param name="response">A instance implementing <see cref="HttpResponseMessage"/>.</param>
+        /// <param name="content">The download content to receive.</param>
         private async Task<IApiResults<DownloadFileResponse>> HandleResponseAsync(HttpResponseMessage response, Stream content)
         {
             if (response == null)
@@ -1131,7 +1132,7 @@ namespace Bytewizer.Backblaze.Client
         /// Gets the serialized json object from HTTP content with a media type of "application/json"
         /// </summary>
         /// <typeparam name="T">Type to return.</typeparam>
-        /// <param name="content">A instance implementing <see cref="HttpResponseMessage"/>.</param>
+        /// <param name="response">A instance implementing <see cref="HttpResponseMessage"/>.</param>
         private async Task<T> ReadAsJsonAsync<T>(HttpResponseMessage response)
         {
             var mediaType = response.Content.Headers.ContentType?.MediaType;

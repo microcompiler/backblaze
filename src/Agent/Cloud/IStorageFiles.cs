@@ -102,12 +102,13 @@ namespace Bytewizer.Backblaze.Cloud
         /// Gets a url for uploading files. 
         /// </summary>
         /// <param name="bucketId">The bucket id you want to upload to.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         Task<IApiResults<GetUploadUrlResponse>> GetUploadUrlAsync(string bucketId, TimeSpan cacheTTL = default);
 
         /// <summary>
-        /// Hides a file so that <see cref="DownloadAsync"/> by name will not find the file but previous versions of the file are still stored.   
+        /// Hides a file so that <see cref="DownloadAsync(DownloadFileByNameRequest, Stream, IProgress{ICopyProgress})"/> by name will not find the file but previous versions of the file are still stored.   
         /// </summary>
         /// <param name="bucketId">The bucket id containing the file to hide.</param>
         /// <param name="fileName">The name of the file to hide.</param>
@@ -171,9 +172,10 @@ namespace Bytewizer.Backblaze.Cloud
         #endregion
 
         /// <summary>
-        /// Upload file to Backblaze B2 Cloud Storage. 
+        /// Uploads a file by bucket id and file name to Backblaze B2 Cloud Storage. 
         /// </summary>
         /// <param name="bucketId">The bucket id you want to upload to.</param>
+        /// <param name="fileName">The name of the file to upload.</param>
         /// <param name="localPath">The relative or absolute path to the file. This string is not case-sensitive.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancel">The cancellation token to cancel operation.</param>
@@ -181,13 +183,28 @@ namespace Bytewizer.Backblaze.Cloud
         /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
         /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IApiResults<UploadFileResponse>> UploadAsync(string bucketId, string localPath, IProgress<ICopyProgress> progress, CancellationToken cancel);
+        Task<IApiResults<UploadFileResponse>> UploadAsync(string bucketId, string fileName, string localPath, IProgress<ICopyProgress> progress, CancellationToken cancel);
 
         /// <summary>
-        /// Download file from Backblaze B2 Cloud Storage. 
+        /// Downloads a file by bucket and file name from Backblaze B2 Cloud Storage. 
+        /// </summary>
+        /// <param name="bucketName">The name of the bucket to download from.</param>
+        /// <param name="fileName">The name of the file to download.</param>
+        /// <param name="localPath">The relative or absolute path to the file. This string is not case-sensitive.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <param name="cancel">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<IApiResults<DownloadFileResponse>> DownloadAsync(string bucketName, string fileName, string localPath, IProgress<ICopyProgress> progress, CancellationToken cancel);
+
+        /// <summary>
+        /// Downloads a file by file id from Backblaze B2 Cloud Storage. 
         /// </summary>
         /// <param name="fileId">The unique id of the file to download.</param>
         /// <param name="localPath">The relative or absolute path to the file. This string is not case-sensitive.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <param name="cancel">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>

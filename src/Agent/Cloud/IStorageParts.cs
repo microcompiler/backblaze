@@ -82,7 +82,6 @@ namespace Bytewizer.Backblaze.Cloud
         /// </summary>
         /// <param name="request">The <see cref="ListPartsRequest"/> to send.</param>
         /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
-        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         Task<IApiResults<ListPartsResponse>> ListAsync(ListPartsRequest request, TimeSpan cacheTTL = default);

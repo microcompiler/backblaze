@@ -45,7 +45,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// The maximum number of parts to return from this call. 
         /// The default value is <see cref="DefaultPartsPerTransaction"/> and the maximum allowed is <see cref="MaximumPartsPerTransaction"/>.
-        /// Passing in 0 means to use the default of <see cref="DefaultPartPerTransaction"/>. NOTE: <see cref="ListPartsRequest"/> is a Class C transaction. 
+        /// Passing in 0 means to use the default of <see cref="DefaultPartsPerTransaction"/>. NOTE: <see cref="ListPartsRequest"/> is a Class C transaction. 
         /// If you set <see cref="MaxPartCount"/> to more than 1000 and more than 1000 are returned, the call will be billed as multiple transactions,
         /// as if you had made requests in a loop asking for 1000 at a time. For example: if you set <see cref="MaxPartCount"/> to 10000 and 3123 items are returned,
         /// you will be billed for 4 Class C transactions. 

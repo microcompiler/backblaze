@@ -63,6 +63,7 @@ namespace Bytewizer.Backblaze.Cloud
         /// Upload content stream to Backblaze B2 Cloud Storage. 
         /// </summary>
         /// <param name="bucketId">The bucket id you want to upload to.</param>
+        /// <param name="fileName">The name of the file.</param>
         /// <param name="content"> The content stream of the content payload.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>

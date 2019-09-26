@@ -159,10 +159,8 @@ namespace Bytewizer.Backblaze.Models
         /// Determines whether the specified <see cref="object" /> is equal to this instance.
         /// </summary>
         /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
-        /// <returns>
-        /// <see cref="true"/>, if the specified <see cref="object" /> is equal to this instance;
-        /// otherwise, <see cref="false"/>.
-        /// </returns>
+        /// <c>true</c>, if the specified <see cref="object" /> is equal to this instance;
+        /// otherwise, <c>false</c>.
         public override bool Equals(object obj)
         {
             return obj is FileSize byteSize && Equals(byteSize);
@@ -172,10 +170,7 @@ namespace Bytewizer.Backblaze.Models
         /// Determines whether this instance is equal to another <see cref="FileSize" />.
         /// </summary>
         /// <param name="other">The <see cref="FileSize" /> to compare to this instance.</param>
-        /// <returns>
-        /// <see cref="true"/>, if this instance is equal to the <paramref name="other" /> parameter;
-        /// otherwise, <see cref="false"/>.
-        /// </returns>
+        /// <returns><c>true</c>, if this instance is equal to the <paramref name="other" /> parameter; otherwise, <c>false</c>.</returns>
         public bool Equals(FileSize other)
         {
             return Bytes == other.Bytes;
@@ -266,8 +261,8 @@ namespace Bytewizer.Backblaze.Models
 		/// <param name="a">The first <see cref="FileSize" /> to compare.</param>
 		/// <param name="b">The second <see cref="FileSize" /> to compare.</param>
 		/// <returns>
-		/// <see cref="true"/>, if both <see cref="FileSize" /> values are equal;
-		/// otherwise, <see cref="false"/>.
+		/// <c>true</c>, if both <see cref="FileSize" /> values are equal;
+		/// otherwise, <c>false</c>.
 		/// </returns>
 		public static bool operator ==(FileSize a, FileSize b)
         {
@@ -280,8 +275,8 @@ namespace Bytewizer.Backblaze.Models
         /// <param name="a">The first <see cref="FileSize" /> to compare.</param>
         /// <param name="b">The second <see cref="FileSize" /> to compare.</param>
         /// <returns>
-        /// <see cref="true"/>, if both <see cref="FileSize" /> values are not equal;
-        /// otherwise, <see cref="false"/>.
+        /// <c>true</c>, if both <see cref="FileSize" /> values are not equal;
+        /// otherwise, <c>false</c>.
         /// </returns>
         public static bool operator !=(FileSize a, FileSize b)
         {
@@ -294,8 +289,8 @@ namespace Bytewizer.Backblaze.Models
         /// <param name="a">The first value to compare.</param>
         /// <param name="b">The second value to compare.</param>
         /// <returns>
-        /// <see cref="true"/>, if <paramref name="a" /> is less than <paramref name="b" />;
-        /// otherwise, <see cref="false"/>.
+        /// <c>true</c>, if <paramref name="a" /> is less than <paramref name="b" />;
+        /// otherwise, <c>false</c>.
         /// </returns>
         public static bool operator <(FileSize a, FileSize b)
         {
@@ -308,8 +303,8 @@ namespace Bytewizer.Backblaze.Models
         /// <param name="a">The first value to compare.</param>
         /// <param name="b">The second value to compare.</param>
         /// <returns>
-        /// <see cref="true"/>, if <paramref name="a" /> is less than or equal to <paramref name="b" />;
-        /// otherwise, <see cref="false"/>.
+        /// <c>true</c>, if <paramref name="a" /> is less than or equal to <paramref name="b" />;
+        /// otherwise, <c>false</c>.
         /// </returns>
         public static bool operator <=(FileSize a, FileSize b)
         {
@@ -322,8 +317,8 @@ namespace Bytewizer.Backblaze.Models
         /// <param name="a">The first value to compare.</param>
         /// <param name="b">The second value to compare.</param>
         /// <returns>
-        /// <see cref="true"/>, if <paramref name="a" /> is greater than <paramref name="b" />;
-        /// otherwise, <see cref="false"/>.
+        /// <c>true</c>, if <paramref name="a" /> is greater than <paramref name="b" />;
+        /// otherwise, <c>false</c>.
         /// </returns>
         public static bool operator >(FileSize a, FileSize b)
         {
@@ -336,8 +331,8 @@ namespace Bytewizer.Backblaze.Models
         /// <param name="a">The first value to compare.</param>
         /// <param name="b">The second value to compare.</param>
         /// <returns>
-        /// <see cref="true"/>, if <paramref name="a" /> is greater than or equal to <paramref name="b" />;
-        /// otherwise, <see cref="false"/>.
+        /// <c>true</c>, if <paramref name="a" /> is greater than or equal to <paramref name="b" />;
+        /// otherwise, <c>false</c>.
         /// </returns>
         public static bool operator >=(FileSize a, FileSize b)
         {

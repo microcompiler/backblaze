@@ -1,25 +1,26 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Bytewizer.Backblaze.Agent;
-using Bytewizer.Backblaze.Models;
-using Microsoft.Extensions.Logging;
-using System.IO;
 using System.Collections.Generic;
+
+using Microsoft.Extensions.Logging;
+
+using Bytewizer.Backblaze.Cloud;
 
 namespace Backblaze.Sample
 {
-    public class Storage
+    public class Application
     {
-        public readonly IBackblazeAgent _storage;
+        public readonly IStorage _storage;
         public readonly ILogger _logger;
 
         public ProgressBar progress = new ProgressBar();
         
-        public Storage(IBackblazeAgent storage, ILogger<Storage> logger)
+        public Application(IStorage storage, ILogger<Application> logger)
         {
             _storage = storage;
             _logger = logger;
@@ -38,8 +39,10 @@ namespace Backblaze.Sample
                 Exit(1);
             }
 
-            var bucket = await _storage.Buckets.FirstAsync();
-            if (bucket == null) Exit(1);
+            var bucketlist = await _storage.Buckets.GetAsync();
+            if (bucketlist == null) Exit(1);
+
+            var bucket = bucketlist.ToList().First();
 
             switch (args[0].ToLower())
             {
@@ -79,11 +82,11 @@ namespace Backblaze.Sample
 
                         parallelTasks.Add(Task.Run(async () =>
                         {
-                            progress = new ProgressBar();                    
+                            progress = new ProgressBar();
                             await _storage.Files.UploadAsync(bucket.BucketId, file.FullName, file.FullName, progress, token);
                         }));
 
-                        //Console.WriteLine(Environment.NewLine);
+                        Console.WriteLine(Environment.NewLine);
                     }
                     await Task.WhenAll(parallelTasks);
 

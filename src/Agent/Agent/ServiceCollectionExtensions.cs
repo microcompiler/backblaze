@@ -85,7 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .SetHandlerLifetime(TimeSpan.FromSeconds(options.HandlerLifetime))
             .AddPolicyHandler(RetryPolicy(options.RetryCount));
 
-            services.AddSingleton<IStorage, Bytewizer.Backblaze.Cloud.Storage>();
+            services.AddSingleton<IStorage, Storage>();
 
             return new BackblazeAgentBuilder(services);
         }

@@ -16,7 +16,7 @@ namespace Bytewizer.Backblaze.Cloud
         /// Copies local files to a bucket that match a search pattern in a specified directory path, and optionally searches subdirectories.
         /// </summary>
         /// <param name="bucketId">The bucket id to copy files to.</param>
-        /// <param name="path"> The relative or absolute path to the directory to search. This string is not case-sensitive.</param>
+        /// <param name="localPath">The relative or absolute path to the directory to search. This string is not case-sensitive.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path. This parameter can contain a combination of valid
         /// literal path and wildcard (* and ?) characters, but it doesn't support regular expressions.</param>
         /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory

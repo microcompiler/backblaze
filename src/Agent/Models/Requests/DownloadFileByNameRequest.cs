@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bytewizer.Backblaze.Extensions;
+using System;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 
@@ -60,10 +61,10 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public string FileName
         {
-            get { return _RemoteFileName.AbsolutePath; }
-            private set { _RemoteFileName = new Uri(value); }
+            get { return _fileName.ToPath(); }
+            private set { _fileName = new Uri(value, UriKind.RelativeOrAbsolute); }
         }
-        private Uri _RemoteFileName;
+        private Uri _fileName;
 
         /// <summary>
         /// The authorization token that must be used when uploading files.  

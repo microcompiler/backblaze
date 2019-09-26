@@ -12,6 +12,9 @@ namespace Bytewizer.Backblaze.Client
         /// </summary>
         private CacheKeys(string value) { Value = value; }
 
+        /// <summary>
+        /// Gets a <see cref="string" /> that represents this value.
+        /// </summary>
         public string Value { get; private set; }
 
         /// <summary>
@@ -54,11 +57,17 @@ namespace Bytewizer.Backblaze.Client
         /// </summary>
         public static CacheKeys ListUnfinished { get { return new CacheKeys(typeof(ListUnfinishedLargeFilesRequest).Name); } }
 
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
         public override string ToString()
         {
             return this.Value;
         }
 
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
         public static implicit operator string(CacheKeys key) { return key.ToString(); }
     }
 }

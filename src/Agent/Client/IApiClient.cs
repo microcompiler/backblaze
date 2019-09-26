@@ -8,6 +8,9 @@ using Bytewizer.Backblaze.Models;
 
 namespace Bytewizer.Backblaze.Client
 {
+    /// <summary>
+    /// An interface for <see cref="IApiClient"/>.
+    /// </summary>
     public interface IApiClient
     {
         #region Lifetime
@@ -15,9 +18,6 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Frees resources owned by this instance.
         /// </summary>
-        /// <param name="disposing">
-        /// True when called via <see cref="IDisposable.Dispose()"/>, false when called from the finalizer.
-        /// </param>
         void Dispose();
 
         /// <summary>
@@ -118,9 +118,7 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        /// <returns>
-		/// The <see cref="AuthorizeAccountResponse" /> of this <see cref="IApiResults{T}.Response"/> value, or <see cref="null"/>, if the response was was error data.
-		/// </returns>
+		/// The <see cref="AuthorizeAccountResponse" /> of this <see cref="IApiResults{T}.Response"/> value, or <c>null</c>, if the response was was error data.
         Task<IApiResults<AuthorizeAccountResponse>> AuthorizeAccountAync(string keyId, string applicationKey, CancellationToken cancellationToken);
 
         /// <summary>
@@ -305,7 +303,7 @@ namespace Bytewizer.Backblaze.Client
         Task<IApiResults<GetUploadUrlResponse>> GetUploadUrlAsync(GetUploadUrlRequest request, TimeSpan cacheTTL, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Hides a file so that <see cref="DownloadFileByNameAsync"/> will not find the file but previous versions of the file are still stored.   
+        /// Hides a file so that <see cref="DownloadFileByNameAsync(DownloadFileByNameRequest, Stream, IProgress{ICopyProgress}, CancellationToken)"/> will not find the file but previous versions of the file are still stored.   
         /// </summary>
         /// <param name="request">The <see cref="HideFileRequest"/> to send.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>

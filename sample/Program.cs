@@ -30,7 +30,7 @@ namespace Backblaze.Sample
 
                 logger.LogDebug("Woo Hooo");
 
-                await serviceProvider.GetService<Storage>().MainAsync(args, cts.Token);
+                await serviceProvider.GetService<Application>().MainAsync(args, cts.Token);
             }
             catch (Exception ex)
             {
@@ -51,10 +51,12 @@ namespace Backblaze.Sample
                 builder.AddDebug();
                 //builder.AddConsole();
             });
+
+            services.AddMemoryCache();
             
             services.AddBackblazeAgent(config.GetSection("Agent"));
 
-            services.AddSingleton<Storage>();
+            services.AddSingleton<Application>();
         }
     }
 }

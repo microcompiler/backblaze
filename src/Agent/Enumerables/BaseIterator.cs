@@ -38,7 +38,7 @@ namespace Bytewizer.Backblaze.Adapters
         protected readonly CancellationToken _cancellationToken;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseIterator"/> class.
+        /// Initializes a new instance of the <see cref="BaseIterator{T}"/> class.
         /// </summary>
         public BaseIterator(IApiClient client, ILogger logger, TimeSpan cacheTTL, CancellationToken cancellationToken)
         {

@@ -16,7 +16,7 @@ namespace Bytewizer.Backblaze.Client
     /// <summary>
     /// Represents a base implementation which uses <see cref="HttpClient"/> for making HTTP requests.
     /// </summary>
-    public abstract partial class Storage : DisposableObject
+    public abstract partial class ApiRest : DisposableObject
     {
         #region Constants
 
@@ -36,7 +36,7 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="logger">The <see cref="ILogger"/> used for application logging.</param>
         /// <param name="cache">The <see cref="ICacheManager"/> used for application caching.</param>
         /// <param name="policy">The <see cref="IPolicyManager"/> used for application resilience.</param>
-        public Storage(HttpClient httpClient, ILogger<Storage> logger, ICacheManager cache, IPolicyManager policy)
+        public ApiRest(HttpClient httpClient, ILogger<ApiRest> logger, ICacheManager cache, IPolicyManager policy)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -167,6 +167,13 @@ namespace Bytewizer.Backblaze.Client
 
         #region Upload Stream
 
+        /// <summary>
+        /// Uploads content by bucket id. 
+        /// </summary>
+        /// <param name="request">The upload file request content to send.</param>
+        /// <param name="content">The upload content to receive.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <param name="cancel">The cancellation token to cancel operation.</param>
         public async Task<IApiResults<UploadFileResponse>> UploadAsync
             (UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
@@ -279,6 +286,7 @@ namespace Bytewizer.Backblaze.Client
         /// Downloads the most recent version of a large file in chunked parts. 
         /// </summary>
         /// <param name="request">The <see cref="DownloadFileByIdRequest"/> content to send.</param>
+        /// <param name="results">The <see cref="DownloadFileResponse"/> results.</param>
         /// <param name="content">The download content to receive.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
@@ -309,6 +317,7 @@ namespace Bytewizer.Backblaze.Client
         /// Downloads the most recent version of a large file in chunked parts. 
         /// </summary>
         /// <param name="request">The <see cref="DownloadFileByIdRequest"/> content to send.</param>
+        /// <param name="results">The <see cref="DownloadFileResponse"/> results.</param>
         /// <param name="content">The download content to receive.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>

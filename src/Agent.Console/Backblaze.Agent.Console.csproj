@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageId>Backblaze.Agent.Console</PackageId>
     <Authors>Microcompiler</Authors>
     <Company>Bytewizer Inc.</Company>
     <Product>Backblaze B2 Client</Product>
     <LangVersion>7.1</LangVersion>
     <RootNamespace>Bytewizer.Backblaze.Agent.Console</RootNamespace>
-    <Version>0.8.2</Version>
+    <Version>0.8.5</Version>
     <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage API.</Description>
     <Copyright>2019 Bytewizer</Copyright>
     <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
@@ -19,6 +20,7 @@
     <AssemblyName>Backblaze.Agent.Console</AssemblyName>
     <RepositoryType></RepositoryType>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -42,8 +44,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>

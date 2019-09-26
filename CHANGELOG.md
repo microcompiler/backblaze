@@ -1,3 +1,9 @@
+0.8.5 - September 25 2019
+* Added intellisense support in nuget package
+
+0.8.4 - September 24 2019
+* Fixed package build error
+
 0.8.3 - September 24 2019
 * Fixed #5 - UriFormatExceptionSystem thrown when calling UploadAsync
 * Fixed several know issues

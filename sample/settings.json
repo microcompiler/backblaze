@@ -8,6 +8,19 @@
   },
   "Agent": {
     "KeyId": "[key_id]",
-    "ApplicationKey": "[application_key]"
+    "ApplicationKey": "[application_key]",
+    "HandlerLifetime": 0,
+    "Timeout": 0,
+    "RetryCount": 0,
+    "RequestMaxParallel": 0,
+    "DownloadMaxParallel": 0,
+    "DownloadCutoffSize": 0,
+    "DownloadPartSize": 0,
+    "UploadMaxParallel": 0,
+    "UploadCutoffSize": 0,
+    "UploadPartSize": 0,
+    "AutoSetPartSize": false,
+    "ChecksumDisabled": false,
+    "TestMode": ""
   }
 }

@@ -5,6 +5,9 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Bytewizer.Backblaze.Client
 {
+    /// <summary>
+    /// An interface for <see cref="ICacheManager"/>.
+    /// </summary>
     public interface ICacheManager
     {
         /// <summary>

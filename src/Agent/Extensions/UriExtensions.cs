@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Bytewizer.Backblaze.Extensions
 {
@@ -9,6 +7,10 @@ namespace Bytewizer.Backblaze.Extensions
     /// </summary>
     public static class UriExtensions
     {
+        /// <summary>
+        /// Returns a <see cref="string"/> of the <see cref="Uri"/> absolute path.
+        /// </summary>
+        /// <param name="instance">The <see cref="Uri"/> instance to return.</param>
         public static string ToPath(this Uri instance)
         {
             if (instance.IsAbsoluteUri)

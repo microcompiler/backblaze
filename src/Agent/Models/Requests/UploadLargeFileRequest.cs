@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
+using System.Diagnostics;
 
 using Bytewizer.Backblaze.Extensions;
-using System.Diagnostics;
 
 namespace Bytewizer.Backblaze.Models
 {
@@ -16,9 +15,9 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="UploadFileRequest"/> class.
         /// </summary>
-        /// <param name="uploadUrl">The url used to upload this file.</param>
+        /// <param name="bucketId">The bucket id the file will go in.</param>
         /// <param name="fileName">The name of the file.</param>
-        /// <param name="authorizationToken">The authorization token that must be used when uploading files.</param>
+        /// /// <param name="content">The download content to receive.</param>
         public UploadLargeFileRequest(string bucketId, string fileName, Stream content)
         {
             // Validate required arguments

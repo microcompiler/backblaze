@@ -4,6 +4,9 @@ using Polly;
 
 namespace Bytewizer.Backblaze.Client
 {
+    /// <summary>
+    /// An interface for <see cref="IPolicyManager"/>.
+    /// </summary>
     public interface IPolicyManager
     {
         /// <summary>

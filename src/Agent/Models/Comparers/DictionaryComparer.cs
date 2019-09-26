@@ -40,7 +40,7 @@ namespace Bytewizer.Backblaze.Models
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DictionaryComparer{T}"/> class.
+        /// Initializes a new instance of the <see cref="DictionaryComparer()"/> class.
         /// </summary>
         /// <param name="elementComparer">The comparer used to compare elements.</param>
         public DictionaryComparer(IEqualityComparer<object> elementComparer)
@@ -58,18 +58,18 @@ namespace Bytewizer.Backblaze.Models
         /// <param name="objA">The first object to compare.</param>
         /// <param name="objB">The second object to compare.</param>
         /// <returns>true if the objects are considered equal; otherwise, false. If both objA and objB are null, the method returns true.</returns>
-        public bool Equals(IDictionary<TKey, TValue> x, IDictionary<TKey, TValue> y)
+        public bool Equals(IDictionary<TKey, TValue> objA, IDictionary<TKey, TValue> objB)
         {
-            if (x.Count != y.Count)
+            if (objA.Count != objB.Count)
                 return false;
 
-            if (x.Keys.Except(y.Keys).Any())
+            if (objA.Keys.Except(objB.Keys).Any())
                 return false;
 
-            if (y.Keys.Except(x.Keys).Any())
+            if (objB.Keys.Except(objA.Keys).Any())
                 return false;
 
-            return x.All(pair => _elementComparer.Equals(pair.Value, y[pair.Key]));
+            return objA.All(pair => _elementComparer.Equals(pair.Value, objB[pair.Key]));
         }
 
         /// <summary>

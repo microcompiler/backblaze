@@ -26,17 +26,18 @@ namespace Bytewizer.Backblaze.Models
         #region Lifetime
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiResults{T}." /> class.
+        /// Initializes a new instance of the <see cref="ApiResults{T}" /> class.
         /// </summary>
-        /// <param name="response">Http response message.</param>
+        /// <param name="response">The http response message.</param>
         public ApiResults(HttpResponseMessage response)
             : this(response, GetBodyAsObject(response))
         {}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiResults{T}." /> class.
+        /// Initializes a new instance of the <see cref="ApiResults{T}" /> class.
         /// </summary>
-        /// <param name="response">Http response message.</param>
+        /// <param name="response">The http response message.</param>
+        /// <param name="content">The content received.</param>
         public ApiResults(HttpResponseMessage response, T content)
         {
             HttpResponse = response ?? throw new ArgumentNullException(nameof(response));
@@ -44,19 +45,22 @@ namespace Bytewizer.Backblaze.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiResults{T}." /> class.
+        /// Initializes a new instance of the <see cref="ApiResults{T}" /> class.
         /// </summary>
-        /// <param name="response">Http response message.</param>
+        /// <param name="response">The http response message.</param>
+        /// <param name="error">The parsed API error data.</param>
         public ApiResults(HttpResponseMessage response, ErrorResponse error)
         {
             HttpResponse = response ?? throw new ArgumentNullException(nameof(response));
             Error = error;
         }
-
+        //The parsed API error data.
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiResults{T}." /> class.
+        /// Initializes a new instance of the <see cref="ApiResults{T}" /> class.
         /// </summary>
         /// <param name="response">Http response message.</param>
+        /// <param name="content">The content received.</param>
+        /// <param name="error">The parsed API error data.</param>
         public ApiResults(HttpResponseMessage response, T content, ErrorResponse error)
         {
             HttpResponse = response ?? throw new ArgumentNullException(nameof(response));
@@ -110,7 +114,7 @@ namespace Bytewizer.Backblaze.Models
         public bool IsSuccessStatusCode { get { return HttpResponse.IsSuccessStatusCode; } }
 
         /// <summary>
-        /// Throws an exception if the <see cref="IsSuccessStatusCode"/> property for the HTTP response is <see cref="false"/>.
+        /// Throws an exception if the <see cref="IsSuccessStatusCode"/> property for the HTTP response is <c>false</c>"/>.
         /// </summary>
         public IApiResults<T> EnsureSuccessStatusCode()
         {

@@ -13,13 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Backblaze.Agent" Version="0.8.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
+    <PackageReference Include="Backblaze.Agent.Console" Version="0.8.5" />
   </ItemGroup>
 
   <ItemGroup>

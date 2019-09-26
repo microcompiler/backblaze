@@ -43,7 +43,7 @@ namespace Bytewizer.Backblaze.Cloud
             {
                 parallelTasks.Add(Task.Run(async () =>
                 {         
-                    var results = await Files.UploadAsync(bucketId, filepath, null, cancellationToken);
+                    var results = await Files.UploadAsync(bucketId, filepath, filepath, null, cancellationToken);
                     if (results.IsSuccessStatusCode)
                     {
                         response.Add(results.Response);

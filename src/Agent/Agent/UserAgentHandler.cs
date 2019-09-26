@@ -8,19 +8,31 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Bytewizer.Backblaze.Agent
-{ 
+{
+    /// <summary>
+    /// The user agent handler.
+    /// </summary>
     public class UserAgentHandler : DelegatingHandler
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserAgentHandler" /> class.
+        /// </summary>
         public UserAgentHandler()
             : this(Assembly.GetEntryAssembly())
         {
         }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserAgentHandler" /> class.
+        /// </summary>
+        /// <param name="assembly">An assembly of a common language runtime application.</param>
         public UserAgentHandler(Assembly assembly)
             : this(GetProduct(assembly), GetVersion(assembly))
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserAgentHandler" /> class.
+        /// </summary>
         public UserAgentHandler(string applicationName, string applicationVersion)
         {
             if (applicationName == null)
@@ -36,11 +48,22 @@ namespace Bytewizer.Backblaze.Agent
             };
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserAgentHandler" /> class.
+        /// </summary>
         public UserAgentHandler(List<ProductInfoHeaderValue> userAgentValues) =>
-            this.UserAgentValues = userAgentValues ?? throw new ArgumentNullException(nameof(userAgentValues));
+            UserAgentValues = userAgentValues ?? throw new ArgumentNullException(nameof(userAgentValues));
 
+        /// <summary>
+        /// Gets or sets user agent values.
+        /// </summary>
         public List<ProductInfoHeaderValue> UserAgentValues { get; set; }
 
+        /// <summary>
+        /// Add the user agent to the outgoing request.
+        /// </summary>
+        /// <param name="request">The HTTP request message.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken)
@@ -53,12 +76,20 @@ namespace Bytewizer.Backblaze.Agent
                 }
             }
 
-            // Else the header has already been added due to a retry.
+            // else the header has already been added due to a retry.
             return base.SendAsync(request, cancellationToken);
         }
 
+        /// <summary>
+        /// Get product info.
+        /// </summary>
+        /// <param name="assembly">An assembly of a common language runtime application.</param>
         private static string GetProduct(Assembly assembly) => GetAttributeValue<AssemblyProductAttribute>(assembly);
 
+        /// <summary>
+        /// Get version info.
+        /// </summary>
+        /// <param name="assembly">An assembly of a common language runtime application.</param>
         private static string GetVersion(Assembly assembly)
         {
             var infoVersion = GetAttributeValue<AssemblyInformationalVersionAttribute>(assembly);
@@ -70,6 +101,11 @@ namespace Bytewizer.Backblaze.Agent
             return GetAttributeValue<AssemblyFileVersionAttribute>(assembly);
         }
 
+        /// <summary>
+        /// Get attribute values.
+        /// </summary>
+        /// <typeparam name="T">Attribute type.</typeparam>
+        /// <param name="assembly">An assembly of a common language runtime application.</param>
         private static string GetAttributeValue<T>(Assembly assembly)
             where T : Attribute
         {

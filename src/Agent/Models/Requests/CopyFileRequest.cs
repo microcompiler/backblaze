@@ -18,6 +18,7 @@ namespace Bytewizer.Backblaze.Models
         /// Initializes a new instance of the <see cref="CopyFileRequest"/> class for copying files.
         /// </summary>
         /// <param name="sourceFileId">The unique identifier for the file to copy.</param>
+        /// <param name="fileName">The name of the file.</param>
         public CopyFileRequest(string sourceFileId, string fileName)
         {
             // Validate required arguments
@@ -50,10 +51,10 @@ namespace Bytewizer.Backblaze.Models
         [JsonProperty(Required = Required.Always)]
         public string FileName
         {
-            get { return _FileName.ToPath(); }
-            private set { _FileName = new Uri(value, UriKind.RelativeOrAbsolute); }
+            get { return _fileName.ToPath(); }
+            private set { _fileName = new Uri(value, UriKind.RelativeOrAbsolute); }
         }
-        private Uri _FileName;
+        private Uri _fileName;
 
         /// <summary>
         /// A standard byte-range request to copy. If not provided the whole source file will be copied. 

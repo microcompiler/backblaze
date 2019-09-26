@@ -32,14 +32,6 @@ namespace Bytewizer.Backblaze.Models
         [JsonProperty(Required = Required.Always)]
         public string FileId { get; private set; }
 
-        /// <summary>
-        /// Converts the value of this instance to a memory cache key.
-        /// </summary>
-        public string ToCacheKey()
-        {
-            return $"{GetType().Name}--{GetHashCode().ToString()}";
-        }
-
         ///	<summary>
         ///	Debugger display for this object.
         ///	</summary>

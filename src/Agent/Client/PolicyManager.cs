@@ -7,12 +7,12 @@ using Microsoft.Extensions.Logging;
 using Polly;
 
 using Bytewizer.Backblaze.Agent;
-using System.Net.Http;
-using System.Net;
-using System.Linq;
 
 namespace Bytewizer.Backblaze.Client
 {
+    /// <summary>
+    /// Policy objects used for application resilience.
+    /// </summary>
     public class PolicyManager : IPolicyManager
     {
         /// <summary>
@@ -28,6 +28,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyManager"/> class.
         /// </summary>
+        /// <param name="options">Options for application configuration.</param>
         /// <param name="logger">Logger for application caching.</param>
         public PolicyManager(IAgentOptions options, ILogger<PolicyManager> logger)
         {

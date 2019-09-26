@@ -16,7 +16,6 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         /// <param name="bucketId">The bucket id you want to upload to.</param>
         /// <param name="fileName">The name of the file.</param>
-        /// <param name="authorizationToken">The authorization token that must be used when uploading files.</param>
         public UploadFileByBucketIdRequest(string bucketId, string fileName)
         {
             // Validate required arguments

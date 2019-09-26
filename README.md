@@ -5,6 +5,7 @@ The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaz
 - Full support for Backblaze B2 Cloud Storage API v2 including accounts, keys, buckets and files.
 - Built on .NET Core, targeting .NET Standard 2.0, which means Backblaze Agent will work on Windows, Mac and Linux systems.
 - Seamlessly intergrates with .NET Core Dependency Injection and HttpClientFactory to implement resilient requests.
+- Simple in-memory local or distributed  response cache using MemoryCache.
 - Large file support with low memory allocation.
 - Native support of task based programming model (async/await).
 

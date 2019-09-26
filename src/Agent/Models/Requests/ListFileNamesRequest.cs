@@ -76,7 +76,7 @@ namespace Bytewizer.Backblaze.Models
         public string Prefix { get; set; } = string.Empty;
 
         /// <summary>
-        /// Files returned will be limited to those within the top folder or any one subfolder. Defaults to <see cref="null"/>. Folder names 
+        /// Files returned will be limited to those within the top folder or any one subfolder. Defaults to <c>null</c>. Folder names 
         /// will also be returned. The delimiter character will be used to "break" file names into folders. 
         /// </summary>
         public string Delimiter { get; set; } = null;

@@ -1,5 +1,5 @@
 ﻿using Bytewizer.Backblaze.Cloud;
-using Bytewizer.Backblaze.Client;
+
 using Microsoft.Extensions.Logging;
 
 namespace Backblaze

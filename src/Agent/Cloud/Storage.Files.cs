@@ -154,6 +154,7 @@ namespace Bytewizer.Backblaze.Cloud
         /// Gets a url for uploading files. 
         /// </summary>
         /// <param name="bucketId">The ID of the bucket that you want to upload to.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<GetUploadUrlResponse>> IStorageFiles.GetUploadUrlAsync
@@ -164,7 +165,7 @@ namespace Bytewizer.Backblaze.Cloud
         }
 
         /// <summary>
-        /// Hides a file so that <see cref="DownloadFileByNameAsync"/> will not find the file but previous versions of the file are still stored.   
+        /// Hides a file so that <see cref="DownloadByIdAsync(DownloadFileByIdRequest, Stream, IProgress{ICopyProgress}, CancellationToken)"/> will not find the file but previous versions of the file are still stored.   
         /// </summary>
         /// <param name="bucketId">The bucket id containing the file to hide.</param>
         /// <param name="fileName">The name of the file to hide.</param>
@@ -207,8 +208,7 @@ namespace Bytewizer.Backblaze.Cloud
         /// List versions of the files contained in one bucket in alphabetical order by file name
         /// and by reverse of date/time uploaded for versions of files with the same name. 
         /// </summary>
-        /// <param name="request">The <see cref="ListFileVersionRequest"/> to send.</param>
-        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <param name="bucketId">The bucket id to look for file names in.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<ListFileVersionResponse>> IStorageFiles.ListVersionsAsync
@@ -261,9 +261,10 @@ namespace Bytewizer.Backblaze.Cloud
         #endregion
 
         /// <summary>
-        /// Upload file to Backblaze B2 Cloud Storage. 
+        /// Uploads a file by bucket id and file name to Backblaze B2 Cloud Storage. 
         /// </summary>
         /// <param name="bucketId">The bucket id you want to upload to.</param>
+        /// <param name="fileName">The name of the file to upload.</param>
         /// <param name="localPath">The relative or absolute path to the file. This string is not case-sensitive.</param>
         /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
         /// <param name="cancel">The cancellation token to cancel operation.</param>
@@ -272,7 +273,7 @@ namespace Bytewizer.Backblaze.Cloud
         /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<UploadFileResponse>> IStorageFiles.UploadAsync
-            (string bucketId, string localPath, IProgress<ICopyProgress> progress, CancellationToken cancel)
+            (string bucketId, string fileName, string localPath, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
             using (var content = File.OpenRead(localPath))
             {
@@ -297,7 +298,7 @@ namespace Bytewizer.Backblaze.Cloud
                 var isCompressed = ((File.GetAttributes(localPath) & FileAttributes.Compressed) == FileAttributes.Compressed);
                 fileInfo.Add("src_file_compressed", isCompressed.ToString().ToLower());
 
-                var request = new UploadFileByBucketIdRequest(bucketId, localPath) { LastModified = lastModified, FileInfo = fileInfo };
+                var request = new UploadFileByBucketIdRequest(bucketId, fileName) { LastModified = lastModified, FileInfo = fileInfo };
                 var results = await _client.UploadAsync(request, content, progress, cancel);
                 if (results.IsSuccessStatusCode)
                 {
@@ -313,10 +314,46 @@ namespace Bytewizer.Backblaze.Cloud
         }
 
         /// <summary>
-        /// Download file from Backblaze B2 Cloud Storage. 
+        /// Downloads a file by bucket and file name from Backblaze B2 Cloud Storage. 
+        /// </summary>
+        /// <param name="bucketName">The name of the bucket to download from.</param>
+        /// <param name="fileName">The name of the file to download.</param>
+        /// <param name="localPath">The relative or absolute path to the file. This string is not case-sensitive.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <param name="cancel">The cancellation token to cancel operation.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        async Task<IApiResults<DownloadFileResponse>> IStorageFiles.DownloadAsync
+            (string bucketName, string fileName, string localPath, IProgress<ICopyProgress> progress, CancellationToken cancel)
+        {
+            if (!Directory.Exists(Path.GetDirectoryName(localPath)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(localPath));
+            }
+
+            using (var content = File.Create(localPath))
+            {
+                var request = new DownloadFileByNameRequest(bucketName, fileName);
+                var results = await _client.DownloadAsync(request, content, progress, cancel);
+                if (results.IsSuccessStatusCode)
+                {
+                    var lastModified = results.Response.FileInfo.GetLastModified();
+                    if (lastModified != DateTime.MinValue)
+                        File.SetLastWriteTime(localPath, lastModified);
+                }
+
+                return results;
+            }
+        }
+
+        /// <summary>
+        /// Downloads a file by file id from Backblaze B2 Cloud Storage. 
         /// </summary>
         /// <param name="fileId">The unique id of the file to download.</param>
         /// <param name="localPath">The relative or absolute path to the file. This string is not case-sensitive.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <param name="cancel">The cancellation token to cancel operation.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>

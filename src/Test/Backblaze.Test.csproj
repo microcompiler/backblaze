@@ -11,7 +11,7 @@
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl></PackageProjectUrl>
     <RepositoryUrl></RepositoryUrl>
-    <Version>0.8.2</Version>
+    <Version>0.8.5</Version>
     <PackageTags>backblaze, b2, cloud-storage, api, csharp</PackageTags>
     <RootNamespace>Bytewizer.Backblaze</RootNamespace>
   </PropertyGroup>
