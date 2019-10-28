@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Version>0.9.0</Version>
+    <Authors>Bytewizer Inc.</Authors>
+    <Product>Backblaze B2 Client Sample</Product>
+    <Copyright>2019 Bytewizer</Copyright>
+    <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage API.</Description>
+    <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
+    <RootNamespace>Bytewizer.Backblaze.Minimum</RootNamespace>
+    <AssemblyName>Bytewizer.Backblaze.Minimum</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Backblaze.Client" Version="0.9.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
+  </ItemGroup>
+
+</Project>

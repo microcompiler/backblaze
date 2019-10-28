@@ -1,3 +1,10 @@
+0.9.0 - October 27 2019
+* Added support for HttpClient initialization
+* Fixed #6 - Ability to initialize the client without dependency injection
+* Fixed several know issues
+* Published Backblaze.Client package to NuGet 
+* Delisted 'Backblaze.Agent.Console' from package listings
+
 0.8.5 - September 25 2019
 * Added intellisense support in nuget package
 

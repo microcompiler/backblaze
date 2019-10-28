@@ -1,5 +1,5 @@
 param(
-  [string]$version = '0.8.5',
+  [string]$version = '0.9.0',
   [string]$configuration = 'Release',
   [string]$path = $PSScriptRoot,
   [string[]]$targets = 'default'
@@ -25,7 +25,8 @@ target compile {
 target test {
   # Set the path to the projects you want to test.
   $test_projects = @(
-    "$path\src\Test\Backblaze.Test.csproj"
+    "$path\test\Integration\Backblaze.Tests.Integration.csproj",
+	"$path\test\Unit\Backblaze.Tests.Unit.csproj"
   )
 
   # This runs "dotnet test". Change to Invoke-Xunit to invoke "dotnet xunit"
