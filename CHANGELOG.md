@@ -1,4 +1,4 @@
-0.9.0 - October 27 2019
+0.9.1 - October 27 2019
 * Added support for HttpClient initialization
 * Fixed #6 - Ability to initialize the client without dependency injection
 * Fixed several know issues
