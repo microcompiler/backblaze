@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <Version>0.8.1</Version>
+    <Version>0.9.1</Version>
     <Authors>Bytewizer Inc.</Authors>
     <Product>Backblaze B2 Client Sample</Product>
     <Copyright>2019 Bytewizer</Copyright>
@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Backblaze.Agent" Version="0.9.0" />
+    <PackageReference Include="Backblaze.Agent" Version="0.9.1" />
     <PackageReference Include="Bytewizer.Extensions.Console" Version="0.9.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />

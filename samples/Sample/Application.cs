@@ -17,12 +17,12 @@ namespace Backblaze.Sample
 {
     public class Application : IApplication
     {
-        public readonly IStorageAgent _storage;
+        public readonly IStorageClient _storage;
         public readonly ILogger _logger;
 
         public ProgressBar progress = new ProgressBar();
         
-        public Application(IStorageAgent storage, ILogger<Application> logger)
+        public Application(IStorageClient storage, ILogger<Application> logger)
         {
             _storage = storage;
             _logger = logger;

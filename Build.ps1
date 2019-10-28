@@ -1,5 +1,5 @@
 param(
-  [string]$version = '0.9.0',
+  [string]$version = '0.9.1',
   [string]$configuration = 'Release',
   [string]$path = $PSScriptRoot,
   [string[]]$targets = 'default'

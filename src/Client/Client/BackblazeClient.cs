@@ -10,28 +10,28 @@ using Bytewizer.Backblaze.Handlers;
 namespace Bytewizer.Backblaze.Client
 {
     /// <summary>
-    /// Represents a default implementation of the <see cref="BackblazeAgent"/> which uses <see cref="HttpClient"/> for making requests.
+    /// Represents a default implementation of the <see cref="BackblazeClient"/> which uses <see cref="HttpClient"/> for making requests.
     /// </summary>
-    public class BackblazeAgent : Storage, IStorageAgent
+    public class BackblazeClient : Storage, IStorageClient
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BackblazeAgent"/> class with defaults.
+        /// Initializes a new instance of the <see cref="BackblazeClient"/> class with defaults.
         /// </summary>
-        public BackblazeAgent()
+        public BackblazeClient()
             : base(GetHttpClient(), new ClientOptions(), new NullLoggerFactory(), null)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BackblazeAgent"/> class.
+        /// Initializes a new instance of the <see cref="BackblazeClient"/> class.
         /// </summary>
-        public BackblazeAgent(IClientOptions options, ILoggerFactory logger = null, IMemoryCache cache = null)
+        public BackblazeClient(IClientOptions options, ILoggerFactory logger = null, IMemoryCache cache = null)
             : base(GetHttpClient(options.RetryCount, logger), options, logger, cache)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BackblazeAgent"/> class.
+        /// Initializes a new instance of the <see cref="BackblazeClient"/> class.
         /// </summary>
-        public BackblazeAgent(HttpClient client, IClientOptions options, ILoggerFactory logger = null, IMemoryCache cache = null)
+        public BackblazeClient(HttpClient client, IClientOptions options, ILoggerFactory logger = null, IMemoryCache cache = null)
             : base(client, options, logger, cache)
         { }
 
@@ -40,9 +40,9 @@ namespace Bytewizer.Backblaze.Client
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
-        public static BackblazeAgent Initialize(string keyId, string applicationKey)
+        public static BackblazeClient Initialize(string keyId, string applicationKey)
         {
-            var client = new BackblazeAgent();
+            var client = new BackblazeClient();
             if (client == null) throw new ArgumentNullException(nameof(client));
 
             client.Connect(keyId, applicationKey);
@@ -58,7 +58,7 @@ namespace Bytewizer.Backblaze.Client
             if (loggerFactory == null)
                 loggerFactory = new NullLoggerFactory();
 
-            var logger = loggerFactory.CreateLogger<BackblazeAgent>();
+            var logger = loggerFactory.CreateLogger<BackblazeClient>();
             var policy = PolicyManager.CreateRetryPolicy(retryCount, logger);
             
             return ClientFactory.Create(new DelegatingHandler[] { 

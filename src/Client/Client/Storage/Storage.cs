@@ -16,7 +16,7 @@ namespace Bytewizer.Backblaze.Client
     /// <summary>
     /// Represents a base implementation of the <see cref="Storage"/> which uses <see cref="ApiClient"/> for making HTTP requests.
     /// </summary>
-    public abstract partial class Storage : DisposableObject, IStorageAgent
+    public abstract partial class Storage : DisposableObject, IStorageClient
     {
         #region Lifetime
 

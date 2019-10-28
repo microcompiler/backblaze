@@ -9,13 +9,13 @@ namespace Bytewizer.Backblaze.Samples
     {
         // Note: Run with Control + F5 to keep the console window open
 
-        private static BackblazeAgent Client;
+        private static IStorageClient Client;
 
         static void Main(string[] args)
         {
             try
             {
-                Client = BackblazeAgent.Initialize("e14ecff4c2db", "0007eb0f509d3f8d7b40f8594b10ea501dd48303e8");
+                Client = BackblazeClient.Initialize("[key_id]", "[application_key]");
 
                 var buckets = Client.Buckets.GetAsync().GetAwaiter().GetResult();
 

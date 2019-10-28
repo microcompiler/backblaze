@@ -32,7 +32,7 @@ namespace Backblaze.Tests.Integration
         public IConfiguration Configuration { get; }
         public ILogger Logger { get; }
         public IClientOptions Options { get; }
-        public IStorageAgent Storage { get; }
+        public IStorageClient Storage { get; }
 
         //[Fact]
         //public async Task Agent_Example()

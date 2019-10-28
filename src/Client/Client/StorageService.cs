@@ -5,7 +5,7 @@ namespace Bytewizer.Backblaze.Client
     /// <summary>
     /// Represents a default implementation of the <see cref="StorageService"/> which uses <see cref="ApiClient"/> for making requests.
     /// </summary>
-    public class StorageService : Storage, IStorageAgent
+    public class StorageService : Storage, IStorageClient
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StorageService"/> class.

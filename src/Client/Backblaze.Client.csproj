@@ -9,7 +9,7 @@
     <Product>Backblaze B2 Client</Product>
     <LangVersion>7.1</LangVersion>
     <RootNamespace>Bytewizer.Backblaze</RootNamespace>
-    <Version>0.9.0</Version>
+    <Version>0.9.1</Version>
     <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage.PI.</Description>
     <Copyright>2019 Bytewizer</Copyright>
     <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>

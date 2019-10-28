@@ -41,14 +41,14 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-To get a list of backblaze buckets simply inject `IStorageAgent` into your class and call the async client.  
+To get a list of backblaze buckets simply inject `IStorageClient` into your class and call the async client.  
 
 ```csharp
 public class IndexModel : PageModel
 {
-  private readonly IStorageAgent _storage;
+  private readonly IStorageClient _storage;
 
-  public IndexModel(IStorageAgent storage)
+  public IndexModel(IStorageClient storage)
   {
       _storage = storage;
   }
@@ -80,7 +80,7 @@ Sample Code:
 ```CSharp
 class Program
 {
-  private static BackblazeAgent Client;
+  private static IStorageClient Client;
 
   static async Task Main(string[] args)
   {
@@ -97,7 +97,7 @@ class Program
  
       var cache = new MemoryCache(new MemoryCacheOptions());
 
-      Client = new BackblazeAgent(options, loggerFactory, cache);  
+      Client = new BackblazeClient(options, loggerFactory, cache);  
       await Client.ConnectAsync("[key_id]", "[application_key]");
 
       var buckets = await Client.Buckets.GetAsync();
@@ -121,13 +121,13 @@ Sample Code:
 ```CSharp
 class Program
 {
-  private static BackblazeAgent Client;
+  private static IStorageClient Client;
 
   static void Main(string[] args)
   {
     try
     {
-      Client = new BackblazeAgent();
+      Client = new BackblazeClient();
       Client.Connect("[key_id]", "[application_key]");
       
       var buckets = Client.Buckets.GetAsync().GetAwaiter().GetResult();

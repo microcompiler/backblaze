@@ -39,7 +39,7 @@ namespace Backblaze.Tests.Integration
         public IConfiguration Config { get; }
         public ILogger Logger { get; }
         public IClientOptions Options { get; }
-        public IStorageAgent Storage { get; }
+        public IStorageClient Storage { get; }
         public MockFileSystem FileSystem { get; }
 
         #endregion
@@ -76,7 +76,7 @@ namespace Backblaze.Tests.Integration
             Config = Services.GetService<IConfiguration>();
             Logger = Services.GetService<ILogger<StorageClientFixture>>();
             Options = Services.GetService<IClientOptions>();
-            Storage = Services.GetService<IStorageAgent>();
+            Storage = Services.GetService<IStorageClient>();
             FileSystem = SeedFileSystem();
 
             SeedStorage().GetAwaiter().GetResult();

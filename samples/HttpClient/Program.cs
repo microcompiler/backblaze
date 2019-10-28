@@ -14,7 +14,7 @@ namespace Bytewizer.HttpClient.Sample
     {
         // Note: Run with Control + F5 to keep the console window open
 
-        private static BackblazeAgent Client;
+        private static BackblazeClient Client;
 
         static async Task Main(string[] args)
         {
@@ -33,7 +33,7 @@ namespace Bytewizer.HttpClient.Sample
 
                 var cache = new MemoryCache(new MemoryCacheOptions());
 
-                Client = new BackblazeAgent(options, loggerFactory, cache);
+                Client = new BackblazeClient(options, loggerFactory, cache);
                 
                 await Client.ConnectAsync("[key_id]", "[application_key]");
                 

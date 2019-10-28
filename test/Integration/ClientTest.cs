@@ -14,6 +14,9 @@ namespace Backblaze.Tests.Integration
 {
     public class ClientTest : IClassFixture<StorageClientFixture>
     {
+        private readonly static BackblazeClient Client = 
+            BackblazeClient.Initialize("[key_id]", "[application_key]");
+
         public ClientTest(StorageClientFixture fixture)
         {
             Options = fixture.Options;
@@ -28,7 +31,7 @@ namespace Backblaze.Tests.Integration
         [Fact]
         public async Task BackblazeAgent_Default()
         {
-            using (var client = new BackblazeAgent())
+            using (var client = new BackblazeClient())
             {
                 client.Connect(Options.KeyId, Options.ApplicationKey);
 
@@ -40,7 +43,7 @@ namespace Backblaze.Tests.Integration
         [Fact]
         public async Task BackblazeAgent_Initialize()
         {
-            using (var client = BackblazeAgent.Initialize(Options.KeyId, Options.ApplicationKey))
+            using (var client = BackblazeClient.Initialize(Options.KeyId, Options.ApplicationKey))
             {
                 client.Connect();
 
@@ -65,7 +68,7 @@ namespace Backblaze.Tests.Integration
 
             var cache = new MemoryCache(new MemoryCacheOptions());
 
-            using (var client = new BackblazeAgent(options, loggerFactory, cache))
+            using (var client = new BackblazeClient(options, loggerFactory, cache))
             {
                 client.Connect();
 

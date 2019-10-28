@@ -11,7 +11,7 @@ namespace Bytewizer.Backblaze.Client
     /// <summary>
     /// An interface for <see cref="Storage"/>.
     /// </summary>
-    public interface IStorageAgent : IDisposable
+    public interface IStorageClient : IDisposable
     {
         #region Lifetime
 

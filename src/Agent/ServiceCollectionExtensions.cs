@@ -75,7 +75,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddHttpMessageHandler<UserAgentHandler>()
             .SetHandlerLifetime(TimeSpan.FromSeconds(options.HandlerLifetime));
 
-            services.AddSingleton<IStorageAgent, StorageService>();
+            services.AddSingleton<IStorageClient, StorageService>();
 
             return new BackblazeAgentBuilder(services);
         }
