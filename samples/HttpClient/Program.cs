@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
 
 using Bytewizer.Backblaze.Client;
+using System.IO;
+using System.Linq;
 
 namespace Bytewizer.HttpClient.Sample
 {
@@ -34,11 +36,11 @@ namespace Bytewizer.HttpClient.Sample
                 Client = new BackblazeAgent(options, loggerFactory, cache);
                 
                 await Client.ConnectAsync("[key_id]", "[application_key]");
-
+                
                 var buckets = await Client.Buckets.GetAsync();
 
                 foreach (var bucket in buckets)
-                    Console.WriteLine($"Bucket Name: {bucket.BucketName} - Type: {bucket.BucketType}");   
+                    Console.WriteLine($"Bucket Name: {bucket.BucketName} - Type: {bucket.BucketType}");
             }
             catch (Exception ex)
             {

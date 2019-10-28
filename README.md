@@ -6,9 +6,9 @@ The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaz
 
 ## Features
 - Full support for Backblaze B2 Cloud Storage API v2 including accounts, keys, buckets and files.
-- Built on .NET Core, targeting .NET Standard 2.0, which means Backblaze Agent will work on Windows, Mac and Linux systems.
+- Built targeting .NET Standard 2.0 which means Backblaze Agent will work on Windows, Mac and Linux systems.
 - Seamlessly intergrates with .NET Core Dependency Injection and HttpClientFactory to implement resilient requests.
-- Simple in-memory local or distributed  response cache using MemoryCache.
+- Simple in-memory response cache using MemoryCache.
 - Large file support with low memory allocation.
 - Native support of task based programming model (async/await).
 
@@ -69,8 +69,8 @@ public class IndexModel : PageModel
   }
 }
 ```
-### Initializing Backblaze Client without Dependance Injection ###
-Run the following commands:
+### Initializing Backblaze Client without Dependency Injection ###
+Install the following packages:
 ```bash
 > dotnet add package Backblaze.Client
 > dotnet add package Microsoft.Extensions.Caching.Memory
@@ -112,8 +112,8 @@ class Program
   }
 }
 ```
-### Initializing Backblaze Client without Dependance Injection, Logging or Caching ###
-Run the following command:
+### Initializing Backblaze Client without Dependency Injection, Logging or Caching ###
+Install the following package:
 ```bash
 > dotnet add package Backblaze.Client
 ```
@@ -142,6 +142,19 @@ class Program
   }
 }
 ```
+## Basic Usage
+
+Upload File Stream
+```CSharp
+foreach (var filePath in Directory.GetFiles(@"c:\my\directory"))
+{
+  using (var stream = File.OpenRead(filePath))
+  {
+    var results = await Client.UploadAsync("[BucketId]", new FileInfo(filePath).Name, stream);
+  }
+}
+```
+
 ## Microsoft Logging Integration
 
 Install the Microsoft.Extensions.Logging packages:

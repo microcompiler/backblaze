@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Sample", "Sample\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpClient.Sample", "HttpClient\HttpClient.Sample.csproj", "{D88FA66B-B274-40DF-AD5B-F6143E6B7D6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpClient.Minimum", "HttpClinet Minimum\HttpClient.Minimum.csproj", "{8BC73B0B-39E2-493F-B915-5C500ABA2C3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpClient.Minimum", "HttpClient Minimum\HttpClient.Minimum.csproj", "{8BC73B0B-39E2-493F-B915-5C500ABA2C3D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
