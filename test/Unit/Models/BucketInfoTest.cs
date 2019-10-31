@@ -9,20 +9,7 @@ using Xunit;
 namespace Backblaze.Tests.Unit
 {
     public class BucketInfoTest
-    {
-                
-        [Fact]
-        public void Tester()
-        {
-            var options = new ClientOptions() { KeyId = "e14ecff4c2db", ApplicationKey = "0007eb0f509d3f8d7b40f8594b10ea501dd48303e8" };
-            var loggerFactory = new LoggerFactory();
-            var apiClient = new ApiClient(new HttpClient(), options, loggerFactory.CreateLogger<ApiRest>(), null);
-            //apiClient.Connect("e14ecff4c2db", "0007eb0f509d3f8d7b40f8594b10ea501dd48303e8");
-            var storage = new StorageService(apiClient, loggerFactory.CreateLogger<StorageService>());
-            var testBucket = storage.Buckets.FindByNameAsync("integraton-test-bucket-db7e").GetAwaiter().GetResult();
-
-        }
-        
+    {    
         [Fact]
         public void BucketInfoEquatable()
         {

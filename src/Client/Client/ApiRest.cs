@@ -33,7 +33,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiClient"/> class.
         /// </summary>
-        public ApiRest(HttpClient httpClient, IClientOptions options, ILogger<ApiRest> logger, IMemoryCache cache )
+        public ApiRest(HttpClient httpClient, IClientOptions options, ILogger<ApiRest> logger, IMemoryCache cache)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -349,7 +349,7 @@ namespace Bytewizer.Backblaze.Client
                 var mmultiStream = new MultiStream(content, part.Position, part.Length);
                 var partReqeust = new DownloadFileByNameRequest(request.BucketName, request.FileName)
                 {
-                    Range = new RangeHeaderValue(part.Position, part.Position + part.Length - 1)
+                    Range = part.RangeHeader
                 };
 
                 var partResults = await DownloadFileByNameAsync(partReqeust, mmultiStream, progress, cancellationToken);
@@ -392,7 +392,7 @@ namespace Bytewizer.Backblaze.Client
             if (fileResults.IsSuccessStatusCode)
             {
                 var urlRequest = new GetUploadPartUrlRequest(fileResults.Response.FileId);
-                var urlResults = await GetUploadPartUrlAsync(urlRequest, DefaultCacheTTL, cancellationToken);
+                var urlResults = await GetUploadPartUrlAsync(urlRequest, default, cancellationToken);
                 if (fileResults.IsSuccessStatusCode)
                 {
                     foreach (var part in parts)
@@ -450,9 +450,9 @@ namespace Bytewizer.Backblaze.Client
             if (streamLength == -1 || streamLength <= partSize)
                 return hashSet;
 
-            long parts = streamLength / partSize;
+            var parts = Math.Ceiling((double)streamLength / partSize);
 
-            for (int i = 0; i <= parts; i++)
+            for (int i = 0; i < parts; i++)
             {
                 hashSet.Add(
                     new FileParts()
@@ -472,23 +472,29 @@ namespace Bytewizer.Backblaze.Client
         /// </summary>
         /// <param name="contentLength">The download content length.</param>
         /// <param name="partSize">The part size in bits.</param>
-        private static HashSet<FileParts> GetContentParts(long contentLength, FileSize partSize)
+        private static HashSet<FileParts> GetContentParts(long contentLength, long partSize)
         {
             HashSet<FileParts> hashSet = new HashSet<FileParts>();
 
             if (contentLength == -1 || contentLength <= partSize)
                 return hashSet;
 
-            long parts = contentLength / (long)partSize;
+            var parts = Math.Ceiling((double)contentLength / partSize);
 
-            for (int i = 0; i <= parts; i++)
+            for (int i = 0; i < parts; i++)
             {
+                var partNumber = i + 1;
+                var position = i * partSize;
+                var length = Math.Min(contentLength - position, partSize);
+                var rangeHeader = new RangeHeaderValue(position, position + length - 1);
+
                 hashSet.Add(
                     new FileParts()
                     {
-                        PartNumber = i + 1,
-                        Position = i * (long)partSize,
-                        Length = Math.Min(contentLength - (i * (long)partSize), (long)partSize)
+                        PartNumber = partNumber,
+                        Position = position,
+                        Length = length,
+                        RangeHeader = rangeHeader
                     }
                 );
             }

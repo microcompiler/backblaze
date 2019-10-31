@@ -13,7 +13,7 @@ namespace Bytewizer.Backblaze.Handlers
     /// <summary>
     /// The user agent handler.
     /// </summary>
-    public class UserAgentHandler : DelegatingHandler
+    public sealed class UserAgentHandler : DelegatingHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UserAgentHandler" /> class.

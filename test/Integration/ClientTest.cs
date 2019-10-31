@@ -1,26 +1,25 @@
-using System;
-using System.Net.Http;
 using System.Threading.Tasks;
+using System.Security.Authentication;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 using Bytewizer.Backblaze.Client;
 
 using Xunit;
 
-using Microsoft.Extensions.Caching.Memory;
-
 namespace Backblaze.Tests.Integration
 {
     public class ClientTest : IClassFixture<StorageClientFixture>
     {
-        private readonly static BackblazeClient Client = 
-            BackblazeClient.Initialize("[key_id]", "[application_key]");
+        private readonly BackblazeClient Client;
 
         public ClientTest(StorageClientFixture fixture)
         {
             Options = fixture.Options;
             BucketId = fixture.bucketId;
+
+            Client = BackblazeClient.Initialize(Options.KeyId, Options.ApplicationKey);
         }
         public IClientOptions Options { get; }
 
@@ -29,7 +28,26 @@ namespace Backblaze.Tests.Integration
         public string BucketId;
 
         [Fact]
-        public async Task BackblazeAgent_Default()
+        public async Task BackblazeClient_Initialize()
+        {
+            var results = await Client.Buckets.FindByNameAsync(BucketName);
+            Assert.Equal(BucketName, results.BucketName);
+        }
+
+        [Fact]
+        public async Task BackblazeClient_Authentication()
+        {
+            await Assert.ThrowsAsync<AuthenticationException>(async () =>  
+            {
+                using (var client = new BackblazeClient())
+                {
+                    await client.ConnectAsync("Bad_Key_Id", "Bad_Appkication_Key");
+                };
+            });
+        }
+
+        [Fact]
+        public async Task BackblazeClient_Default()
         {
             using (var client = new BackblazeClient())
             {
@@ -41,19 +59,7 @@ namespace Backblaze.Tests.Integration
         }
 
         [Fact]
-        public async Task BackblazeAgent_Initialize()
-        {
-            using (var client = BackblazeClient.Initialize(Options.KeyId, Options.ApplicationKey))
-            {
-                client.Connect();
-
-                var results = await client.Buckets.FindByNameAsync(BucketName);
-                Assert.Equal(BucketName, results.BucketName);
-            };
-        }
-
-        [Fact]
-        public async Task InitializeAgent_WithLoggerAndCache()
+        public async Task BackblazeClient_WithLoggerAndCache()
         {
             var options = Options;
 

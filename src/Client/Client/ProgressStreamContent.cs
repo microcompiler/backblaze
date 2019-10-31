@@ -15,7 +15,7 @@ namespace Bytewizer.Backblaze.Client
     {
         private const int defaultBufferSize = 16384;
 
-        private Stream _content;
+        private readonly Stream _content;
         private readonly int _bufferSize;
         private readonly long _expectedContentLength;
         private readonly bool _handleStreamDispose = false;

@@ -63,7 +63,7 @@ namespace Bytewizer.Backblaze.Client
             
             return ClientFactory.Create(new DelegatingHandler[] { 
                 new UserAgentHandler(), 
-                new TransientFaultHandler(policy), 
+                new TransientHttpErrorHandler(policy), 
                 new LoggingHandler(logger) 
             });
         }

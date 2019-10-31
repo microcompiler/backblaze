@@ -1108,7 +1108,7 @@ namespace Bytewizer.Backblaze.Client
 
                 response.Headers.GetBzInfo(fileResponse);
 
-                VerifyDownloadHash(fileResponse, content);
+                //VerifyDownloadHash(fileResponse, content);
 
                 return new ApiResults<DownloadFileResponse>(response, fileResponse);
             }

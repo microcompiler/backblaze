@@ -28,6 +28,7 @@ namespace Backblaze.Tests.Integration
         public IClientOptions Options { get; }
         public IStorageClient Storage { get; }
         public MockFileSystem FileSystem { get; }
+        public MockFileSystem LargeFileSystem { get; }
 
         public BaseFixture(StorageClientFixture fixture)
         {
@@ -37,6 +38,7 @@ namespace Backblaze.Tests.Integration
             Options = fixture.Options;
             Storage = fixture.Storage;
             FileSystem = fixture.FileSystem;
+            LargeFileSystem = fixture.LargeFileSystem;
 
             BucketId = fixture.bucketId;
         }

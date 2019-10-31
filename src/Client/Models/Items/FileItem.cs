@@ -41,7 +41,7 @@ namespace Bytewizer.Backblaze.Models
         /// Gets or sets the SHA1 of the bytes stored in the file as a 40-digit hex string. Large files do not have SHA1 checksums and the value is "none".
         /// The value is <c>null</c> when the action is <see cref="ActionType.Hide"/> or <see cref="ActionType.Folder"/>. 
         /// </summary>
-        public string ContentSha1 { get; set; }
+        public virtual string ContentSha1 { get; set; }
 
         /// <summary>
         /// Gets or sets the file content type. When the action is <see cref="ActionType.Upload"/> or <see cref="ActionType.Start"/>, the MIME type of the file as specified when the file 

@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
 using System.IO;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Backblaze.Tests.Integration
 {
@@ -41,6 +42,7 @@ namespace Backblaze.Tests.Integration
         public IClientOptions Options { get; }
         public IStorageClient Storage { get; }
         public MockFileSystem FileSystem { get; }
+        public MockFileSystem LargeFileSystem { get; }
 
         #endregion
 
@@ -78,6 +80,7 @@ namespace Backblaze.Tests.Integration
             Options = Services.GetService<IClientOptions>();
             Storage = Services.GetService<IStorageClient>();
             FileSystem = SeedFileSystem();
+            LargeFileSystem = SeedLargeFileSystem();
 
             SeedStorage().GetAwaiter().GetResult();
         }
@@ -94,11 +97,21 @@ namespace Backblaze.Tests.Integration
         {
             var fileSystem = new MockFileSystem();
 
-            fileSystem.AddFile(@"c:\rootbytes.bin", new MockFileData(new byte[] { 0x01, 0x34, 0x56, 0xd2 }));
-            fileSystem.AddFile(@"c:\matrix\file-bytes.bin", new MockFileData(new byte[] { 0x02, 0x34, 0x56, 0xd2 }));
-            fileSystem.AddFile(@"c:\shawshank\file-bytes.bin", new MockFileData(new byte[] { 0x03, 0x34, 0x56, 0xd2 }));
+            fileSystem.AddFile(@"c:\root-five-bytes.bin", new MockFileData(new byte[] { 0x01, 0x34, 0x56, 0xd2, 0xd2 }));
+            fileSystem.AddFile(@"c:\matrix\five-bytes.bin", new MockFileData(new byte[] { 0x02, 0x34, 0x56, 0xd2, 0xd2 }));
+            fileSystem.AddFile(@"c:\shawshank\five-bytes.bin", new MockFileData(new byte[] { 0x03, 0x34, 0x56, 0xd2, 0xd2 }));
 
             return fileSystem;
+        }
+
+        private MockFileSystem SeedLargeFileSystem()
+        {
+            var content = Enumerable.Range(0, (int)(ClientOptions.MinimumCutoffSize * 1.2)).Select(i => (byte)i).ToArray();
+            var largeFileSystem = new MockFileSystem();
+
+            largeFileSystem.AddFile(@"c:\six-megabyte.bin", new MockFileData(content));
+
+            return largeFileSystem;
         }
 
         private async Task SeedStorage()

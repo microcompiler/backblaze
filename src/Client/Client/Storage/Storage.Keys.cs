@@ -99,7 +99,7 @@ namespace Bytewizer.Backblaze.Client
             (ListKeysRequest request, TimeSpan cacheTTL)
         {
             var enumerable = new KeyEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<KeyItem>;
-            return await Task.FromResult(enumerable);
+            return await Task.FromResult(enumerable).ConfigureAwait(false);
         }
 
         /// <summary>

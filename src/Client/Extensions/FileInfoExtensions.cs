@@ -64,7 +64,7 @@ namespace Bytewizer.Backblaze.Extensions
         }
 
         /// <summary>
-        /// Sets the large file SHA1 header.
+        /// Gets the large file SHA1 header.
         /// </summary>
         /// <param name="fileInfo">The file info dictionary.</param>
         public static string GetLargeFileSha1(this FileInfo fileInfo)

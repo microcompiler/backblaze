@@ -14,6 +14,7 @@ using Bytewizer.Backblaze.Extensions;
 using Bytewizer.Backblaze.Enumerables;
 
 using Xunit;
+using System.Diagnostics;
 
 namespace Backblaze.Tests.Integration
 {
@@ -306,7 +307,7 @@ namespace Backblaze.Tests.Integration
             Assert.Equal(3, response.Count());
         }
 
-        [Fact, TestPriority(2)]
+        [Fact, TestPriority(3)]
         public async Task Files_ListFileInfoAsync()
         {
             var response = new List<GetFileInfoResponse>();
@@ -344,7 +345,7 @@ namespace Backblaze.Tests.Integration
             Assert.Equal(files.Response.Files.Count(), response.Count());
         }
 
-        [Fact, TestPriority(3)]
+        [Fact, TestPriority(4)]
         public async Task Files_DownloadAsync()
         {
             var response = new List<DownloadFileResponse>();
@@ -377,7 +378,7 @@ namespace Backblaze.Tests.Integration
             Assert.Equal(files.Count(), response.Count());
         }
 
-        [Fact, TestPriority(4)]
+        [Fact, TestPriority(5)]
         public async Task Files_CopyAsync()
         {
             var response = new List<CopyFileResponse>();
@@ -398,7 +399,103 @@ namespace Backblaze.Tests.Integration
             Assert.Equal(files.Response.Files.Count(), response.Count());
         }
 
-        [Fact, TestPriority(5)]
+        [Fact, TestPriority(10)]
+        public async Task LargeFiles_UploadAsync()
+        {
+            var response = new List<UploadFileResponse>();
+            var files = LargeFileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
+
+            foreach (var file in files)
+            {
+                using (var content = LargeFileSystem.File.OpenRead(file))
+                {
+                    var request = new UploadFileByBucketIdRequest(BucketId, file);
+                    var results = await Storage.UploadAsync(request, content, null, CancellationToken.None);
+                    if (results.IsSuccessStatusCode)
+                    {
+                        var fileSha1 = LargeFileSystem.File.OpenRead(file).ToSha1();
+                        if (!fileSha1.Equals(results.Response.ContentSha1))
+                            throw new InvalidOperationException();
+
+                        response.Add(results.Response);
+                    }
+                }
+            }
+
+            Assert.Equal(files.Count(), response.Count());
+        }
+
+        [Fact, TestPriority(11)]
+        public async Task LargeFiles_DownloadAsync()
+        {
+            var response = new List<DownloadFileResponse>();
+            var fileSystem = new MockFileSystem();
+            var files = LargeFileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
+
+            foreach (var file in files)
+            {
+                if (!fileSystem.Directory.Exists(Path.GetDirectoryName(file)))
+                {
+                    fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(file));
+                }
+
+                using (var content = fileSystem.File.Create(file))
+                {
+                    var results = await Storage.DownloadAsync(BucketName, file, content);
+                    if (results.IsSuccessStatusCode)
+                    {
+                        response.Add(results.Response);
+                    }
+                }
+
+                var byte1 = LargeFileSystem.File.ReadAllBytes(file);
+                var byte2 = fileSystem.File.ReadAllBytes(file);
+
+                if (!byte1.SequenceEqual(byte2))
+                    throw new InvalidOperationException();
+            }
+
+            Assert.Equal(files.Count(), response.Count());
+        }
+
+        [Fact, TestPriority(12)]
+        public async Task LargeFiles_DownloadAsync_ById()
+        {
+            var response = new List<DownloadFileResponse>();
+            var fileSystem = new MockFileSystem();
+
+            var fileResults = await Storage.Files.ListNamesAsync(BucketId);
+            fileResults.EnsureSuccessStatusCode();
+
+            var files = fileResults.Response.Files.Where(x => x.FileName == "c:/six-megabyte.bin");
+
+            foreach (var file in files)
+            {
+                if (!fileSystem.Directory.Exists(Path.GetDirectoryName(file.FileName)))
+                {
+                    fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(file.FileName));
+                }
+
+                using (var content = fileSystem.File.Create(file.FileName))
+                {
+                    var results = await Storage.DownloadByIdAsync(file.FileId, content);
+                    if (results.IsSuccessStatusCode)
+                    {
+                        response.Add(results.Response);
+                    }
+                }
+
+                var byte1 = LargeFileSystem.File.ReadAllBytes(file.FileName);
+                var byte2 = fileSystem.File.ReadAllBytes(file.FileName);
+
+                if (!byte1.SequenceEqual(byte2))
+                    throw new InvalidOperationException();
+            }
+
+            Assert.Equal(files.Count(), response.Count());
+        }
+
+        [Fact, TestPriority(100)]
         public async Task Files_DeleteAsync()
         {
             var response = new List<DeleteFileVersionResponse>();

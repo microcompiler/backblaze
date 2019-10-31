@@ -1,4 +1,6 @@
-﻿namespace Bytewizer.Backblaze.Models
+﻿using System.Net.Http.Headers;
+
+namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
     /// Represents information related to a <see cref="FileParts"/>.
@@ -16,8 +18,13 @@
         public long Position { get; set; }
 
         /// <summary>
-        /// Gets or sets the legnth of the file part
+        /// Gets or sets the legnth of the file part.
         /// </summary>
         public long Length { get; set; }
+
+        /// <summary>
+        /// Gets or sets a range header value of the file part.
+        /// </summary>
+        public RangeHeaderValue RangeHeader { get; set; }
     }
 }
