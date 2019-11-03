@@ -19,12 +19,12 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Minimum number of characters in bucket name.
         /// </summary>
-        public const int MinimumBucketNameLength = 6;
+        public static readonly int MinimumBucketNameLength = 6;
 
         /// <summary>
         /// Maximum number of characters in bucket name.
         /// </summary>
-        public const int MaximumBucketNameLength = 50;
+        public static readonly int MaximumBucketNameLength = 50;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateBucketRequest"/> class.

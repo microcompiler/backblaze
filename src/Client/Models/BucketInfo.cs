@@ -13,17 +13,17 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Maximum number of bucket items allowed.
         /// </summary>
-        public const int MaximumBucketItemsAllowed = 10;
+        public static readonly int MaximumBucketItemsAllowed = 10;
 
         /// <summary>
         /// Minimum number of characters in bucket key name.
         /// </summary>
-        public const int MinimumBucketInfoLength = 1;
+        public static readonly int MinimumBucketInfoLength = 1;
 
         /// <summary>
         /// Maximum number of characters in bucket key name.
         /// </summary>
-        public const int MaximumBucketInfoLength = 50;
+        public static readonly int MaximumBucketInfoLength = 50;
 
         /// <summary>
         /// The dictionary used to store elements.

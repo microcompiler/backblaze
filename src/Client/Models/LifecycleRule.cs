@@ -11,12 +11,12 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Minimum number of days from hiding to deleting.
         /// </summary>
-        public const int MinimumDaysFromHidingToDeleting = 1;
+        public static readonly int MinimumDaysFromHidingToDeleting = 1;
 
         /// <summary>
         /// Minimum number of days from uploading to hiding.
         /// </summary>
-        public const int MinimumDaysFromUploadingToHiding = 1;
+        public static readonly int MinimumDaysFromUploadingToHiding = 1;
 
         /// <summary>
         /// This specifis how long to keep file versions after hiding. When set 0 is not allowed and it must be a positive number. 

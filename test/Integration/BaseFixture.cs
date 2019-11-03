@@ -19,6 +19,7 @@ using System.IO.Abstractions.TestingHelpers;
 
 namespace Backblaze.Tests.Integration
 {
+    
     [TestCaseOrderer("Backblaze.Tests.Integration.PriorityOrderer", "Backblaze.Tests.Integration")]
     public abstract class BaseFixture : IClassFixture<StorageClientFixture>
     {
@@ -43,6 +44,7 @@ namespace Backblaze.Tests.Integration
             BucketId = fixture.bucketId;
         }
 
+        public string ContentType = "application/octet-stream";
         public string BucketName = StorageClientFixture.BucketName;
         public string BucketId;
         public string KeyName = StorageClientFixture.KeyName;

@@ -6,6 +6,9 @@ using System.Security.Authentication;
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
 using Bytewizer.Backblaze.Enumerables;
+using System.IO;
+using System.Threading;
+using System.Linq;
 
 namespace Bytewizer.Backblaze.Client
 {
@@ -148,6 +151,25 @@ namespace Bytewizer.Backblaze.Client
             return await _client.StartLargeFileAsync(request, cancellationToken);
         }
 
+        /// <summary>
+        /// Uploads one part of a multi-part content stream using file id obtained from <see cref="StartLargeFileResponse"/>. 
+        /// </summary>
+        /// <param name="uploadUrl">The url used to upload this file.</param>
+        /// <param name="partNumber">The part number of the file.</param>
+        /// <param name="authorizationToken">The authorization token that must be used when uploading files.</param>
+        /// <param name="content"> The content stream of the content payload.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        async Task<IApiResults<UploadPartResponse>> IStorageParts.UploadAsync
+            (Uri uploadUrl, int partNumber, string authorizationToken, Stream content, IProgress<ICopyProgress> progress)
+        {
+            var request = new UploadPartRequest(uploadUrl, partNumber, authorizationToken);
+            return await _client.UploadPartAsync(request, content, progress, cancellationToken);
+        }
+
         #endregion
 
         /// <summary>
@@ -160,7 +182,32 @@ namespace Bytewizer.Backblaze.Client
         async Task<IEnumerable<PartItem>> IStorageParts.GetEnumerableAsync(ListPartsRequest request, TimeSpan cacheTTL)
         {
             var enumerable = new PartEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<PartItem>;
-            return await Task.FromResult(enumerable);
+            return await Task.FromResult(enumerable).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets all parts associated with a file id ordered by part number. 
+        /// </summary>
+        /// <param name="fileId">The large file id whose parts you want to list.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        async Task<IEnumerable<PartItem>> IStorageParts.GetAsync(string fileId)
+        {
+            var request = new ListPartsRequest(fileId);
+            return await Parts.GetAsync(request);
+        }
+
+        /// <summary>
+        /// Gets all parts associated with a file id ordered by part number. 
+        /// </summary>
+        /// <param name="request">The <see cref="ListPartsRequest"/> to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        async Task<IEnumerable<PartItem>> IStorageParts.GetAsync(ListPartsRequest request, TimeSpan cacheTTL)
+        {
+            var enumerable = await Parts.GetEnumerableAsync(request, cacheTTL);
+            return enumerable.OrderBy(x => x.PartNumber).ToList();
         }
     }
 }

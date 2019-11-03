@@ -16,22 +16,22 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Minimum numbers of characters in key name.
         /// </summary>
-        public const int MinimumKeyNameLength = 1;
+        public static readonly int MinimumKeyNameLength = 1;
 
         /// <summary>
         /// Maximum number of characters in key name.
         /// </summary>
-        public const int MaximumKeyNameLength = 100;
+        public static readonly int MaximumKeyNameLength = 100;
 
         /// <summary>
         /// Minimum number of seconds key will expire.
         /// </summary>
-        public const int MinimumDurationInSeconds = 1;
+        public static readonly int MinimumDurationInSeconds = 1;
 
         /// <summary>
         /// Maximum number of seconds (1000 days in seconds) key will expire.
         /// </summary>
-        public const int MaximumDurationInSeconds = 86400000;
+        public static readonly int MaximumDurationInSeconds = 86400000;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateKeyRequest"/> class.
@@ -87,7 +87,7 @@ namespace Bytewizer.Backblaze.Models
         /// a positive integer and must be less than 1000 days (in seconds). 
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public ulong ValidDurationInSeconds
+        public long ValidDurationInSeconds
         {
             get { return _validDurationInSeconds; }
             set
@@ -98,7 +98,7 @@ namespace Bytewizer.Backblaze.Models
                     throw new ArgumentOutOfRangeException($"Argument must be a minimum of {MinimumDurationInSeconds} and a maximum of {MaximumDurationInSeconds} duration in seconds.", nameof(ValidDurationInSeconds));
             }
         }
-        private ulong _validDurationInSeconds;
+        private long _validDurationInSeconds;
 
         /// <summary>
         /// When present the new key can only access this bucket. When set only these capabilities can be specified: listBuckets, listFiles,

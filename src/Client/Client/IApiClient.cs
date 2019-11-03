@@ -11,22 +11,8 @@ namespace Bytewizer.Backblaze.Client
     /// <summary>
     /// An interface for <see cref="IApiClient"/>.
     /// </summary>
-    public interface IApiClient
+    public interface IApiClient : IDisposable
     {
-        #region Lifetime
-
-        /// <summary>
-        /// Frees resources owned by this instance.
-        /// </summary>
-        void Dispose();
-
-        /// <summary>
-        /// Indicates this instance has been disposed.
-        /// </summary>
-        bool IsDisposed { get; }
-
-        #endregion
-
         #region Public Properties
 
         /// <summary>

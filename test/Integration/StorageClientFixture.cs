@@ -18,19 +18,19 @@ using System.Linq;
 
 namespace Backblaze.Tests.Integration
 {
-    public class StorageClientFixture : IDisposable 
+    public class StorageClientFixture : IDisposable
     {
         #region Constants
 
         /// <summary>
         /// The default test bucket created to run test methods in.
         /// </summary>
-        public const string BucketName = "integraton-test-bucket-db7e";
+        public static readonly string BucketName = "integraton-test-bucket-db7e";
 
         /// <summary>
         /// The default test key created to run test methods with.
         /// </summary>
-        public const string KeyName = "integration-test-key-db7e";
+        public static readonly string KeyName = "integration-test-key-db7e";
 
         #endregion
 
@@ -49,9 +49,14 @@ namespace Backblaze.Tests.Integration
         #region Private Fields
 
         /// <summary>
+        /// Thread synchronization object.
+        /// </summary>
+        private static object _lock = new object();
+
+        /// <summary>
         /// Configuration flag.
         /// </summary>
-        private static bool _initialized;
+        //private static bool _initialized;
 
         /// <summary>
         /// The default test bucket id to run test methods.
@@ -72,9 +77,8 @@ namespace Backblaze.Tests.Integration
 
         public StorageClientFixture()
         {
-            string[] args = null;
-            Services = CreateConsoleBuilder(args).Build().Services;
-            
+            Services = CreateConsoleBuilder(null).Build().Services;
+
             Config = Services.GetService<IConfiguration>();
             Logger = Services.GetService<ILogger<StorageClientFixture>>();
             Options = Services.GetService<IClientOptions>();
@@ -82,16 +86,19 @@ namespace Backblaze.Tests.Integration
             FileSystem = SeedFileSystem();
             LargeFileSystem = SeedLargeFileSystem();
 
-            SeedStorage().GetAwaiter().GetResult();
+            lock (_lock)
+            {
+                SeedStorage().GetAwaiter().GetResult();
+            }
         }
 
         public static IApplicationBuilder CreateConsoleBuilder(string[] args) =>
-            ConsoleApplication.CreateDefaultBuilder(args)
-                .ConfigureServices((context, services) =>
-                {
-                    services.AddMemoryCache();
-                    services.AddBackblazeAgent(context.Configuration.GetSection("Agent"));
-                });
+        ConsoleApplication.CreateDefaultBuilder(args)
+            .ConfigureServices((context, services) =>
+            {
+                services.AddMemoryCache();
+                services.AddBackblazeAgent(context.Configuration.GetSection("Agent"));
+            });
 
         private MockFileSystem SeedFileSystem()
         {
@@ -116,9 +123,9 @@ namespace Backblaze.Tests.Integration
 
         private async Task SeedStorage()
         {
-            if (_initialized)
-                return;
-            
+            //if (_initialized)
+            //    return;
+
             //Check for test bucket
             var testBucket = await Storage.Buckets.FindByNameAsync(BucketName);
 
@@ -151,8 +158,8 @@ namespace Backblaze.Tests.Integration
             }
 
             Logger.LogInformation("Storage seed initialization completed");
-                
-            _initialized = true;
+
+            //_initialized = true;
 
         }
 

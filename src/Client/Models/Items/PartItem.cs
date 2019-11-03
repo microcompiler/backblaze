@@ -21,7 +21,7 @@ namespace Bytewizer.Backblaze.Models
         /// Gets or sets the part number.  
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string PartNumber { get; set; }
+        public int PartNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the number of bytes stored in the part.

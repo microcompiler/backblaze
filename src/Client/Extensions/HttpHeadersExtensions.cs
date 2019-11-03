@@ -80,8 +80,11 @@ namespace Bytewizer.Backblaze.Extensions
         /// <param name="value">The header value.</param>
         public static void SetBzInfo(this HttpRequestHeaders headers, IDictionary<string,string> value)
         {
-            foreach (var h in value.ToDictionary(a => $"x-bz-info-{a.Key}", a => a.Value.ToUrlEncode()))
-                headers.Add(h.Key, h.Value);
+            if (value != null)
+            {
+                foreach (var h in value.ToDictionary(a => $"x-bz-info-{a.Key}", a => a.Value.ToUrlEncode()))
+                    headers.Add(h.Key, h.Value);
+            }
         }
 
         /// <summary>

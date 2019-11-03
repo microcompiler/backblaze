@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Security.Authentication;
 
 using Bytewizer.Backblaze.Models;
+using System.IO;
 
 namespace Bytewizer.Backblaze.Client
 {
@@ -103,6 +104,20 @@ namespace Bytewizer.Backblaze.Client
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         Task<IApiResults<StartLargeFileResponse>> StartLargeFileAsync(StartLargeFileRequest request);
 
+        /// <summary>
+        /// Uploads one part of a multi-part content stream using file id obtained from <see cref="StartLargeFileResponse"/>. 
+        /// </summary>
+        /// <param name="uploadUrl">The url used to upload this file.</param>
+        /// <param name="partNumber">The part number of the file.</param>
+        /// <param name="authorizationToken">The authorization token that must be used when uploading files.</param>
+        /// <param name="content"> The content stream of the content payload.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
+        /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<IApiResults<UploadPartResponse>> UploadAsync(Uri uploadUrl, int partNumber, string authorizationToken, Stream content, IProgress<ICopyProgress> progress);
+
         #endregion
 
         /// <summary>
@@ -113,5 +128,22 @@ namespace Bytewizer.Backblaze.Client
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         Task<IEnumerable<PartItem>> GetEnumerableAsync(ListPartsRequest request, TimeSpan cacheTTL = default);
+
+        /// <summary>
+        /// Gets all parts associated with a file id ordered by part number. 
+        /// </summary>
+        /// <param name="fileId">The large file id whose parts you want to list.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<IEnumerable<PartItem>> GetAsync(string fileId);
+
+        /// <summary>
+        /// Gets all parts associated with a file id ordered by part number. 
+        /// </summary>
+        /// <param name="request">The <see cref="ListPartsRequest"/> to send.</param>
+        /// <param name="cacheTTL">An absolute cache expiration time to live (TTL) relative to now.</param>
+        /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
+        /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
+        Task<IEnumerable<PartItem>> GetAsync(ListPartsRequest request, TimeSpan cacheTTL = default);
     }
 }

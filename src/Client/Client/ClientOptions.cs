@@ -13,77 +13,77 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// The default base authentication url of Backblaze B2 Cloud Storage.
         /// </summary>
-        public static Uri DefaultAuthUrl = new Uri("https://api.backblazeb2.com/b2api/v2/");
+        public static readonly Uri DefaultAuthUrl = new Uri("https://api.backblazeb2.com/b2api/v2/");
 
         /// <summary>
         /// The default time in seconds that the message handler instance can be reused.
         /// </summary>
-        public const double DefaultHandlerLifetime = 600;
+        public static readonly double DefaultHandlerLifetime = 600;
         
         /// <summary>
         /// Represents the default time in seconds to wait before the client request times out.
         /// </summary>
-        public const double DefaultTimeout = 600;
+        public static readonly double DefaultTimeout = 600;
 
         /// <summary>
         /// Represents the default number of times the client will retry failed requests before timing out.
         /// </summary>
-        public const int DefaultRetryCount = 5;
+        public static readonly int DefaultRetryCount = 5;
 
         /// <summary>
         /// Represents the default maximum number of parallel request connections established.
         /// </summary>
-        public const int DefaultRequestMaxParallel = 10;
+        public static readonly int DefaultRequestMaxParallel = 10;
 
         /// <summary>
         /// Represents the default maximum number of parallel download connections established.
         /// </summary>
-        public const int DefaultDownloadMaxParallel = 5;
+        public static readonly int DefaultDownloadMaxParallel = 5;
 
         /// <summary>
         /// Represents the default download cutoff size for switching to chunked parts in bytes.
         /// </summary>
-        public const long DefaultDownloadCutoffSize = 100 * FileSize.MegaByte;
+        public static readonly long DefaultDownloadCutoffSize = 100 * FileSize.MegaByte;
 
         /// <summary>
         /// Represents the default download part size in bytes. This field is constant.
         /// </summary>
-        public const long DefaultDownloadPartSize = 100 * FileSize.MegaByte;
+        public static readonly long DefaultDownloadPartSize = 100 * FileSize.MegaByte;
 
         /// <summary>
         /// Represents the default maximum number of parallel upload connections established.
         /// </summary>
-        public const int DefaultUploadMaxParallel = 3;
+        public static readonly int DefaultUploadMaxParallel = 3;
 
         /// <summary>
         /// Represents the default upload cutoff size for switching to chunked parts in bytes. 
         /// </summary>
-        public const long DefaultUploadCutoffSize = 100 * FileSize.MegaByte;
+        public static readonly long DefaultUploadCutoffSize = 100 * FileSize.MegaByte;
 
         /// <summary>
         /// Represents the default upload part size in bytes. 
         /// </summary>
-        public const long DefaultUploadPartSize = 100 * FileSize.MegaByte;
+        public static readonly long DefaultUploadPartSize = 100 * FileSize.MegaByte;
 
         /// <summary>
         /// Represents the minimum file cutoff size in bytes. 
         /// </summary>
-        public const long MinimumCutoffSize = 5 * FileSize.MegaByte;
+        public static readonly long MinimumCutoffSize = 5 * FileSize.MegaByte;
 
         /// <summary>
         /// Represents the maximum file size in bytes. 
         /// </summary>
-        public const long MaximumFileSize = 10 * FileSize.TeraByte;
+        public static readonly long MaximumFileSize = 10 * FileSize.TeraByte;
 
         /// <summary>
         /// Represents the minimum file part size in bytes. 
         /// </summary>
-        public const long MinimumPartSize = 5 * FileSize.MegaByte;
+        public static readonly long MinimumPartSize = 5 * FileSize.MegaByte;
 
         /// <summary>
         /// Represents the maximum file part size in bytes. 
         /// </summary>
-        public const long MaximumPartSize = 5 * FileSize.GigaByte;
+        public static readonly long MaximumPartSize = 5 * FileSize.GigaByte;
 
         #endregion
 

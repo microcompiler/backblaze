@@ -391,7 +391,7 @@ namespace Bytewizer.Backblaze.Client
             (ListFileNamesRequest request, TimeSpan cacheTTL)
         {
             var enumerable = new FileNameEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
-            return await Task.FromResult(enumerable);
+            return await Task.FromResult(enumerable).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -406,7 +406,7 @@ namespace Bytewizer.Backblaze.Client
             (ListFileVersionRequest request, TimeSpan cacheTTL)
         {
             var enumerable = new FileVersionEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
-            return await Task.FromResult(enumerable);
+            return await Task.FromResult(enumerable).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -420,7 +420,7 @@ namespace Bytewizer.Backblaze.Client
                 (ListUnfinishedLargeFilesRequest request, TimeSpan cacheTTL)
         {
             var enumerable = new UnfinishedEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
-            return await Task.FromResult(enumerable);
+            return await Task.FromResult(enumerable).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -452,44 +452,24 @@ namespace Bytewizer.Backblaze.Client
             (ListFileVersionRequest request)
         {
             var response = new List<DeleteFileVersionResponse>();
-            var parallelTasks = new List<Task>();
-
+            
             var files = await Files.GetEnumerableAsync(request);
-            foreach (var file in files)
+            await files.ForEachAsync(_client.Options.RequestMaxParallel, async filepath =>
             {
-                parallelTasks.Add(Task.Run(async () =>
+                var deleteRequest = new DeleteFileVersionRequest(filepath.FileId, filepath.FileName);
+                var results = await _client.DeleteFileVersionAsync(deleteRequest, cancellationToken);
+                if (results.IsSuccessStatusCode)
                 {
-                    var deleteRequest = new DeleteFileVersionRequest(file.FileId, file.FileName);
-                    var results = await _client.DeleteFileVersionAsync(deleteRequest, cancellationToken);
-                    if (results.IsSuccessStatusCode)
-                    {
-                        _logger.LogInformation($"Successfully deleted '{file.FileName}' file from '{request.BucketId}' bucket id.");
-                        response.Add(results.Response);
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"Failed deleting '{file.FileName}' file with error: {results.Error.Message}");
-                    }
-                }));
-            }
-            await Task.WhenAll(parallelTasks);
+                    _logger.LogInformation($"Successfully deleted '{filepath.FileName}' file from '{request.BucketId}' bucket id.");
+                    response.Add(results.Response);
+                }
+                else
+                {
+                    _logger.LogWarning($"Failed deleting '{filepath.FileName}' file with error: {results.Error.Message}");
+                }
+            }, cancellationToken);
 
             return response;
-
-            //var tom = files.ForEachAsync(Task.Run(async () =>
-            //{
-            //        var deleteRequest = new DeleteFileVersionRequest(file.FileId, file.FileName);
-            //        var results = await _client.DeleteFileVersionAsync(deleteRequest, cancellationToken);
-            //        if (results.IsSuccessStatusCode)
-            //        {
-            //            _logger.LogInformation($"Successfully deleted '{file.FileName}' file from '{request.BucketId}' bucket id.");
-            //            response.Add(results.Response);
-            //        }
-            //        else
-            //        {
-            //            _logger.LogWarning($"Failed deleting '{file.FileName}' file with error: {results.Error.Message}");
-            //        }
-            //    }));
         }
     }
 }

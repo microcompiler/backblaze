@@ -15,12 +15,12 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Represents the default number of keys per transaction.
         /// </summary>
-        public const int DefaultPartsPerTransaction = 100;
+        public static readonly int DefaultPartsPerTransaction = 100;
 
         /// <summary>
         /// Maximum number of keys per transaction.
         /// </summary>
-        public const int MaximumPartsPerTransaction = 10000;
+        public static readonly int MaximumPartsPerTransaction = 10000;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListPartsRequest"/> class.

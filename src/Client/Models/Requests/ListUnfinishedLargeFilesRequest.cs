@@ -15,12 +15,12 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Represents the default number of file names per transaction.
         /// </summary>
-        public const int DefaultNamesPerTransaction = 100;
+        public static readonly int DefaultNamesPerTransaction = 100;
 
         /// <summary>
         /// Maximum number of file names per transaction.
         /// </summary>
-        public const int MaximumNamesPerTransaction = 1000;
+        public static readonly int MaximumNamesPerTransaction = 1000;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListUnfinishedLargeFilesRequest"/> class.

@@ -13,22 +13,22 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Minimum number of characters in bucket key name.
         /// </summary>
-        public const int MinimumCorsRuleNameLength = 6;
+        public static readonly int MinimumCorsRuleNameLength = 6;
 
         /// <summary>
         /// Maximum number of characters in core rule name.
         /// </summary>
-        public const int MaximumCorsRuleNameLength = 50;
+        public static readonly int MaximumCorsRuleNameLength = 50;
 
         /// <summary>
         /// Represents the minimum age seconds. 
         /// </summary>
-        public const int MinimumAgeSeconds = 0;
+        public static readonly int MinimumAgeSeconds = 0;
 
         /// <summary>
         /// Represents the maximum age seconds. 
         /// </summary>
-        public const int MaximumAgeSeconds = 86400;
+        public static readonly int MaximumAgeSeconds = 86400;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CorsRule" /> class.

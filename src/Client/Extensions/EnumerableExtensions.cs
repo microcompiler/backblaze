@@ -53,7 +53,7 @@ namespace Bytewizer.Backblaze.Extensions
                     using (partition)
                         while (partition.MoveNext() && !cancellationToken.IsCancellationRequested)
                         {
-                            await action(partition.Current);
+                            await action(partition.Current).ConfigureAwait(false);
                         }
                 }, cancellationToken));
         }

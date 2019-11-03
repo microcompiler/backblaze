@@ -14,12 +14,12 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Represents the default number of keys per transaction.
         /// </summary>
-        public const int DefaultKeysPerTransaction = 100;
+        public static readonly int DefaultKeysPerTransaction = 100;
 
         /// <summary>
         /// Maximum number of keys per transaction.
         /// </summary>
-        public const int MaximumKeysPerTransaction = 10000;
+        public static readonly int MaximumKeysPerTransaction = 10000;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListKeysRequest"/> class.

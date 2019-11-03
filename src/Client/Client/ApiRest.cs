@@ -140,7 +140,7 @@ namespace Bytewizer.Backblaze.Client
         /// </summary>
         public async Task ConnectAsync()
         {
-            await ConnectAsync(Options.KeyId, Options.ApplicationKey);
+            await ConnectAsync(Options.KeyId, Options.ApplicationKey).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace Bytewizer.Backblaze.Client
             _policy.ConnectAsync = () => ConnectAsync(keyId, applicationKey);
             _cache.Clear();
 
-            var results = await AuthorizeAccountAync(keyId, applicationKey, CancellationToken.None);
+            var results = await AuthorizeAccountAync(keyId, applicationKey, CancellationToken.None).ConfigureAwait(false);
             if (results.IsSuccessStatusCode)
             {
                 AuthToken = new AuthToken(results.Response.AuthorizationToken)
@@ -200,7 +200,7 @@ namespace Bytewizer.Backblaze.Client
                 if (content.Length < Options.UploadCutoffSize)
                 {
                     var urlRequest = new GetUploadUrlRequest(request.BucketId);
-                    var urlResults = await GetUploadUrlAsync(urlRequest, cancel);
+                    var urlResults = await GetUploadUrlAsync(urlRequest, cancel).ConfigureAwait(false);
 
                     if (urlResults.IsSuccessStatusCode)
                     {
@@ -211,7 +211,7 @@ namespace Bytewizer.Backblaze.Client
                             FileInfo = request.FileInfo
                         };
 
-                        return await UploadFileAsync(fileRequest, content, progress, cancel);
+                        return await UploadFileAsync(fileRequest, content, progress, cancel).ConfigureAwait(false);
                     }
 
                     return new ApiResults<UploadFileResponse>(urlResults.HttpResponse, urlResults.Error);
@@ -224,7 +224,7 @@ namespace Bytewizer.Backblaze.Client
                         FileInfo = request.FileInfo
                     };
 
-                    return await UploadLargeFileAsync(largeFileRequest, progress, cancel);
+                    return await UploadLargeFileAsync(largeFileRequest, progress, cancel).ConfigureAwait(false);
                 }
             });
         }
@@ -252,16 +252,16 @@ namespace Bytewizer.Backblaze.Client
                 {
                     if (fileResults.Response.ContentLength < Options.DownloadCutoffSize)
                     {
-                        return await DownloadFileByNameAsync(request, content, progress, cancel);
+                        return await DownloadFileByNameAsync(request, content, progress, cancel).ConfigureAwait(false);
                     }
                     else
                     {
-                        return await DownloadLargeFileAsync(fileRequest, fileResults, content, progress, cancel);
+                        return await DownloadLargeFileAsync(fileRequest, fileResults, content, progress, cancel).ConfigureAwait(false);
                     }
                 }
 
                 return fileResults;
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -277,21 +277,21 @@ namespace Bytewizer.Backblaze.Client
             return await _policy.InvokeDownload.ExecuteAsync(async () =>
             {
                 var fileRequest = new DownloadFileByIdRequest(request.FileId);
-                var fileResults = await DownloadFileByIdAsync(fileRequest, cancel);
+                var fileResults = await DownloadFileByIdAsync(fileRequest, cancel).ConfigureAwait(false);
                 if (fileResults.IsSuccessStatusCode)
                 {
                     if (fileResults.Response.ContentLength < Options.DownloadCutoffSize)
                     {
-                        return await DownloadFileByIdAsync(request, content, progress, cancel);
+                        return await DownloadFileByIdAsync(request, content, progress, cancel).ConfigureAwait(false);
                     }
                     else
                     {
-                        return await DownloadLargeFileAsync(fileRequest, fileResults, content, progress, cancel);
+                        return await DownloadLargeFileAsync(fileRequest, fileResults, content, progress, cancel).ConfigureAwait(false);
                     }
                 }
 
                 return fileResults;
-            });
+            }).ConfigureAwait(false);
         }
 
         #endregion
@@ -321,7 +321,7 @@ namespace Bytewizer.Backblaze.Client
                     Range = new RangeHeaderValue(part.Position, part.Position + part.Length - 1)
                 };
 
-                var partResults = await DownloadFileByIdAsync(partReqeust, mmultiStream, progress, cancellationToken);
+                var partResults = await DownloadFileByIdAsync(partReqeust, mmultiStream, progress, cancellationToken).ConfigureAwait(false);
                 if (!partResults.IsSuccessStatusCode)
                 {
                     return new ApiResults<DownloadFileResponse>(partResults.HttpResponse, partResults.Error);
@@ -352,7 +352,7 @@ namespace Bytewizer.Backblaze.Client
                     Range = part.RangeHeader
                 };
 
-                var partResults = await DownloadFileByNameAsync(partReqeust, mmultiStream, progress, cancellationToken);
+                var partResults = await DownloadFileByNameAsync(partReqeust, mmultiStream, progress, cancellationToken).ConfigureAwait(false);
                 if (!partResults.IsSuccessStatusCode)
                 {
                     return new ApiResults<DownloadFileResponse>(partResults.HttpResponse, partResults.Error);
@@ -388,11 +388,11 @@ namespace Bytewizer.Backblaze.Client
 
             fileRequest.FileInfo.SetLargeFileSha1(request.ContentStream.ToSha1());
 
-            var fileResults = await StartLargeFileAsync(fileRequest, cancellationToken);
+            var fileResults = await StartLargeFileAsync(fileRequest, cancellationToken).ConfigureAwait(false);
             if (fileResults.IsSuccessStatusCode)
             {
                 var urlRequest = new GetUploadPartUrlRequest(fileResults.Response.FileId);
-                var urlResults = await GetUploadPartUrlAsync(urlRequest, default, cancellationToken);
+                var urlResults = await GetUploadPartUrlAsync(urlRequest, default, cancellationToken).ConfigureAwait(false);
                 if (fileResults.IsSuccessStatusCode)
                 {
                     foreach (var part in parts)
@@ -400,7 +400,7 @@ namespace Bytewizer.Backblaze.Client
                         var partStream = new PartialStream(request.ContentStream, part.Position, part.Length);
                         var partReqeust = new UploadPartRequest(urlResults.Response.UploadUrl, part.PartNumber, urlResults.Response.AuthorizationToken);
 
-                        var partResults = await UploadPartAsync(partReqeust, partStream, progress, cancellationToken);
+                        var partResults = await UploadPartAsync(partReqeust, partStream, progress, cancellationToken).ConfigureAwait(false);
                         if (partResults.IsSuccessStatusCode)
                         {
                             sha1Hash.Add(partResults.Response.ContentSha1);
@@ -417,11 +417,11 @@ namespace Bytewizer.Backblaze.Client
                 }
 
                 var finishRequest = new FinishLargeFileRequest(fileResults.Response.FileId, sha1Hash);
-                var finishResults = await FinishLargeFileAsync(finishRequest, cancellationToken);
+                var finishResults = await FinishLargeFileAsync(finishRequest, cancellationToken).ConfigureAwait(false);
                 if (finishResults.IsSuccessStatusCode)
                 {
                     var infoRequest = new GetFileInfoRequest(fileResults.Response.FileId);
-                    var infoResults = await GetFileInfoAsync(infoRequest, cancellationToken);
+                    var infoResults = await GetFileInfoAsync(infoRequest, cancellationToken).ConfigureAwait(false);
                     if (infoResults.IsSuccessStatusCode)
                     {
                         return finishResults;

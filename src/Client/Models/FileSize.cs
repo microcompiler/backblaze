@@ -11,22 +11,22 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Represents the number of bytes in one kilobyte. This field is constant.
         /// </summary>
-        public const long KiloByte = 1024L;
+        public static readonly long KiloByte = 1024L;
 
         /// <summary>
         /// Represents the number of bytes in one megabyte. This field is constant.
         /// </summary>
-        public const long MegaByte = 1024L * 1024;
+        public static readonly long MegaByte = 1024L * 1024;
 
         /// <summary>
         /// Represents the number of bytes in one gigabyte. This field is constant.
         /// </summary>
-        public const long GigaByte = 1024L * 1024 * 1024;
+        public static readonly long GigaByte = 1024L * 1024 * 1024;
 
         /// <summary>
         /// Represents the number of bytes in one terabyte. This field is constant.
         /// </summary>
-        public const long TeraByte = 1024L * 1024 * 1024 * 1024;
+        public static readonly long TeraByte = 1024L * 1024 * 1024 * 1024;
 
         /// <summary>
         /// Gets the number of bytes that represent the value of this instance. 

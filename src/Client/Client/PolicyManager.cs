@@ -170,7 +170,7 @@ namespace Bytewizer.Backblaze.Client
                     onRetry: async (exception, timeSpan, count, context) =>
                     {
                         _logger.LogWarning($"{exception.Message} Retry attempt {count} waiting {timeSpan.TotalSeconds} seconds before next retry.");
-                        await ConnectAsync.Invoke();
+                        await ConnectAsync.Invoke().ConfigureAwait(false);
                     });   
         }
 

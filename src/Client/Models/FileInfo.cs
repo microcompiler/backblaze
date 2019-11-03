@@ -13,17 +13,17 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Maximum number of file info items allowed.
         /// </summary>
-        public const int MaximumFileInfoItemsAllowed = 10;
+        public static readonly int MaximumFileInfoItemsAllowed = 10;
 
         /// <summary>
         /// Minimum number of characters in file info key name.
         /// </summary>
-        public const int MinimumFileInfoLength = 1;
+        public static readonly int MinimumFileInfoLength = 1;
 
         /// <summary>
         /// Maximum number of characters in file info key name.
         /// </summary>
-        public const int MaximumFileInfoLength = 50;
+        public static readonly int MaximumFileInfoLength = 50;
 
         /// <summary>
         /// The dictionary used to store elements.

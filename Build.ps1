@@ -7,7 +7,7 @@ param(
 
 # Boostrap posh-build
 $build_dir = Join-Path $path ".build"
-if (! (Test-Path (Join-Path $build_dir "Posh-Build.ps1"))) { Write-Host "Installing posh-build..."; New-Item -Type Directory $build_dir -ErrorAction Ignore | Out-Null; Save-Script "Posh-Build" -Path $build_dir }
+if (! (Test-Path (Join-Path $build_dir "Posh-Build.ps1"))) { Write-Output "Installing posh-build..."; New-Item -Type Directory $build_dir -ErrorAction Ignore | Out-Null; Save-Script "Posh-Build" -Path $build_dir }
 . (Join-Path $build_dir "Posh-Build.ps1")
 
 # Set these variables as desired
@@ -43,8 +43,8 @@ target deploy {
   # Find all the packages and display them for confirmation
   $packages = dir $packages_dir -Filter "*.nupkg"
 
-  Write-Host "Packages to upload:"
-  $packages | ForEach-Object { Write-Host $_.Name }
+  Write-Output "Packages to upload:"
+  $packages | ForEach-Object { Write-Output $_.Name }
 
   # Ensure we haven't run this by accident.
   $result = New-Prompt "Upload Packages" "Do you want to publish the NuGet packages?" @(
@@ -60,9 +60,9 @@ target deploy {
   elseif ($result -eq 1) {
     $packages | ForEach-Object {
       $package = $_.FullName
-      Write-Host "Uploading $package"
+      Write-Output "Uploading $package"
       Invoke-Dotnet nuget push $package --api-key $key --source "https://www.nuget.org/api/v2/package"
-      Write-Host
+      Write-Output
     }
   }
 }

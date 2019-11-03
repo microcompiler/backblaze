@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.Http.Headers;
 using System.Collections.Generic;
 
 using System.IO.Abstractions.TestingHelpers;
@@ -14,214 +13,18 @@ using Bytewizer.Backblaze.Extensions;
 using Bytewizer.Backblaze.Enumerables;
 
 using Xunit;
-using System.Diagnostics;
+using Bytewizer.Backblaze.Command;
 
 namespace Backblaze.Tests.Integration
 {
-    public class EndpointTest : BaseFixture
+    public class FilesTest : BaseFixture
     {
-        private static readonly string _bucketName = $"{Guid.NewGuid().ToString()}";
-        private static string _bucketId;
-
-        private static readonly string _keyName = $"{Guid.NewGuid().ToString()}";
-        private static string _keyId;
-
-        public EndpointTest(StorageClientFixture fixture) 
+        public FilesTest(StorageClientFixture fixture) 
             : base(fixture)
         { }
 
         [Fact, TestPriority(1)]
-        public async Task Buckets_CreateAsync()
-        {
-            // Create bucket
-            var request = new CreateBucketRequest(Storage.AccountId, _bucketName, BucketType.AllPrivate)
-            {
-                BucketInfo = new BucketInfo()
-                {
-                    { "key1", "value1" },
-                    { "key2", "value2" }
-                },
-                CacheControl = new CacheControlHeaderValue()
-                {
-                    MaxAge = TimeSpan.FromSeconds(120)
-                },
-                LifecycleRules = new LifecycleRules()
-                {   new LifecycleRule()
-                    {
-                        DaysFromHidingToDeleting = 6,
-                        DaysFromUploadingToHiding = 5,
-                        FileNamePrefix = "backup/",
-                    },
-                    new LifecycleRule()
-                    {
-                        DaysFromHidingToDeleting = 45,
-                        DaysFromUploadingToHiding = 7,
-                        FileNamePrefix = "files/",
-                    },
-                },
-                CorsRules = new CorsRules
-                { new CorsRule(
-                     "downloadFromAnyOrigin",
-                     new List<string> { "https" },
-                     new List<string> { "b2_download_file_by_id" , "b2_download_file_by_name" },
-                     3600)
-                    {
-                        AllowedHeaders = new List<string> { "range" },
-                        ExposeHeaders = new List<string> { "x-bz-content-sha1" },
-                    }
-                }
-            };
-
-            var results = await Storage.Buckets.CreateAsync(request);
-            results.EnsureSuccessStatusCode();
-
-            _bucketId = results.Response.BucketId;
-
-            Assert.Equal(typeof(CreateBucketResponse), results.Response.GetType());
-            Assert.Equal(_bucketName, results.Response.BucketName);
-            Assert.Equal(request.BucketInfo.Count, results.Response.BucketInfo.Count);
-            Assert.Equal(request.LifecycleRules.Count, results.Response.LifecycleRules.Count);
-            Assert.Equal(request.CorsRules.Count, results.Response.CorsRules.Count);
-
-            Assert.True(results.Response.CorsRules.Equals(request.CorsRules));
-            Assert.Equal(request.CorsRules.ToList(), results.Response.CorsRules.ToList());
-
-            Assert.True(results.Response.LifecycleRules.Equals(request.LifecycleRules));
-            Assert.Equal(request.LifecycleRules.ToList(), results.Response.LifecycleRules.ToList());
-        }
-
-        [Fact, TestPriority(2)]
-        public async Task Buckets_FindByIdAsync()
-        {
-            var results = await Storage.Buckets.FindByIdAsync(_bucketId);
-
-            Assert.Equal(typeof(BucketItem), results.GetType());
-            Assert.Equal(_bucketName, results.BucketName);
-        }
-
-        [Fact, TestPriority(2)]
-        public async Task Buckets_FindByNameAsync()
-        {
-            var results = await Storage.Buckets.FindByNameAsync(_bucketName);
-
-            Assert.Equal(typeof(BucketItem), results.GetType());
-            Assert.Equal(_bucketId, results.BucketId);
-        }
-
-        [Fact, TestPriority(2)]
-        public async Task Buckets_ListAsync()
-        {
-            var results = await Storage.Buckets.ListAsync();
-            results.EnsureSuccessStatusCode();
-
-            Assert.Equal(typeof(ListBucketsResponse), results.Response.GetType());
-            Assert.True(results.Response.Buckets.Count >= 1, "The actual count was not greater than one");
-        }
-
-        [Fact, TestPriority(2)]
-        public async Task Buckets_GetAsync()
-        {
-            var results = await Storage.Buckets.GetAsync();
-
-            Assert.Equal(typeof(List<BucketItem>), results.GetType());
-            Assert.True(results.ToList().Count() >= 1, "The actual count was not greater than one");
-        }
-
-        [Fact, TestPriority(2)]
-        public async Task Buckets_UpdateAsync()
-        {
-            var results = await Storage.Buckets.UpdateAsync(_bucketId, BucketType.AllPrivate);
-
-            Assert.Equal(typeof(UpdateBucketResponse), results.Response.GetType());
-            Assert.Equal(_bucketId, results.Response.BucketId);
-            Assert.Equal(BucketType.AllPrivate, results.Response.BucketType);
-        }
-
-        [Fact, TestPriority(3)]
-        public async Task Buckets_DeleteAsync()
-        {
-            var results = await Storage.Buckets.DeleteAsync(_bucketId);
-
-            Assert.Equal(typeof(DeleteBucketResponse), results.Response.GetType());
-            Assert.Equal(_bucketId, results.Response.BucketId);
-            Assert.Equal(BucketType.AllPrivate, results.Response.BucketType);
-        }
-
-        [Fact, TestPriority(1)]
-        public async Task Keys_CreateAsync()
-        {
-            var request = new CreateKeyRequest(Storage.AccountId, _keyName, Capabilities.ReadOnly())
-            {
-                ValidDurationInSeconds = (ulong)DateTime.Now.AddDays(5).Second
-            };
-            var results = await Storage.Keys.CreateAsync(request);
-
-            _keyId = results.Response.ApplicationKeyId;
-
-            Assert.Equal(typeof(CreateKeyResponse), results.Response.GetType());
-            //Assert.Equal(DateTime.Now.AddDays(5).Date, results.Response.ExpirationTimestamp.Date);
-            Assert.Equal(Capabilities.ReadOnly(), results.Response.Capabilities);
-        }
-
-        [Fact, TestPriority(2)]
-        public async Task Keys_FindByNameAsync()
-        {
-            var results = await Storage.Keys.FindByNameAsync(_keyName);
-
-            Assert.Equal(typeof(KeyItem), results.GetType());
-            Assert.Equal(_keyId, results.ApplicationKeyId);
-            Assert.Equal(Capabilities.ReadOnly(), results.Capabilities);
-        }
-
-        [Fact, TestPriority(2)]
-        public async Task Keys_FindByIdAsync()
-        {
-            var results = await Storage.Keys.FindByIdAsync(_keyId);
-
-            Assert.Equal(typeof(KeyItem), results.GetType());
-            Assert.Equal(_keyName, results.KeyName);
-            Assert.Equal(Capabilities.ReadOnly(), results.Capabilities);
-        }
-
-        [Fact, TestPriority(2)]
-        public async Task Keys_Enumerable()
-        {
-            var request = new ListKeysRequest(Storage.AccountId);
-            var enumerable = await Storage.Keys.GetEnumerableAsync(request);
-
-            Assert.Equal(typeof(KeyEnumerable), enumerable.GetType());
-            Assert.True(enumerable.ToList().Count() >= 1, "The actual count was not greater than one");
-        }
-
-        [Fact, TestPriority(2)]
-        public async Task Keys_ListAsync()
-        {
-            var results = await Storage.Keys.ListAsync();
-
-            Assert.Equal(typeof(ListKeysResponse), results.Response.GetType());
-            Assert.True(results.Response.Keys.Count >= 1, "The actual count was not greater than one");
-        }
-
-        [Fact, TestPriority(2)]
-        public async Task Keys_GetAsync()
-        {
-            var results = await Storage.Keys.GetAsync();
-
-            Assert.Equal(typeof(List<KeyItem>), results.GetType());
-            Assert.True(results.ToList().Count() >= 1, "The actual count was not greater than one");
-        }
-
-        [Fact, TestPriority(3)]
-        public async Task Keys_DeleteAsync()
-        {
-            var results = await Storage.Keys.DeleteAsync(_keyId);
-
-            Assert.Equal(typeof(DeleteKeyResponse), results.Response.GetType());
-            Assert.Equal(Capabilities.ReadOnly(), results.Response.Capabilities);
-        }
-
-        [Fact, TestPriority(1)]
-        public async Task Files_UploadAsync()
+        public async Task UploadAsync()
         {
             var response = new List<UploadFileResponse>();
             var files = FileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
@@ -250,7 +53,7 @@ namespace Backblaze.Tests.Integration
         }
 
         [Fact, TestPriority(2)]
-        public async Task Files_FileNameEnumerable()
+        public async Task FileNameEnumerable()
         {
             var request = new ListFileNamesRequest(BucketId);
             var enumerable = await Storage.Files.GetEnumerableAsync(request);
@@ -260,7 +63,7 @@ namespace Backblaze.Tests.Integration
         }
 
         [Fact, TestPriority(2)]
-        public async Task Files_FileVersionEnumerable()
+        public async Task FileVersionEnumerable()
         {
             var request = new ListFileVersionRequest(BucketId);
             var enumerable = await Storage.Files.GetEnumerableAsync(request);
@@ -270,7 +73,7 @@ namespace Backblaze.Tests.Integration
         }
 
         [Fact, TestPriority(2)]
-        public async Task Files_ListNamesAsync()
+        public async Task ListNamesAsync()
         {
             var response = new List<ListFileNamesResponse>();
 
@@ -291,7 +94,7 @@ namespace Backblaze.Tests.Integration
         }
 
         [Fact, TestPriority(2)]
-        public async Task Files_ListVersionsAsync()
+        public async Task ListVersionsAsync()
         {
             var response = new List<ListFileVersionResponse>();
 
@@ -304,11 +107,11 @@ namespace Backblaze.Tests.Integration
                 }
             }
 
-            Assert.Equal(3, response.Count());
+            Assert.Equal(4, response.Count());
         }
 
         [Fact, TestPriority(3)]
-        public async Task Files_ListFileInfoAsync()
+        public async Task ListFileInfoAsync()
         {
             var response = new List<GetFileInfoResponse>();
 
@@ -346,7 +149,7 @@ namespace Backblaze.Tests.Integration
         }
 
         [Fact, TestPriority(4)]
-        public async Task Files_DownloadAsync()
+        public async Task DownloadAsync()
         {
             var response = new List<DownloadFileResponse>();
             var fileSystem = new MockFileSystem();
@@ -379,7 +182,7 @@ namespace Backblaze.Tests.Integration
         }
 
         [Fact, TestPriority(5)]
-        public async Task Files_CopyAsync()
+        public async Task CopyAsync()
         {
             var response = new List<CopyFileResponse>();
 
@@ -432,6 +235,17 @@ namespace Backblaze.Tests.Integration
             var fileSystem = new MockFileSystem();
             var files = LargeFileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
 
+            int progressEventCounter = 0;
+            long lastBytesTransferred = 0;
+            double lastProgress = 0;
+            var progress = new NaiveProgress<ICopyProgress>(x =>
+            {
+                progressEventCounter++;
+                //Assert.True(x.BytesTransferred > lastBytesTransferred);
+                lastBytesTransferred = x.BytesTransferred;
+                lastProgress = x.PercentComplete;
+            });
+            
             foreach (var file in files)
             {
                 if (!fileSystem.Directory.Exists(Path.GetDirectoryName(file)))
@@ -441,7 +255,8 @@ namespace Backblaze.Tests.Integration
 
                 using (var content = fileSystem.File.Create(file))
                 {
-                    var results = await Storage.DownloadAsync(BucketName, file, content);
+                    var request = new DownloadFileByNameRequest(BucketName, file);
+                    var results = await Storage.DownloadAsync(request, content, progress,CancellationToken.None);
                     if (results.IsSuccessStatusCode)
                     {
                         response.Add(results.Response);
@@ -455,6 +270,8 @@ namespace Backblaze.Tests.Integration
                     throw new InvalidOperationException();
             }
 
+            Assert.True(progressEventCounter > 0);
+            Assert.Equal(1, lastProgress);
             Assert.Equal(files.Count(), response.Count());
         }
 
@@ -513,6 +330,39 @@ namespace Backblaze.Tests.Integration
             }
 
             Assert.Equal(files.Response.Files.Count(), response.Count());
+        }
+        [Fact, TestPriority(100)]
+        public async Task Files_DeleteAllAsync()
+        {
+            var response = new List<UploadFileResponse>();
+            var files = FileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
+
+            foreach (var file in files)
+            {
+                using (var content = FileSystem.File.OpenRead(file))
+                {
+                    var request = new UploadFileByBucketIdRequest(BucketId, file)
+                    {
+                        LastModified = FileSystem.File.GetLastWriteTime(file)
+                    };
+                    var results = await Storage.UploadAsync(request, content, null, CancellationToken.None);
+                    if (results.IsSuccessStatusCode)
+                    {
+                        var fileSha1 = FileSystem.File.OpenRead(file).ToSha1();
+                        if (!fileSha1.Equals(results.Response.ContentSha1))
+                            throw new InvalidOperationException();
+
+                        response.Add(results.Response);
+                    }
+                }
+            }
+
+            Assert.Equal(files.Count(), response.Count());
+
+            var deletedRequest = new ListFileVersionRequest(BucketId);
+            var deletedFiles = await Storage.Files.DeleteAllAsync(deletedRequest);
+            
+            Assert.Equal(files.Count(), deletedFiles.Count());
         }
     }
 }

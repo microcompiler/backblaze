@@ -15,12 +15,12 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Minimum numbers of large file parts.
         /// </summary>
-        public const int MinimumPartNumber = 1;
+        public static readonly int MinimumPartNumber = 1;
 
         /// <summary>
         /// Maximum numbers of large file parts.
         /// </summary>
-        public const int MaximumPartNumber = 10000;
+        public static readonly int MaximumPartNumber = 10000;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CopyPartRequest"/> class.

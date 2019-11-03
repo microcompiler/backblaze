@@ -12,7 +12,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Maximum number of rules allowed.
         /// </summary>
-        public const int MaximumRulesAllowed = 100;
+        public static readonly int MaximumRulesAllowed = 100;
 
         /// <summary>
         /// The list used to store elements.
