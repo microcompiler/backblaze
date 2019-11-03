@@ -2,18 +2,18 @@
 
 [![NuGet Version](https://img.shields.io/nuget/vpre/Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/Backblaze.Agent)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/Backblaze.Agent)
-[![Code Quality](https://img.shields.io/codacy/coverage/e6a2855a2f024f529cea959488091e9a?style=flat-square)](https://app.codacy.com/manual/microcompiler/backblaze/dashboard)
+[![Code Quality](https://img.shields.io/codacy/grade/9af3e637b4fe400b80a63561f316bb14.svg?style=flat-square)](https://app.codacy.com/manual/microcompiler/backblaze/dashboard)
 
 The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaze B2 Cloud Storage API](https://www.backblaze.com/b2/cloud-storage.html). Backblaze B2 Cloud Storage provides the cheapest cloud storage available on the internet. Backblaze B2 Cloud Storage is ¼ of the price of other storage providers. Give it a try as the first 10 GB of storage is free.
 
 ## Features
 
-- Full support for Backblaze B2 Cloud Storage API v2 including uploading, downloading, accounts, keys, buckets and files.
-- Built targeting .NET Standard 2.0 which means Backblaze Agent will work on Windows, Mac and Linux systems.
-- Seamlessly intergrates with .NET Core Dependency Injection and HttpClientFactory to implement resilient requests.
-- Simple in-memory response cache using MemoryCache.
-- Large file support with low memory allocation.
-- Native support of task based programming model (async/await).
+-  Full support for Backblaze B2 Cloud Storage API v2 including uploading, downloading, accounts, keys, buckets and files.
+-  Built targeting .NET Standard 2.0 which means Backblaze Agent will work on Windows, Mac and Linux systems.
+-  Seamlessly intergrates with .NET Core Dependency Injection and HttpClientFactory to implement resilient requests.
+-  Simple in-memory response cache using MemoryCache.
+-  Large file support with low memory allocation.
+-  Native support of task based programming model (async/await).
 
 For feature requests and bug reports, please [open an issue on GitHub](https://github.com/microcompiler/backblaze/issues/new).
 

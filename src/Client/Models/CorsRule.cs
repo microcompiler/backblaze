@@ -23,7 +23,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Represents the minimum age seconds. 
         /// </summary>
-        public static readonly int MinimumAgeSeconds = 0;
+        public static readonly int MinimumAgeSeconds;
 
         /// <summary>
         /// Represents the maximum age seconds. 

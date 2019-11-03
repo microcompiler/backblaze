@@ -11,13 +11,13 @@ namespace Backblaze.Tests.Unit
         [Fact]
         public void LifecycleRuleEquatable()
         {
-            var rule1 = new LifecycleRule()
+            var rule1 = new LifecycleRule
             {
                 DaysFromHidingToDeleting = 6,
                 DaysFromUploadingToHiding = 5,
                 FileNamePrefix = "backup/",
             };
-            var rule2 = new LifecycleRule()
+            var rule2 = new LifecycleRule
             {
                 DaysFromHidingToDeleting = 6,
                 DaysFromUploadingToHiding = 5,
@@ -29,14 +29,14 @@ namespace Backblaze.Tests.Unit
             Assert.True(rule1 == rule2);
             Assert.False(rule1 != rule2);
 
-            var rule3 = new LifecycleRules()
-                {   new LifecycleRule()
+            var rule3 = new LifecycleRules
+                {   new LifecycleRule
                     {
                         DaysFromHidingToDeleting = 6,
                         DaysFromUploadingToHiding = 5,
                         FileNamePrefix = "backup/",
                     },
-                    new LifecycleRule()
+                    new LifecycleRule
                     {
                         DaysFromHidingToDeleting = 45,
                         DaysFromUploadingToHiding = 7,
@@ -44,14 +44,14 @@ namespace Backblaze.Tests.Unit
                     },
                 };
 
-            var rule4 = new LifecycleRules()
-                {   new LifecycleRule()
+            var rule4 = new LifecycleRules
+                {   new LifecycleRule
                     {
                         DaysFromHidingToDeleting = 6,
                         DaysFromUploadingToHiding = 5,
                         FileNamePrefix = "backup/",
                     },
-                    new LifecycleRule()
+                    new LifecycleRule
                     {
                         DaysFromHidingToDeleting = 45,
                         DaysFromUploadingToHiding = 7,
@@ -75,7 +75,7 @@ namespace Backblaze.Tests.Unit
 
                 for (int i = 0; i < LifecycleRules.MaximumRulesAllowed + 1; i++)
                 {
-                    list.Add(new LifecycleRule()
+                    list.Add(new LifecycleRule
                     {
                         DaysFromHidingToDeleting = 45,
                         DaysFromUploadingToHiding = 7

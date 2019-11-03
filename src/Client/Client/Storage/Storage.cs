@@ -23,7 +23,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="Storage"/> class.
         /// </summary>
-        public Storage(HttpClient client, IClientOptions options, ILoggerFactory logger, IMemoryCache cache)
+        protected Storage(HttpClient client, IClientOptions options, ILoggerFactory logger, IMemoryCache cache)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="Storage"/> class.
         /// </summary>
-        public Storage(IApiClient client, ILogger logger)
+        protected Storage(IApiClient client, ILogger logger)
         {
             try
             {
@@ -114,15 +114,10 @@ namespace Bytewizer.Backblaze.Client
         /// </summary>
         public CancellationToken CancellationToken
         {
-            get { return cancellationToken; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(CancellationToken));
-                cancellationToken = value;
-            }
+            get { return _cancellationToken; }
+            set { _cancellationToken = (value == null) ? CancellationToken.None : value; }
         }
-        private CancellationToken cancellationToken = CancellationToken.None;
+        private CancellationToken _cancellationToken = CancellationToken.None;
 
         #endregion
 
@@ -176,7 +171,7 @@ namespace Bytewizer.Backblaze.Client
             (string bucketId, string fileName, Stream content)
         {
             var request = new UploadFileByBucketIdRequest(bucketId, fileName);
-            return await UploadAsync(request, content, null, cancellationToken);
+            return await UploadAsync(request, content, null, _cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -193,7 +188,7 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<UploadFileResponse>> UploadAsync
             (UploadFileByBucketIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await _client.UploadAsync(request, content, progress, cancel);   
+            return await _client.UploadAsync(request, content, progress, cancel).ConfigureAwait(false);   
         }
 
         #endregion
@@ -214,7 +209,7 @@ namespace Bytewizer.Backblaze.Client
             (string bucketName, string fileName, Stream content)
         {
             var request = new DownloadFileByNameRequest(bucketName, fileName);
-            return await DownloadAsync(request, content, null, cancellationToken);
+            return await DownloadAsync(request, content, null, _cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -231,7 +226,7 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<DownloadFileResponse>> DownloadAsync
             (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-            return await _client.DownloadAsync(request, content, progress, cancel);
+            return await _client.DownloadAsync(request, content, progress, cancel).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -247,7 +242,7 @@ namespace Bytewizer.Backblaze.Client
             (string fileId, Stream content)
         {
             var request = new DownloadFileByIdRequest(fileId);
-            return await DownloadByIdAsync(request, content, null, cancellationToken);
+            return await DownloadByIdAsync(request, content, null, _cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -264,7 +259,7 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<DownloadFileResponse>> DownloadByIdAsync
             (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
-                return await _client.DownloadByIdAsync(request, content, progress, cancel);
+                return await _client.DownloadByIdAsync(request, content, progress, cancel).ConfigureAwait(false);
         }
 
         #endregion

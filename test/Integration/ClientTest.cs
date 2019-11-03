@@ -137,7 +137,7 @@ namespace Backblaze.Tests.Integration
 
                 var results = await client.Buckets.FindByNameAsync(BucketName);
                 Assert.Equal(BucketName, results.BucketName);
-            };
+            }
         }
     }
 }

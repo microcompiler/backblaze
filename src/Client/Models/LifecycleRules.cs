@@ -48,22 +48,22 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Adds the specified <see cref="LifecycleRule"/> to <see cref="LifecycleRules"/> limited to 100 rules.
         /// </summary>
-        /// <param name="value">The value of the rule to add.</param>
-        public void Add(LifecycleRule value)
+        /// <param name="item">The value of the rule to add.</param>
+        public void Add(LifecycleRule item)
         {
             // Validate required elements
             if (Count >= MaximumRulesAllowed)
                 throw new InvalidOperationException(
                           $"This list is limited to {MaximumRulesAllowed} rules. You cannot add more rules.");
 
-            if (!string.IsNullOrEmpty(value.FileNamePrefix))
+            if (!string.IsNullOrEmpty(item.FileNamePrefix))
             {
-                var rule = _lifecycleRules.Find(x => x.FileNamePrefix.Contains(value.FileNamePrefix));
+                var rule = _lifecycleRules.Find(x => x.FileNamePrefix.Contains(item.FileNamePrefix));
                 if (rule != null)
                     throw new InvalidOperationException(
                          $"File name prefix must be unique. You cannot add a rule with the same file name prefix.");
             }
-            _lifecycleRules.Add(value);
+            _lifecycleRules.Add(item);
         }
 
         /// <summary>

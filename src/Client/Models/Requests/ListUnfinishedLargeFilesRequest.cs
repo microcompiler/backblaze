@@ -80,18 +80,5 @@ namespace Bytewizer.Backblaze.Models
         {
             get { return $"{{{nameof(BucketId)}: {BucketId}}}"; }
         }
-
-        /// <summary>
-        /// Returns a hash code for this object.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            var hashCode = -1971292434;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(BucketId);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(NamePrefix);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(StartFileId);
-            hashCode = hashCode * -1521134295 + MaxFileCount.GetHashCode();
-            return hashCode;
-        }
     }
 }

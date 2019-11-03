@@ -83,7 +83,7 @@ namespace Bytewizer.Backblaze.Models
         /// Files returned will be limited to those within the top folder, or any one subfolder. Defaults to <c>null</c>. Folder names 
         /// will also be returned. The delimiter character will be used to "break" file names into folders. 
         /// </summary>
-        public string Delimiter { get; set; } = null;
+        public string Delimiter { get; set; }
 
         ///	<summary>
         ///	Debugger display for this object.
@@ -93,21 +93,6 @@ namespace Bytewizer.Backblaze.Models
         private string DebuggerDisplay
         {
             get { return $"{{{nameof(BucketId)}: {BucketId}}}"; }
-        }
-
-        /// <summary>
-        /// Returns a hash code for this object.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            var hashCode = 766801321;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(BucketId);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(StartFileName);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(StartFileId);
-            hashCode = hashCode * -1521134295 + MaxFileCount.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Prefix);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Delimiter);
-            return hashCode;
         }
     }
 }

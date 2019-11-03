@@ -33,7 +33,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<CancelLargeFileResponse>> IStorageParts.CancelLargeFileAsync(string fileId)
         {
             var request = new CancelLargeFileRequest(fileId);
-            return await _client.CancelLargeFileAsync(request, cancellationToken);
+            return await _client.CancelLargeFileAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Bytewizer.Backblaze.Client
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<CopyPartResponse>> IStorageParts.CopyAsync(CopyPartRequest request)
         {
-            return await _client.CopyPartAsync(request, cancellationToken);
+            return await _client.CopyPartAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<CopyPartResponse>> IStorageParts.CopyAsync(string sourceFileId, string largeFileId, int partNumber)
         {
             var request = new CopyPartRequest(sourceFileId, largeFileId, partNumber);
-            return await _client.CopyPartAsync(request, cancellationToken);
+            return await _client.CopyPartAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<UploadFileResponse>> IStorageParts.FinishLargeFileAsync(string fileId, List<string> sha1Parts)
         {
             var request = new FinishLargeFileRequest(fileId, sha1Parts);
-            return await _client.FinishLargeFileAsync(request, cancellationToken);
+            return await _client.FinishLargeFileAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<GetUploadPartUrlResponse>> IStorageParts.GetUploadUrlAsync(string fileId)
         {
             var request = new GetUploadPartUrlRequest(fileId);
-            return await _client.GetUploadPartUrlAsync(request, cancellationToken);
+            return await _client.GetUploadPartUrlAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<GetUploadPartUrlResponse>> IStorageParts.GetUploadUrlAsync(string fileId, TimeSpan cacheTTL)
         {
             var request = new GetUploadPartUrlRequest(fileId);
-            return await _client.GetUploadPartUrlAsync(request, cacheTTL, cancellationToken);
+            return await _client.GetUploadPartUrlAsync(request, cacheTTL, _cancellationToken);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Bytewizer.Backblaze.Client
             (string fileId)
         {
             var request = new ListPartsRequest(fileId);
-            return await _client.ListPartsAsync(request, cancellationToken);
+            return await _client.ListPartsAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<ListPartsResponse>> IStorageParts.ListAsync
             (ListPartsRequest request, TimeSpan cacheTTL)
         {
-            return await _client.ListPartsAsync(request, cacheTTL, cancellationToken);
+            return await _client.ListPartsAsync(request, cacheTTL, _cancellationToken);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<StartLargeFileResponse>> IStorageParts.StartLargeFileAsync(string bucketId, string fileName)
         {
             var request = new StartLargeFileRequest(bucketId, fileName);
-            return await _client.StartLargeFileAsync(request, cancellationToken);
+            return await _client.StartLargeFileAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Bytewizer.Backblaze.Client
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<StartLargeFileResponse>> IStorageParts.StartLargeFileAsync(StartLargeFileRequest request)
         {
-            return await _client.StartLargeFileAsync(request, cancellationToken);
+            return await _client.StartLargeFileAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace Bytewizer.Backblaze.Client
             (Uri uploadUrl, int partNumber, string authorizationToken, Stream content, IProgress<ICopyProgress> progress)
         {
             var request = new UploadPartRequest(uploadUrl, partNumber, authorizationToken);
-            return await _client.UploadPartAsync(request, content, progress, cancellationToken);
+            return await _client.UploadPartAsync(request, content, progress, _cancellationToken);
         }
 
         #endregion
@@ -181,7 +181,7 @@ namespace Bytewizer.Backblaze.Client
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IEnumerable<PartItem>> IStorageParts.GetEnumerableAsync(ListPartsRequest request, TimeSpan cacheTTL)
         {
-            var enumerable = new PartEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<PartItem>;
+            var enumerable = new PartEnumerable(_client, _logger, request, cacheTTL, _cancellationToken) as IEnumerable<PartItem>;
             return await Task.FromResult(enumerable).ConfigureAwait(false);
         }
 

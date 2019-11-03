@@ -15,28 +15,28 @@ namespace Bytewizer.Backblaze.Handlers
     /// <summary>
     /// Handles transient faults that occur during requests according to the provided policy.
     /// </summary>
-    public sealed class TransientHttpErrorHandler : DelegatingHandler
+    public sealed class HttpErrorHandler : DelegatingHandler
     {
         private readonly IAsyncPolicy<HttpResponseMessage> _policy;
 
         /// <summary>
-        /// Initializes an instance of the <see cref="TransientHttpErrorHandler"/> class.
+        /// Initializes an instance of the <see cref="HttpErrorHandler"/> class.
         /// </summary>
         /// <param name="options"></param>
         /// <param name="logger">Logger for transient error handler.</param>
-        public TransientHttpErrorHandler(IClientOptions options, ILogger<StorageService> logger)
+        public HttpErrorHandler(IClientOptions options, ILogger<StorageService> logger)
         {
             _policy = PolicyManager.CreateRetryPolicy(options.RetryCount, logger);
         }
 
         /// <summary>
-        /// Initializes an instance of the <see cref="TransientHttpErrorHandler"/> class.
+        /// Initializes an instance of the <see cref="HttpErrorHandler"/> class.
         /// </summary>
         /// <param name="policy">The transient fault handling policy used for sending requests.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="policy"/> is null.
         /// </exception>
-        public TransientHttpErrorHandler(IAsyncPolicy<HttpResponseMessage> policy)
+        public HttpErrorHandler(IAsyncPolicy<HttpResponseMessage> policy)
         {
             _policy = policy ?? throw new ArgumentNullException(nameof(policy));
         }

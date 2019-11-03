@@ -7,7 +7,7 @@ namespace Bytewizer.Backblaze.Models
     /// <summary>
     /// Represents a collection of <see cref="Capability"/> that contains no duplicates.
     /// </summary>
-    public class Capabilities :  ICollection<Capability>
+    public class Capabilities :  ICollection<Capability>, IEquatable<Capabilities>
     {
         /// <summary>
         /// The hashlist used to store elements.
@@ -27,7 +27,7 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public static Capabilities AllControl()
         {
-            return new Capabilities()
+            return new Capabilities
             { 
                 Capability.ListKeys,
                 Capability.WriteKeys,
@@ -48,7 +48,7 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         public static Capabilities ReadOnly()
         {
-            return new Capabilities()
+            return new Capabilities
             {
                 Capability.ListKeys,
                 Capability.ListBuckets,
@@ -169,7 +169,7 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         /// <param name="a">The first <see cref="Capabilities" /> to compare.</param>
         /// <param name="b">The second <see cref="Capabilities" /> to compare.</param>
-        public static bool operator ==(Capabilities a, Capabilities b)
+        public static bool operator == (Capabilities a, Capabilities b)
         {
             return EqualityComparer<Capabilities>.Default.Equals(a, b);
         }
@@ -179,7 +179,7 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         /// <param name="a">The first <see cref="Capabilities" /> to compare.</param>
         /// <param name="b">The second <see cref="Capabilities" /> to compare.</param>
-        public static bool operator !=(Capabilities a, Capabilities b)
+        public static bool operator != (Capabilities a, Capabilities b)
         {
             return !(a == b);
         }

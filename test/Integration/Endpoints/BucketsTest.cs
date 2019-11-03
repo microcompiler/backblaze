@@ -32,23 +32,23 @@ namespace Backblaze.Tests.Integration
             // Create bucket
             var request = new CreateBucketRequest(Storage.AccountId, _bucketName, BucketType.AllPrivate)
             {
-                BucketInfo = new BucketInfo()
+                BucketInfo = new BucketInfo
                 {
                     { "key1", "value1" },
                     { "key2", "value2" }
                 },
-                CacheControl = new CacheControlHeaderValue()
+                CacheControl = new CacheControlHeaderValue
                 {
                     MaxAge = TimeSpan.FromSeconds(120)
                 },
-                LifecycleRules = new LifecycleRules()
-                {   new LifecycleRule()
+                LifecycleRules = new LifecycleRules
+                {   new LifecycleRule
                     {
                         DaysFromHidingToDeleting = 6,
                         DaysFromUploadingToHiding = 5,
                         FileNamePrefix = "backup/",
                     },
-                    new LifecycleRule()
+                    new LifecycleRule
                     {
                         DaysFromHidingToDeleting = 45,
                         DaysFromUploadingToHiding = 7,

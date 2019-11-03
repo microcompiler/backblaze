@@ -24,7 +24,7 @@ namespace Bytewizer.Backblaze.Extensions
         /// <returns>The full HTTP response. Reading from the response stream is discouraged.</returns>
         public static async Task<HttpResponseMessage> SendAsync(this HttpClient client, HttpRequestMessage request, Stream destination, IProgress<ICopyProgress> progressReport = null, CancellationToken cancel = default)
         {
-            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancel);
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancel).ConfigureAwait(false);
             long contentLength = response.Content.Headers.ContentLength ?? 0;
 
             using (var download = await response.Content.ReadAsStreamAsync())

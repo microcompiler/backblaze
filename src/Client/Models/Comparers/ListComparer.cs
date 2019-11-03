@@ -73,17 +73,17 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Returns a hash code for this collection.
         /// </summary>
-        public int GetHashCode(IEnumerable<T> enumerable)
+        public int GetHashCode(IEnumerable<T> obj)
         {
-            if (enumerable == null)
+            if (obj == null)
                 return 0;
 
             int hash = 257698343;
             unchecked
             {
-                foreach (T value in enumerable)
+                foreach (T value in obj)
                 {
-                    hash = hash * 559998327 + (value != null ? _elementComparer.GetHashCode(value) : 967398343);
+                    hash = hash * 559998327 + (value != default ? _elementComparer.GetHashCode(value) : 967398343);
                 }
             }
             return hash;

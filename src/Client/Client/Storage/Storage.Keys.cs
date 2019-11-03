@@ -34,7 +34,7 @@ namespace Bytewizer.Backblaze.Client
             (string keyName, Capabilities capabilities)
         {
             var request = new CreateKeyRequest(AccountId, keyName, capabilities);
-            return await _client.CreateKeyAsync(request, cancellationToken);
+            return await _client.CreateKeyAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<CreateKeyResponse>> IStorageKeys.CreateAsync
             (CreateKeyRequest request)
         {
-            return await _client.CreateKeyAsync(request, cancellationToken);
+            return await _client.CreateKeyAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Bytewizer.Backblaze.Client
             (string applicationKeyId)
         {
             var request = new DeleteKeyRequest(applicationKeyId);
-            return await _client.DeleteKeyAsync(request, cancellationToken);
+            return await _client.DeleteKeyAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<ListKeysResponse>> IStorageKeys.ListAsync()
         {
             var request = new ListKeysRequest(AccountId);
-            return await _client.ListKeysAsync(request, cancellationToken);
+            return await _client.ListKeysAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<ListKeysResponse>> IStorageKeys.ListAsync
             (ListKeysRequest request, TimeSpan cacheTTL)
         {
-            return await _client.ListKeysAsync(request, cacheTTL, cancellationToken);
+            return await _client.ListKeysAsync(request, cacheTTL, _cancellationToken);
         }
 
         #endregion
@@ -98,7 +98,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IEnumerable<KeyItem>> IStorageKeys.GetEnumerableAsync
             (ListKeysRequest request, TimeSpan cacheTTL)
         {
-            var enumerable = new KeyEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<KeyItem>;
+            var enumerable = new KeyEnumerable(_client, _logger, request, cacheTTL, _cancellationToken) as IEnumerable<KeyItem>;
             return await Task.FromResult(enumerable).ConfigureAwait(false);
         }
 
@@ -123,7 +123,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IEnumerable<KeyItem>> IStorageKeys.GetAsync
             (ListKeysRequest request, TimeSpan cacheTTL)
         {
-            var enumerable = await Keys.GetEnumerableAsync(new ListKeysRequest(AccountId), cacheTTL);
+            var enumerable = await Keys.GetEnumerableAsync(request, cacheTTL);
             return enumerable.OrderBy(x => x.KeyName).ToList();
         }
 

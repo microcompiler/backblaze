@@ -37,7 +37,7 @@ namespace Bytewizer.Backblaze.Client
             (string sourceFileId, string fileName)
         {
             var request = new CopyFileRequest(sourceFileId, fileName);
-            return await _client.CopyFileAsync(request, cancellationToken);
+            return await _client.CopyFileAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<CopyFileResponse>> IStorageFiles.CopyAsync
             (CopyFileRequest request)
         {
-            return await _client.CopyFileAsync(request, cancellationToken);
+            return await _client.CopyFileAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Bytewizer.Backblaze.Client
             (string fileId, string fileName)
         {
             var request = new DeleteFileVersionRequest(fileId, fileName);
-            return await _client.DeleteFileVersionAsync(request, cancellationToken);
+            return await _client.DeleteFileVersionAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<DownloadFileResponse>> IStorageFiles.DownloadAsync
             (DownloadFileByIdRequest request, Stream content, IProgress<ICopyProgress> progress)
         {
-            return await _client.DownloadFileByIdAsync(request, content, progress, cancellationToken);
+            return await _client.DownloadFileByIdAsync(request, content, progress, _cancellationToken);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<DownloadFileResponse>> IStorageFiles.DownloadAsync
             (DownloadFileByNameRequest request, Stream content, IProgress<ICopyProgress> progress)
         {
-            return await _client.DownloadFileByNameAsync(request, content, progress, cancellationToken);
+            return await _client.DownloadFileByNameAsync(request, content, progress, _cancellationToken);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Bytewizer.Backblaze.Client
             (string bucketId, string fileNamePrefix, long validDurationInSeconds)
         {
             var request = new GetDownloadAuthorizationRequest(bucketId, fileNamePrefix, validDurationInSeconds);
-            return await _client.GetDownloadAuthorizationAsync(request, cancellationToken);
+            return await _client.GetDownloadAuthorizationAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<GetDownloadAuthorizationResponse>> IStorageFiles.GetDownloadTokenAsync
             (GetDownloadAuthorizationRequest request)
         {
-            return await _client.GetDownloadAuthorizationAsync(request, cancellationToken);
+            return await _client.GetDownloadAuthorizationAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace Bytewizer.Backblaze.Client
             (string fileId)
         {
             var request = new GetFileInfoRequest(fileId);
-            return await _client.GetFileInfoAsync(request, cancellationToken);
+            return await _client.GetFileInfoAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace Bytewizer.Backblaze.Client
             (string bucketId)
         {
             var request = new GetUploadUrlRequest(bucketId);
-            return await _client.GetUploadUrlAsync(request, cancellationToken);
+            return await _client.GetUploadUrlAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Bytewizer.Backblaze.Client
             (string bucketId, TimeSpan cacheTTL)
         {
             var request = new GetUploadUrlRequest(bucketId);
-            return await _client.GetUploadUrlAsync(request, cacheTTL, cancellationToken);
+            return await _client.GetUploadUrlAsync(request, cacheTTL, _cancellationToken);
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace Bytewizer.Backblaze.Client
             (string bucketId, string fileName)
         {
             var request = new HideFileRequest(bucketId, fileName);
-            return await _client.HideFileAsync(request, cancellationToken);
+            return await _client.HideFileAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Bytewizer.Backblaze.Client
             (string bucketId)
         {
             var request = new ListFileNamesRequest(bucketId);
-            return await _client.ListFileNamesAsync(request, cancellationToken);
+            return await _client.ListFileNamesAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<ListFileNamesResponse>> IStorageFiles.ListNamesAsync
             (ListFileNamesRequest request, TimeSpan cacheTTL)
         {
-            return await _client.ListFileNamesAsync(request, cacheTTL, cancellationToken);
+            return await _client.ListFileNamesAsync(request, cacheTTL, _cancellationToken);
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace Bytewizer.Backblaze.Client
             (string bucketId)
         {
             var request = new ListFileVersionRequest(bucketId);
-            return await _client.ListFileVersionsAsync(request, cancellationToken);
+            return await _client.ListFileVersionsAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<ListFileVersionResponse>> IStorageFiles.ListVersionsAsync
             (ListFileVersionRequest request, TimeSpan cacheTTL)
         {
-            return await _client.ListFileVersionsAsync(request, cacheTTL, cancellationToken);
+            return await _client.ListFileVersionsAsync(request, cacheTTL, _cancellationToken);
         }
 
         /// <summary>
@@ -242,7 +242,7 @@ namespace Bytewizer.Backblaze.Client
             (string bucketId)
         {
             var request = new ListUnfinishedLargeFilesRequest(bucketId);
-            return await _client.ListUnfinishedLargeFilesAsync(request, cancellationToken);
+            return await _client.ListUnfinishedLargeFilesAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<ListUnfinishedLargeFilesResponse>> IStorageFiles.ListUnfinishedAsync
             (ListUnfinishedLargeFilesRequest request, TimeSpan cacheTTL)
         {
-            return await _client.ListUnfinishedLargeFilesAsync(request, cacheTTL, cancellationToken);
+            return await _client.ListUnfinishedLargeFilesAsync(request, cacheTTL, _cancellationToken);
         }
 
         #endregion
@@ -390,7 +390,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IEnumerable<FileItem>> IStorageFiles.GetEnumerableAsync
             (ListFileNamesRequest request, TimeSpan cacheTTL)
         {
-            var enumerable = new FileNameEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
+            var enumerable = new FileNameEnumerable(_client, _logger, request, cacheTTL, _cancellationToken) as IEnumerable<FileItem>;
             return await Task.FromResult(enumerable).ConfigureAwait(false);
         }
 
@@ -405,7 +405,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IEnumerable<FileItem>> IStorageFiles.GetEnumerableAsync
             (ListFileVersionRequest request, TimeSpan cacheTTL)
         {
-            var enumerable = new FileVersionEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
+            var enumerable = new FileVersionEnumerable(_client, _logger, request, cacheTTL, _cancellationToken) as IEnumerable<FileItem>;
             return await Task.FromResult(enumerable).ConfigureAwait(false);
         }
 
@@ -419,7 +419,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IEnumerable<FileItem>> IStorageFiles.GetEnumerableAsync
                 (ListUnfinishedLargeFilesRequest request, TimeSpan cacheTTL)
         {
-            var enumerable = new UnfinishedEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
+            var enumerable = new UnfinishedEnumerable(_client, _logger, request, cacheTTL, _cancellationToken) as IEnumerable<FileItem>;
             return await Task.FromResult(enumerable).ConfigureAwait(false);
         }
 
@@ -437,7 +437,7 @@ namespace Bytewizer.Backblaze.Client
         {
             return await Task.Run(() =>
             {
-                var adapter = new FileNameEnumerable(_client, _logger, request, cacheTTL, cancellationToken) as IEnumerable<FileItem>;
+                var adapter = new FileNameEnumerable(_client, _logger, request, cacheTTL, _cancellationToken) as IEnumerable<FileItem>;
                 return adapter.First(predicate);
             });
         }
@@ -457,7 +457,7 @@ namespace Bytewizer.Backblaze.Client
             await files.ForEachAsync(_client.Options.RequestMaxParallel, async filepath =>
             {
                 var deleteRequest = new DeleteFileVersionRequest(filepath.FileId, filepath.FileName);
-                var results = await _client.DeleteFileVersionAsync(deleteRequest, cancellationToken);
+                var results = await _client.DeleteFileVersionAsync(deleteRequest, _cancellationToken);
                 if (results.IsSuccessStatusCode)
                 {
                     _logger.LogInformation($"Successfully deleted '{filepath.FileName}' file from '{request.BucketId}' bucket id.");
@@ -467,7 +467,7 @@ namespace Bytewizer.Backblaze.Client
                 {
                     _logger.LogWarning($"Failed deleting '{filepath.FileName}' file with error: {results.Error.Message}");
                 }
-            }, cancellationToken);
+            }, _cancellationToken);
 
             return response;
         }

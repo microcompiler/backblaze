@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using Bytewizer.Backblaze.Models;
-using System.Threading;
 
 namespace Bytewizer.Backblaze.Extensions
 {
@@ -13,20 +12,6 @@ namespace Bytewizer.Backblaze.Extensions
     /// </summary>
     public static class EnumerableExtensions
     {
-        //public static async Task<IEnumerable<T>> AsEnumerableAsync<T>(this IEnumerable<T> source, int dop, Func<IApiResults<T>> action)
-        //{
-        //    var response = new List<T>();
-        //    await source.ForEachAsync(dop, item =>
-        //    {
-        //        var results = action.Invoke();
-        //        if (results.IsSuccessStatusCode)
-        //        {
-        //            response.Add(results.Response);
-        //        }
-        //    });
-        //    return response;
-        //}
-
         /// <summary>
         /// Runs the specified async method for each item of the input collection in a parallel manner.
         /// </summary>

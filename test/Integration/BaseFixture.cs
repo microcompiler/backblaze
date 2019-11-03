@@ -31,7 +31,7 @@ namespace Backblaze.Tests.Integration
         public MockFileSystem FileSystem { get; }
         public MockFileSystem LargeFileSystem { get; }
 
-        public BaseFixture(StorageClientFixture fixture)
+        protected BaseFixture(StorageClientFixture fixture)
         {
             Services = fixture.Services;
             Config = fixture.Config;

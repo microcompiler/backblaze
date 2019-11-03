@@ -43,41 +43,14 @@ namespace Bytewizer.Backblaze.Client
             var files = Directory.EnumerateFiles(localPath, searchPattern, searchOption);
             await files.ForEachAsync(_client.Options.UploadMaxParallel, async filepath =>
             {
-                var results = await Files.UploadAsync(bucketId, filepath, filepath, null, cancellationToken);
+                var results = await Files.UploadAsync(bucketId, filepath, filepath, null, _cancellationToken);
                 if (results.IsSuccessStatusCode)
                 {
                     response.Add(results.Response);
                 }
-            }, cancellationToken);
+            }, _cancellationToken);
 
             return response;
         }
-
-        //async Task<List<DownloadFileResponse>> IBackblazeDirectories.CopyFromAsync(string bucketId, string prefix)
-        //{
-        //    var response = new List<DownloadFileResponse>();
-        //    var parallelTasks = new List<Task>();
-
-        //    var request = new ListFileNamesRequest(bucketId)
-        //    {
-        //        Prefix = prefix
-        //    };
-
-        //    var filelist = await Files.GetAsync(request, 0);
-            
-        //    foreach (var file in filelist)
-        //    {
-        //        parallelTasks.Add(Task.Run(async () =>
-        //        {
-        //            var downloadRequest = new DownloadFileByIdRequest(file.FileId);
-        //            //await DownloadByIdAsync(request, );
-
-
-        //        }));
-        //    }
-        //    await Task.WhenAll(parallelTasks);
-
-        //    return response;
-        //}
     }
 }

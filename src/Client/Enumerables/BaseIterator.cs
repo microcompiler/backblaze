@@ -40,7 +40,7 @@ namespace Bytewizer.Backblaze.Enumerables
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseIterator{T}"/> class.
         /// </summary>
-        public BaseIterator(IApiClient client, ILogger logger, TimeSpan cacheTTL, CancellationToken cancellationToken)
+        protected BaseIterator(IApiClient client, ILogger logger, TimeSpan cacheTTL, CancellationToken cancellationToken)
         {
             _client = client;
             _logger = logger;

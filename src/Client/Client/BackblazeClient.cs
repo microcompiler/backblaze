@@ -18,7 +18,7 @@ namespace Bytewizer.Backblaze.Client
         /// Initializes a new instance of the <see cref="BackblazeClient"/> class with defaults.
         /// </summary>
         public BackblazeClient()
-            : base(GetHttpClient(), new ClientOptions(), new NullLoggerFactory(), null)
+            : base(GetHttpClient(0, null), new ClientOptions(), new NullLoggerFactory(), null)
         { }
 
         /// <summary>
@@ -50,10 +50,10 @@ namespace Bytewizer.Backblaze.Client
             return client;
         }
 
-        private static HttpClient GetHttpClient(int retryCount = 0, ILoggerFactory loggerFactory = null)
-        {
+        private static HttpClient GetHttpClient(int retryCount, ILoggerFactory loggerFactory)
+        {            
             if (retryCount == 0)
-                retryCount = new ClientOptions().RetryCount;
+                retryCount = ClientOptions.DefaultRetryCount;
 
             if (loggerFactory == null)
                 loggerFactory = new NullLoggerFactory();
@@ -63,7 +63,7 @@ namespace Bytewizer.Backblaze.Client
             
             return ClientFactory.Create(new DelegatingHandler[] { 
                 new UserAgentHandler(), 
-                new TransientHttpErrorHandler(policy), 
+                new HttpErrorHandler(policy), 
                 new LoggingHandler(logger) 
             });
         }

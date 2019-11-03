@@ -42,7 +42,7 @@ namespace Bytewizer.Backblaze.Handlers
             if (applicationVersion == null)
                 throw new ArgumentNullException(nameof(applicationVersion));
 
-            this.UserAgentValues = new List<ProductInfoHeaderValue>()
+            UserAgentValues = new List<ProductInfoHeaderValue>
             {
                 new ProductInfoHeaderValue(applicationName.Replace(' ', '-'), applicationVersion),
                 new ProductInfoHeaderValue($"({Environment.OSVersion})"),

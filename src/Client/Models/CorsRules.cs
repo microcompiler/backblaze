@@ -48,22 +48,22 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Adds the specified <see cref="CorsRule"/> to <see cref="CorsRules"/> limited to 100 rules.
         /// </summary>
-        /// <param name="value">The value of the rule to add.</param>
-        public void Add(CorsRule value)
+        /// <param name="item">The value of the rule to add.</param>
+        public void Add(CorsRule item)
         {
             // Validate required elements
             if (Count >= MaximumRulesAllowed)
                 throw new InvalidOperationException(
                           $"This list is limited to {MaximumRulesAllowed} rules. You cannot add more rules.");
 
-            if (!string.IsNullOrEmpty(value.CorsRuleName))
+            if (!string.IsNullOrEmpty(item.CorsRuleName))
             {
-                var rule = _corsRules.Find(x => x.CorsRuleName.Contains(value.CorsRuleName));
+                var rule = _corsRules.Find(x => x.CorsRuleName.Contains(item.CorsRuleName));
                 if (rule != null)
                     throw new InvalidOperationException(
                          $"Rule names must be unique. You cannot add a rule with the same rule name.");
             }
-            _corsRules.Add(value);
+            _corsRules.Add(item);
         }
 
         /// <summary>

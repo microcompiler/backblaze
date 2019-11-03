@@ -100,7 +100,7 @@ namespace Backblaze.Tests.Integration
                 services.AddBackblazeAgent(context.Configuration.GetSection("Agent"));
             });
 
-        private MockFileSystem SeedFileSystem()
+        private static MockFileSystem SeedFileSystem()
         {
             var fileSystem = new MockFileSystem();
 
@@ -111,7 +111,7 @@ namespace Backblaze.Tests.Integration
             return fileSystem;
         }
 
-        private MockFileSystem SeedLargeFileSystem()
+        private static MockFileSystem SeedLargeFileSystem()
         {
             var content = Enumerable.Range(0, (int)(ClientOptions.MinimumCutoffSize * 1.2)).Select(i => (byte)i).ToArray();
             var largeFileSystem = new MockFileSystem();
@@ -123,10 +123,7 @@ namespace Backblaze.Tests.Integration
 
         private async Task SeedStorage()
         {
-            //if (_initialized)
-            //    return;
-
-            //Check for test bucket
+            // Check for test bucket
             var testBucket = await Storage.Buckets.FindByNameAsync(BucketName);
 
             // If test bucket doesn't exist try to create
@@ -158,9 +155,6 @@ namespace Backblaze.Tests.Integration
             }
 
             Logger.LogInformation("Storage seed initialization completed");
-
-            //_initialized = true;
-
         }
 
         public void Dispose()

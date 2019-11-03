@@ -331,38 +331,39 @@ namespace Backblaze.Tests.Integration
 
             Assert.Equal(files.Response.Files.Count(), response.Count());
         }
-        [Fact, TestPriority(100)]
-        public async Task Files_DeleteAllAsync()
-        {
-            var response = new List<UploadFileResponse>();
-            var files = FileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
 
-            foreach (var file in files)
-            {
-                using (var content = FileSystem.File.OpenRead(file))
-                {
-                    var request = new UploadFileByBucketIdRequest(BucketId, file)
-                    {
-                        LastModified = FileSystem.File.GetLastWriteTime(file)
-                    };
-                    var results = await Storage.UploadAsync(request, content, null, CancellationToken.None);
-                    if (results.IsSuccessStatusCode)
-                    {
-                        var fileSha1 = FileSystem.File.OpenRead(file).ToSha1();
-                        if (!fileSha1.Equals(results.Response.ContentSha1))
-                            throw new InvalidOperationException();
+        //[Fact, TestPriority(100)]
+        //public async Task Files_DeleteAllAsync()
+        //{
+        //    var response = new List<UploadFileResponse>();
+        //    var files = FileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
 
-                        response.Add(results.Response);
-                    }
-                }
-            }
+        //    foreach (var file in files)
+        //    {
+        //        using (var content = FileSystem.File.OpenRead(file))
+        //        {
+        //            var request = new UploadFileByBucketIdRequest(BucketId, file)
+        //            {
+        //                LastModified = FileSystem.File.GetLastWriteTime(file)
+        //            };
+        //            var results = await Storage.UploadAsync(request, content, null, CancellationToken.None);
+        //            if (results.IsSuccessStatusCode)
+        //            {
+        //                var fileSha1 = FileSystem.File.OpenRead(file).ToSha1();
+        //                if (!fileSha1.Equals(results.Response.ContentSha1))
+        //                    throw new InvalidOperationException();
 
-            Assert.Equal(files.Count(), response.Count());
+        //                response.Add(results.Response);
+        //            }
+        //        }
+        //    }
 
-            var deletedRequest = new ListFileVersionRequest(BucketId);
-            var deletedFiles = await Storage.Files.DeleteAllAsync(deletedRequest);
+        //    Assert.Equal(files.Count(), response.Count());
+
+        //    var deletedRequest = new ListFileVersionRequest(BucketId);
+        //    var deletedFiles = await Storage.Files.DeleteAllAsync(deletedRequest);
             
-            Assert.Equal(files.Count(), deletedFiles.Count());
-        }
+        //    Assert.Equal(files.Count(), deletedFiles.Count());
+        //}
     }
 }

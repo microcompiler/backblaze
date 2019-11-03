@@ -24,7 +24,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Represents the default cache time to live (TTL) in seconds.
         /// </summary>
-        public readonly TimeSpan DefaultCacheTTL = TimeSpan.FromSeconds(3600);
+        public static readonly TimeSpan DefaultCacheTTL = TimeSpan.FromSeconds(3600);
 
         #endregion
 
@@ -33,7 +33,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiClient"/> class.
         /// </summary>
-        public ApiRest(HttpClient httpClient, IClientOptions options, ILogger<ApiRest> logger, IMemoryCache cache)
+        protected ApiRest(HttpClient httpClient, IClientOptions options, ILogger<ApiRest> logger, IMemoryCache cache)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -489,7 +489,7 @@ namespace Bytewizer.Backblaze.Client
                 var rangeHeader = new RangeHeaderValue(position, position + length - 1);
 
                 hashSet.Add(
-                    new FileParts()
+                    new FileParts
                     {
                         PartNumber = partNumber,
                         Position = position,

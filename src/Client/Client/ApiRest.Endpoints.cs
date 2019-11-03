@@ -47,7 +47,7 @@ namespace Bytewizer.Backblaze.Client
             using (var results = await _policy.InvokeClient.ExecuteAsync(async () =>
                 { return await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false); }))
             {
-                return await HandleResponseAsync<AuthorizeAccountResponse>(results);
+                return await HandleResponseAsync<AuthorizeAccountResponse>(results).ConfigureAwait(false);
             }
 
         }
@@ -67,7 +67,7 @@ namespace Bytewizer.Backblaze.Client
             (CancelLargeFileRequest request, CancellationToken cancellationToken)
         {
             return await InvokePostAsync<CancelLargeFileRequest, CancelLargeFileResponse>
-                (request, $"{AccountInfo.ApiUrl}b2_cancel_large_file", cancellationToken);
+                (request, $"{AccountInfo.ApiUrl}b2_cancel_large_file", cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
@@ -245,7 +245,7 @@ namespace Bytewizer.Backblaze.Client
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await DownloadFileByIdAsync(request, null, null, cancellationToken);
+            return await DownloadFileByIdAsync(request, null, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -310,7 +310,7 @@ namespace Bytewizer.Backblaze.Client
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await DownloadFileByNameAsync(request, null, null, cancellationToken);
+            return await DownloadFileByNameAsync(request, null, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -462,7 +462,7 @@ namespace Bytewizer.Backblaze.Client
                 return await _cache.GetOrCreateAsync(request, async (entry) =>
                 {
                     entry.AbsoluteExpirationRelativeToNow = cacheTTL;
-                    return await GetUploadPartUrlAsync(request, cancellationToken);
+                    return await GetUploadPartUrlAsync(request, cancellationToken).ConfigureAwait(false);
                 });
             }
         }
@@ -481,7 +481,7 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<GetUploadUrlResponse>> GetUploadUrlAsync
             (GetUploadUrlRequest request, CancellationToken cancellationToken)
         {
-            return await GetUploadUrlAsync(request, TimeSpan.Zero, cancellationToken);
+            return await GetUploadUrlAsync(request, TimeSpan.Zero, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -511,7 +511,7 @@ namespace Bytewizer.Backblaze.Client
                 return await _cache.GetOrCreateAsync(request, async (entry) =>
                 {
                     entry.AbsoluteExpirationRelativeToNow = cacheTTL;
-                    return await GetUploadUrlAsync(request, cancellationToken);
+                    return await GetUploadUrlAsync(request, cancellationToken).ConfigureAwait(false);
                 });
             }
         }
@@ -552,7 +552,7 @@ namespace Bytewizer.Backblaze.Client
         public async Task<IApiResults<ListBucketsResponse>> ListBucketsAsync
             (ListBucketsRequest request, CancellationToken cancellationToken)
         {
-            return await ListBucketsAsync(request, TimeSpan.Zero, cancellationToken);
+            return await ListBucketsAsync(request, TimeSpan.Zero, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -584,7 +584,7 @@ namespace Bytewizer.Backblaze.Client
                 return await _cache.GetOrCreateAsync(request, async (entry) =>
                 {
                     entry.AbsoluteExpirationRelativeToNow = cacheTTL;
-                    return await ListBucketsAsync(request, cancellationToken);
+                    return await ListBucketsAsync(request, cancellationToken).ConfigureAwait(false);
                 });
             }
         }

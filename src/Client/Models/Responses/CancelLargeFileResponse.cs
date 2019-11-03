@@ -42,50 +42,5 @@ namespace Bytewizer.Backblaze.Models
         {
             get { return $"{{{nameof(BucketId)}: {BucketId}, {nameof(FileId)}: {FileId}, {nameof(FileName)}: {FileName}}}"; }
         }
-
-        //#region IEquatable
-
-        ///// <summary>
-        ///// Determines whether the given <paramref name="left"/> is equal <paramref name="right"/>.
-        ///// </summary>
-        //public static bool operator ==(MatrixColor left, MatrixColor right)
-        //{
-        //    return left.Equals(right);
-        //}
-
-        ///// <summary>
-        ///// Determines whether the given <paramref name="left"/> is equal <paramref name="right"/>.
-        ///// </summary>
-        //public static bool operator !=(MatrixColor left, MatrixColor right)
-        //{
-        //    return !left.Equals(right);
-        //}
-
-        ///// <summary>
-        ///// Determines whether this object is equal <paramref name="other"/>.
-        ///// </summary>
-        //public bool Equals(MatrixColor other)
-        //{
-        //    return ((R == other.R) && (G == other.G) && (B == other.B));
-        //}
-
-        ///// <summary>
-        ///// Determines whether this object is equal <paramref name="obj"/>.
-        ///// </summary>
-        //public override bool Equals(object obj)
-        //{
-        //    return (obj is MatrixColor) ? Equals((MatrixColor)obj) : false;
-        //}
-
-        ///// <summary>
-        ///// Provides the hash code for the point.
-        ///// </summary>
-        //public override int GetHashCode()
-        //{
-        //    return R.GetHashCode() ^ G.GetHashCode();
-        //}
-
-        //#endregion
-
     }
 }

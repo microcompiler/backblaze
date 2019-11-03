@@ -253,17 +253,17 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Use the recommended part size returned by Backblaze B2 Cloud Storage.
         /// </summary>
-        public bool AutoSetPartSize { get; set; } = false;
+        public bool AutoSetPartSize { get; set; }
 
         /// <summary>
         /// This is for testing use only and not recomended for production environments. 
         /// </summary>
-        public bool ChecksumDisabled { get; set; } = false;
+        public bool ChecksumDisabled { get; set; }
 
         /// <summary>
         /// This is for testing use only and not recomended for production environments. 
         /// </summary>
-        public string TestMode { get; set; } = string.Empty;
+        public string TestMode { get; set; }
 
         /// <summary>
         /// Validate required values and initialize default values.

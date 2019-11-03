@@ -31,7 +31,7 @@ namespace Bytewizer.Backblaze.Client
             (string bucketName, BucketType bucketType)
         {
             var request = new CreateBucketRequest(AccountId, bucketName, bucketType);
-            return await _client.CreateBucketAsync(request, cancellationToken);
+            return await _client.CreateBucketAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<CreateBucketResponse>> IStorageBuckets.CreateAsync
             (CreateBucketRequest request)
         {
-            return await _client.CreateBucketAsync(request, cancellationToken);
+            return await _client.CreateBucketAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<DeleteBucketResponse>> IStorageBuckets.DeleteAsync(string bucketId)
         {
             var request = new DeleteBucketRequest(AccountId, bucketId);
-            return await _client.DeleteBucketAsync(request, cancellationToken);
+            return await _client.DeleteBucketAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<ListBucketsResponse>> IStorageBuckets.ListAsync()
         {
             var request = new ListBucketsRequest(AccountId);
-            return await _client.ListBucketsAsync(request, cancellationToken);
+            return await _client.ListBucketsAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Bytewizer.Backblaze.Client
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IApiResults<ListBucketsResponse>> IStorageBuckets.ListAsync(ListBucketsRequest request, TimeSpan cacheTTL)
         {
-            return await _client.ListBucketsAsync(request, cacheTTL, cancellationToken);
+            return await _client.ListBucketsAsync(request, cacheTTL, _cancellationToken);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Bytewizer.Backblaze.Client
             (string bucketId, BucketType bucketType)
         {
             var request = new UpdateBucketRequest(AccountId, bucketId, bucketType);
-            return await _client.UpdateBucketAsync(request, cancellationToken);
+            return await _client.UpdateBucketAsync(request, _cancellationToken);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<IApiResults<UpdateBucketResponse>> IStorageBuckets.UpdateAsync
             (UpdateBucketRequest request)
         {
-            return await _client.UpdateBucketAsync(request, cancellationToken);
+            return await _client.UpdateBucketAsync(request, _cancellationToken);
         }
 
         #endregion
@@ -133,7 +133,7 @@ namespace Bytewizer.Backblaze.Client
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IEnumerable<BucketItem>> IStorageBuckets.GetAsync(ListBucketsRequest request, TimeSpan cacheTTL)
         {
-            var results = await _client.ListBucketsAsync(request, cacheTTL, cancellationToken);
+            var results = await _client.ListBucketsAsync(request, cacheTTL, _cancellationToken);
             if (results.IsSuccessStatusCode)
                 return results.Response.Buckets;
            
@@ -150,7 +150,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<BucketItem> IStorageBuckets.FindByIdAsync(string bucketId, TimeSpan cacheTTL)
         {
             var request = new ListBucketsRequest(AccountId) { BucketId = bucketId };
-            var results = await _client.ListBucketsAsync(request, cacheTTL, cancellationToken);
+            var results = await _client.ListBucketsAsync(request, cacheTTL, _cancellationToken);
             
             if (results.IsSuccessStatusCode & results.Response.Buckets.Count > 0)
                 return results.Response.Buckets.FirstOrDefault();
@@ -168,7 +168,7 @@ namespace Bytewizer.Backblaze.Client
         async Task<BucketItem> IStorageBuckets.FindByNameAsync(string bucketName, TimeSpan cacheTTL)
         {
             var request = new ListBucketsRequest(AccountId) { BucketName = bucketName };
-            var results = await _client.ListBucketsAsync(request, cacheTTL, cancellationToken);
+            var results = await _client.ListBucketsAsync(request, cacheTTL, _cancellationToken);
             
             if (results.IsSuccessStatusCode & results.Response.Buckets.Count > 0)
                 return results.Response.Buckets.First();

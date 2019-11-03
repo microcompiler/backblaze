@@ -119,12 +119,6 @@ namespace Bytewizer.Backblaze.Models
         private string DebuggerDisplay
         {
             get { return $"{{{nameof(AccountId)}: {AccountId}, {nameof(KeyName)}: {KeyName}}}"; }
-            //$"{Url} ({(Width != null && Height != null ? $"{Width}x{Height}" : "0x0")})";
-            //$"[{Type}] {Author}{(!string.IsNullOrEmpty(Content) ? $": ({Content})" : "")}";
-            //$"{ChannelId} ({(IsEnabled ? "Enabled" : "Disabled")})";
-            //$"Count = { Count}, Flag = { Flag}";
-            //$"{Value?.ToString() ?? "null"} ({Type})";
-            //$"{Value} (left: {(Left == null ? "null" : Left.Value.ToString())}, right: {(Right == null ? "null" : Right.Value.ToString())})";
         }
     }
 }

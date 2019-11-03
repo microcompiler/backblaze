@@ -68,13 +68,13 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton(options);
 
             services.AddTransient<UserAgentHandler>();
-            services.AddTransient<TransientHttpErrorHandler>();
+            services.AddTransient<HttpErrorHandler>();
             services.AddHttpClient<IApiClient, ApiClient>(client =>
             {
                 client.Timeout = TimeSpan.FromSeconds(options.Timeout);
             })
             .AddHttpMessageHandler<UserAgentHandler>()
-            .AddHttpMessageHandler<TransientHttpErrorHandler>()
+            .AddHttpMessageHandler<HttpErrorHandler>()
             .SetHandlerLifetime(TimeSpan.FromSeconds(options.HandlerLifetime));
 
             services.AddSingleton<IStorageClient, StorageService>();
