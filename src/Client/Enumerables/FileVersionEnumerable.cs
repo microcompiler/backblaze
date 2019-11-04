@@ -34,18 +34,30 @@ namespace Bytewizer.Backblaze.Enumerables
         protected override List<FileItem> GetNextPage(out bool isCompleted)
         {
             var results = _client.ListFileVersionsAsync(_request, CancellationToken.None).GetAwaiter().GetResult();
+            
             if (results.IsSuccessStatusCode)
             {
-                _logger.LogDebug($"File version adapter sent request for {_request.MaxFileCount} files including a next file name of '{_request.StartFileName}'");
-                _request.StartFileName = results.Response.NextFileName;
                 isCompleted = string.IsNullOrEmpty(results.Response.NextFileName);
+
+                if (isCompleted)
+                {
+                    _logger.LogDebug($"'{GetType().Name}' sent request for {_request.MaxFileCount} files");
+                }
+                else
+                {
+                    _logger.LogDebug($"'{GetType().Name}' sent request for {_request.MaxFileCount} files including a next file name of '{_request.StartFileName}'");
+                }
+
+                _request.StartFileName = results.Response.NextFileName;
+                
                 return results.Response.Files;
             }
             else
             {
-                _logger.LogError($"File version adapter failed sending request with error: {results.Error.Message}");
+                _logger.LogError($"'{GetType().Name}' failed sending request with error: {results.Error?.Message}");
                 isCompleted = true;
-                return new List<FileItem>();
+
+                return default;
             }
         }
     }

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net.Http.Headers;
-using System.Collections.Generic;
+
+using Bytewizer.Backblaze.Extensions;
 
 namespace Bytewizer.Backblaze.Models
 {
@@ -29,10 +30,25 @@ namespace Bytewizer.Backblaze.Models
         public long ContentLength { get; internal set; }
 
         /// <summary>
-        /// The SHA1 of the bytes stored in the file as a 40-digit hex string. Large files do not have SHA1 checksums, and the value is "none".
-        /// The value is null when the action is <see cref="ActionType.Hide"/> or <see cref="ActionType.Folder"/>. 
+        /// Gets or sets the SHA1 of the bytes stored in the file as a 40-digit hex string. Large files do not have SHA1 checksums and the value is "none".
+        /// The value is <c>null</c> when the action is <see cref="ActionType.Hide"/> or <see cref="ActionType.Folder"/>. 
         /// </summary>
-        public string ContentSha1 { get; internal set; }
+        public string ContentSha1
+        {
+            get
+            {
+                if (_contentSha1.Contains("none"))
+                {
+                    return FileInfo.GetLargeFileSha1();
+                }
+                else
+                {
+                    return _contentSha1;
+                }
+            }
+            set { _contentSha1 = value; }
+        }
+        private string _contentSha1;
 
         /// <summary>
         /// When the action is <see cref="ActionType.Upload"/> or <see cref="ActionType.Start"/>, the MIME type of the file as specified when the file 
@@ -65,9 +81,9 @@ namespace Bytewizer.Backblaze.Models
         /// </remarks>
         public ContentDispositionHeaderValue ContentDisposition { get; internal set; }
 
-        ///	<summary>
-        ///	Debugger display for this object.
-        ///	</summary>
+        /// <summary>
+        /// Debugger display for this object.
+        /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay
         {

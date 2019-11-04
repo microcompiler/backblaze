@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
 using Bytewizer.Backblaze.Client;
-using Bytewizer.Backblaze.Command;
+using Bytewizer.Backblaze.Progress;
 using Bytewizer.Extensions.Console;
 
 namespace Backblaze.Sample

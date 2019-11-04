@@ -6,15 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Bytewizer.Backblaze.Client;
-using Bytewizer.Extensions.Console;
 using Bytewizer.Backblaze.Models;
+using Bytewizer.Extensions.Console;
 
-
-using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
-using System.IO;
-using System.Diagnostics;
-using System.Linq;
 
 namespace Backblaze.Tests.Integration
 {
@@ -51,27 +46,12 @@ namespace Backblaze.Tests.Integration
         /// <summary>
         /// Thread synchronization object.
         /// </summary>
-        private static object _lock = new object();
-
-        /// <summary>
-        /// Configuration flag.
-        /// </summary>
-        //private static bool _initialized;
+        private static readonly object _lock = new object();
 
         /// <summary>
         /// The default test bucket id to run test methods.
         /// </summary>
         public string bucketId;
-
-        /// <summary>
-        /// The default test file id to run test methods.
-        /// </summary>
-        public string fileId;
-
-        /// <summary>
-        /// The default identifier for the account.
-        /// </summary>
-        public string accountId;
 
         #endregion
 
@@ -83,8 +63,6 @@ namespace Backblaze.Tests.Integration
             Logger = Services.GetService<ILogger<StorageClientFixture>>();
             Options = Services.GetService<IClientOptions>();
             Storage = Services.GetService<IStorageClient>();
-            FileSystem = SeedFileSystem();
-            LargeFileSystem = SeedLargeFileSystem();
 
             lock (_lock)
             {
@@ -99,27 +77,6 @@ namespace Backblaze.Tests.Integration
                 services.AddMemoryCache();
                 services.AddBackblazeAgent(context.Configuration.GetSection("Agent"));
             });
-
-        private static MockFileSystem SeedFileSystem()
-        {
-            var fileSystem = new MockFileSystem();
-
-            fileSystem.AddFile(@"c:\root-five-bytes.bin", new MockFileData(new byte[] { 0x01, 0x34, 0x56, 0xd2, 0xd2 }));
-            fileSystem.AddFile(@"c:\matrix\five-bytes.bin", new MockFileData(new byte[] { 0x02, 0x34, 0x56, 0xd2, 0xd2 }));
-            fileSystem.AddFile(@"c:\shawshank\five-bytes.bin", new MockFileData(new byte[] { 0x03, 0x34, 0x56, 0xd2, 0xd2 }));
-
-            return fileSystem;
-        }
-
-        private static MockFileSystem SeedLargeFileSystem()
-        {
-            var content = Enumerable.Range(0, (int)(ClientOptions.MinimumCutoffSize * 1.2)).Select(i => (byte)i).ToArray();
-            var largeFileSystem = new MockFileSystem();
-
-            largeFileSystem.AddFile(@"c:\six-megabyte.bin", new MockFileData(content));
-
-            return largeFileSystem;
-        }
 
         private async Task SeedStorage()
         {

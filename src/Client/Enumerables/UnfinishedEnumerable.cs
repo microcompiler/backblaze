@@ -34,18 +34,30 @@ namespace Bytewizer.Backblaze.Enumerables
         protected override List<FileItem> GetNextPage(out bool isCompleted)
         {
             var results = _client.ListUnfinishedLargeFilesAsync(_request, _cacheTTL, _cancellationToken).GetAwaiter().GetResult();
+            
             if (results.IsSuccessStatusCode)
             {
-                _logger.LogDebug($"Unfinished part adapter sent request for {_request.MaxFileCount} unfinished parts including a next file id of '{_request.StartFileId}'");
-                _request.StartFileId = results.Response.NextFileId;
                 isCompleted = string.IsNullOrEmpty(results.Response.NextFileId);
+                
+                if (isCompleted)
+                {
+                    _logger.LogDebug($"'{GetType().Name}' sent request for {_request.MaxFileCount} files");
+                }
+                else
+                {
+                    _logger.LogDebug($"'{GetType().Name}' sent request for {_request.MaxFileCount} files including a next file name of '{_request.StartFileId}'");
+                }
+
+                _request.StartFileId = results.Response.NextFileId;
+               
                 return results.Response.Files;
             }
             else
             {
-                _logger.LogError($"Unfinished part adapter failed sending request with error: {results.Error.Message}");
+                _logger.LogError($"'{GetType().Name}' failed sending request with error: {results.Error?.Message}");
                 isCompleted = true;
-                return new List<FileItem>();
+                
+                return default;
             }
         }
     }

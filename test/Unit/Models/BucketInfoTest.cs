@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Net.Http;
-using Bytewizer.Backblaze.Agent;
-using Bytewizer.Backblaze.Client;
+
 using Bytewizer.Backblaze.Models;
-using Microsoft.Extensions.Logging;
+
 using Xunit;
 
 namespace Backblaze.Tests.Unit

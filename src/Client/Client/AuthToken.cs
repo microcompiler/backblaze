@@ -56,7 +56,7 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Returns true if the token will expired based on the current system clock and the calculated <see cref="ExpiresAt"/> value.
         /// </summary>
-        public bool IsExpiring() { return (DateTime.Now >= IssuedAt.AddSeconds(ExpiresIn / 90)); }
+        public bool IsExpiring() { return (DateTime.Now >= IssuedAt.AddSeconds(ExpiresIn / 90d)); }
 
         /// <summary>
         /// The token in authorization header format.

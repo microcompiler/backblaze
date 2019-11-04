@@ -8,10 +8,9 @@ using System.Security.Authentication;
 
 using Microsoft.Extensions.Logging;
 
-using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
-using Bytewizer.Backblaze.Enumerables;
 using Bytewizer.Backblaze.Extensions;
+using Bytewizer.Backblaze.Enumerables;
 
 namespace Bytewizer.Backblaze.Client
 {
@@ -302,7 +301,7 @@ namespace Bytewizer.Backblaze.Client
                 var results = await _client.UploadAsync(request, content, progress, cancel);
                 if (results.IsSuccessStatusCode)
                 {
-                    _logger.LogInformation($"Successfully uploaded '{localPath}' file to '{bucketId}' bucket id.");
+                    _logger.LogInformation($"Successfully uploaded '{localPath}' file to '{bucketId}' bucket id");
                 }
                 else
                 {
@@ -446,21 +445,22 @@ namespace Bytewizer.Backblaze.Client
         /// Deletes all files contained in bucket. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileVersionRequest"/> to send.</param>
+        /// <param name="dop">The degree of parallelism. Use 0 to default to <see cref="Environment.ProcessorCount"/>.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
         async Task<IList<DeleteFileVersionResponse>> IStorageFiles.DeleteAllAsync
-            (ListFileVersionRequest request)
+            (ListFileVersionRequest request, int dop)
         {
             var response = new List<DeleteFileVersionResponse>();
             
-            var files = await Files.GetEnumerableAsync(request);
-            await files.ForEachAsync(_client.Options.RequestMaxParallel, async filepath =>
+            var files = await Files.GetEnumerableAsync(request);      
+            await files.ForEachAsync(dop, async filepath =>
             {
                 var deleteRequest = new DeleteFileVersionRequest(filepath.FileId, filepath.FileName);
                 var results = await _client.DeleteFileVersionAsync(deleteRequest, _cancellationToken);
                 if (results.IsSuccessStatusCode)
                 {
-                    _logger.LogInformation($"Successfully deleted '{filepath.FileName}' file from '{request.BucketId}' bucket id.");
+                    _logger.LogInformation($"Successfully deleted '{filepath.FileName}' file from '{request.BucketId}' bucket id");
                     response.Add(results.Response);
                 }
                 else

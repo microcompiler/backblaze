@@ -1,17 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 using System.Collections.Generic;
 
-using System.IO.Abstractions.TestingHelpers;
-
-using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
-using Bytewizer.Backblaze.Extensions;
-using Bytewizer.Backblaze.Enumerables;
 
 using Xunit;
 
@@ -26,10 +19,9 @@ namespace Backblaze.Tests.Integration
             : base(fixture)
         { }
 
-        [Fact, TestPriority(0)]
+        [Fact, TestPriority(1)]
         public async Task CreateAsync()
         {
-            // Create bucket
             var request = new CreateBucketRequest(Storage.AccountId, _bucketName, BucketType.AllPrivate)
             {
                 BucketInfo = new BucketInfo
@@ -111,7 +103,7 @@ namespace Backblaze.Tests.Integration
             results.EnsureSuccessStatusCode();
 
             Assert.Equal(typeof(ListBucketsResponse), results.Response.GetType());
-            Assert.True(results.Response.Buckets.Count >= 1, "The actual count was not greater than one");
+            Assert.True(results.Response.Buckets.Count >= 1, "The actual count was less than one");
         }
 
         [Fact, TestPriority(2)]
@@ -120,10 +112,10 @@ namespace Backblaze.Tests.Integration
             var results = await Storage.Buckets.GetAsync();
 
             Assert.Equal(typeof(List<BucketItem>), results.GetType());
-            Assert.True(results.ToList().Count() >= 1, "The actual count was not greater than one");
+            Assert.True(results.ToList().Count() >= 1, "The actual count was less than one");
         }
 
-        [Fact, TestPriority(2)]
+        [Fact, TestPriority(3)]
         public async Task UpdateAsync()
         {
             var results = await Storage.Buckets.UpdateAsync(_bucketId, BucketType.AllPrivate);
@@ -134,7 +126,7 @@ namespace Backblaze.Tests.Integration
             Assert.Equal(BucketType.AllPrivate, results.Response.BucketType);
         }
 
-        [Fact, TestPriority(3)]
+        [Fact, TestPriority(100)]
         public async Task DeleteAsync()
         {
             var results = await Storage.Buckets.DeleteAsync(_bucketId);

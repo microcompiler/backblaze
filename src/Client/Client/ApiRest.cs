@@ -397,17 +397,19 @@ namespace Bytewizer.Backblaze.Client
                 {
                     foreach (var part in parts)
                     {
-                        var partStream = new PartialStream(request.ContentStream, part.Position, part.Length);
-                        var partReqeust = new UploadPartRequest(urlResults.Response.UploadUrl, part.PartNumber, urlResults.Response.AuthorizationToken);
+                        using (var partStream = new PartialStream(request.ContentStream, part.Position, part.Length))
+                        {
+                            var partReqeust = new UploadPartRequest(urlResults.Response.UploadUrl, part.PartNumber, urlResults.Response.AuthorizationToken);
 
-                        var partResults = await UploadPartAsync(partReqeust, partStream, progress, cancellationToken).ConfigureAwait(false);
-                        if (partResults.IsSuccessStatusCode)
-                        {
-                            sha1Hash.Add(partResults.Response.ContentSha1);
-                        }
-                        else
-                        {
-                            return new ApiResults<UploadFileResponse>(partResults.HttpResponse, partResults.Error);
+                            var partResults = await UploadPartAsync(partReqeust, partStream, progress, cancellationToken).ConfigureAwait(false);
+                            if (partResults.IsSuccessStatusCode)
+                            {
+                                sha1Hash.Add(partResults.Response.ContentSha1);
+                            }
+                            else
+                            {
+                                return new ApiResults<UploadFileResponse>(partResults.HttpResponse, partResults.Error);
+                            }
                         }
                     }
                 }

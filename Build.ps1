@@ -1,5 +1,5 @@
 param(
-  [string]$version = '0.9.1',
+  [string]$version = '0.9.2',
   [string]$configuration = 'Release',
   [string]$path = $PSScriptRoot,
   [string[]]$targets = 'default'
@@ -62,7 +62,7 @@ target deploy {
       $package = $_.FullName
       Write-Output "Uploading $package"
       Invoke-Dotnet nuget push $package --api-key $key --source "https://www.nuget.org/api/v2/package"
-      Write-Output
+      Write-Output ""
     }
   }
 }

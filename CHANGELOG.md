@@ -1,8 +1,12 @@
 # Change Log
 
-## 0.9.2
+## 0.9.2 - November 3, 2019
 
 *  Fixed hash issue with large file uploads
+*  Fixed issue with ContentSha1 responses
+*  Added .ConfigureAwait(false) to all Task methods
+*  Moved test unit tests to xUnit allowing parallel test
+*  Fixed general code quality in several areas
 
 ## 0.9.1 - October 27, 2019
 

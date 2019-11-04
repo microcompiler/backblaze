@@ -253,8 +253,9 @@ namespace Bytewizer.Backblaze.Client
         /// Deletes all of the files contained in bucket. 
         /// </summary>
         /// <param name="request">The <see cref="ListFileVersionRequest"/> to send.</param>
+        /// <param name="dop">The degree of parallelism. Use 0 to default to <see cref="Environment.ProcessorCount"/>.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task<IList<DeleteFileVersionResponse>> DeleteAllAsync(ListFileVersionRequest request);
+        Task<IList<DeleteFileVersionResponse>> DeleteAllAsync(ListFileVersionRequest request, int dop = 3);
     }
 }

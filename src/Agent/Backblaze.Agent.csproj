@@ -9,7 +9,7 @@
     <Product>Backblaze B2 Client</Product>
     <LangVersion>7.1</LangVersion>
     <RootNamespace>Bytewizer.Backblaze</RootNamespace>
-    <Version>0.9.1</Version>
+    <Version>0.9.2</Version>
     <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage.PI.</Description>
     <Copyright>2019 Bytewizer</Copyright>
     <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
@@ -20,6 +20,7 @@
     <AssemblyName>Backblaze.Agent</AssemblyName>
     <RepositoryType></RepositoryType>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageIcon>logo.png</PackageIcon>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
@@ -33,6 +34,13 @@
 
   <ItemGroup>
     <None Include="..\..\LICENSE.md" Link="LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\images\logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

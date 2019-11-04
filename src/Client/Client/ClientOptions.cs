@@ -281,7 +281,6 @@ namespace Bytewizer.Backblaze.Client
 
             if (DownloadCutoffSize < DownloadPartSize)
                 throw new ConfigurationException("Download cutoff size must be greater then or equal to part size.");
-
         }
     }
 }

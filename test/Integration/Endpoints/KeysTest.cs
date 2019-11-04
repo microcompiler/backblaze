@@ -1,15 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using System.IO.Abstractions.TestingHelpers;
-
-using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
-using Bytewizer.Backblaze.Extensions;
 using Bytewizer.Backblaze.Enumerables;
 
 using Xunit;
@@ -38,7 +32,6 @@ namespace Backblaze.Tests.Integration
             _keyId = results.Response.ApplicationKeyId;
 
             Assert.Equal(typeof(CreateKeyResponse), results.Response.GetType());
-            //Assert.Equal(DateTime.Now.AddDays(5).Date, results.Response.ExpirationTimestamp.Date);
             Assert.Equal(Capabilities.ReadOnly(), results.Response.Capabilities);
         }
 
@@ -69,7 +62,7 @@ namespace Backblaze.Tests.Integration
             var enumerable = await Storage.Keys.GetEnumerableAsync(request);
 
             Assert.Equal(typeof(KeyEnumerable), enumerable.GetType());
-            Assert.True(enumerable.ToList().Count() >= 1, "The actual count was not greater than one");
+            Assert.True(enumerable.ToList().Count() >= 1, "The actual count was less than one");
         }
 
         [Fact, TestPriority(2)]
@@ -79,7 +72,7 @@ namespace Backblaze.Tests.Integration
             results.EnsureSuccessStatusCode();
 
             Assert.Equal(typeof(ListKeysResponse), results.Response.GetType());
-            Assert.True(results.Response.Keys.Count >= 1, "The actual count was not greater than one");
+            Assert.True(results.Response.Keys.Count >= 1, "The actual count was less than one");
         }
 
         [Fact, TestPriority(2)]
@@ -88,10 +81,10 @@ namespace Backblaze.Tests.Integration
             var results = await Storage.Keys.GetAsync();
 
             Assert.Equal(typeof(List<KeyItem>), results.GetType());
-            Assert.True(results.ToList().Count() >= 1, "The actual count was not greater than one");
+            Assert.True(results.ToList().Count() >= 1, "The actual count was less than one");
         }
 
-        [Fact, TestPriority(3)]
+        [Fact, TestPriority(100)]
         public async Task DeleteAsync()
         {
             var results = await Storage.Keys.DeleteAsync(_keyId);

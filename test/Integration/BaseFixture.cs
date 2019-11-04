@@ -1,21 +1,11 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Net.Http.Headers;
-using System.Collections.Generic;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
 using Bytewizer.Backblaze.Client;
-using Bytewizer.Backblaze.Models;
-using Bytewizer.Backblaze.Extensions;
-using Bytewizer.Backblaze.Enumerables;
 
 using Xunit;
-
-using System.IO.Abstractions.TestingHelpers;
 
 namespace Backblaze.Tests.Integration
 {
@@ -28,8 +18,13 @@ namespace Backblaze.Tests.Integration
         public ILogger Logger { get; }
         public IClientOptions Options { get; }
         public IStorageClient Storage { get; }
-        public MockFileSystem FileSystem { get; }
-        public MockFileSystem LargeFileSystem { get; }
+
+        public static readonly string ContentType = "application/octet-stream";
+        public static readonly string BucketName = StorageClientFixture.BucketName;
+        public static readonly string KeyName = StorageClientFixture.KeyName;
+        
+        public string BucketId;
+        public string KeyId;
 
         protected BaseFixture(StorageClientFixture fixture)
         {
@@ -38,16 +33,7 @@ namespace Backblaze.Tests.Integration
             Logger = fixture.Logger;
             Options = fixture.Options;
             Storage = fixture.Storage;
-            FileSystem = fixture.FileSystem;
-            LargeFileSystem = fixture.LargeFileSystem;
-
             BucketId = fixture.bucketId;
         }
-
-        public string ContentType = "application/octet-stream";
-        public string BucketName = StorageClientFixture.BucketName;
-        public string BucketId;
-        public string KeyName = StorageClientFixture.KeyName;
-        public string KeyId;
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 /// <summary>
 /// Contains extension methods for <see cref="DateTime"/> object.

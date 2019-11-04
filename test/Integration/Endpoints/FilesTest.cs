@@ -13,34 +13,40 @@ using Bytewizer.Backblaze.Extensions;
 using Bytewizer.Backblaze.Enumerables;
 
 using Xunit;
-using Bytewizer.Backblaze.Command;
 
 namespace Backblaze.Tests.Integration
 {
+    [Collection("Sequential")]
     public class FilesTest : BaseFixture
     {
-        public FilesTest(StorageClientFixture fixture) 
+        private static readonly MockFileSystem _fileSystem = new MockFileSystem();
+
+        public FilesTest(StorageClientFixture fixture)
             : base(fixture)
-        { }
+        {
+            _fileSystem.AddFile(@"c:\root-five-bytes.bin", new MockFileData(new byte[] { 0x01, 0x34, 0x56, 0xd2, 0xd2 }));
+            _fileSystem.AddFile(@"c:\matrix\five-bytes.bin", new MockFileData(new byte[] { 0x02, 0x34, 0x56, 0xd2, 0xd2 }));
+            _fileSystem.AddFile(@"c:\shawshank\five-bytes.bin", new MockFileData(new byte[] { 0x03, 0x34, 0x56, 0xd2, 0xd2 }));
+        }
 
         [Fact, TestPriority(1)]
         public async Task UploadAsync()
         {
             var response = new List<UploadFileResponse>();
-            var files = FileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
+            var files = _fileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
 
             foreach (var file in files)
             {
-                using (var content = FileSystem.File.OpenRead(file))
+                using (var content = _fileSystem.File.OpenRead(file))
                 {
                     var request = new UploadFileByBucketIdRequest(BucketId, file)
                     {
-                        LastModified = FileSystem.File.GetLastWriteTime(file)
+                        LastModified = _fileSystem.File.GetLastWriteTime(file)
                     };
                     var results = await Storage.UploadAsync(request, content, null, CancellationToken.None);
                     if (results.IsSuccessStatusCode)
                     {
-                        var fileSha1 = FileSystem.File.OpenRead(file).ToSha1();
+                        var fileSha1 = _fileSystem.File.OpenRead(file).ToSha1();
                         if (!fileSha1.Equals(results.Response.ContentSha1))
                             throw new InvalidOperationException();
 
@@ -53,23 +59,23 @@ namespace Backblaze.Tests.Integration
         }
 
         [Fact, TestPriority(2)]
-        public async Task FileNameEnumerable()
+        public async Task GetFileNameEnumerable()
         {
             var request = new ListFileNamesRequest(BucketId);
             var enumerable = await Storage.Files.GetEnumerableAsync(request);
 
             Assert.Equal(typeof(FileNameEnumerable), enumerable.GetType());
-            Assert.True(enumerable.ToList().Count() >= 1, "The actual count was not greater than one");
+            Assert.Equal(_fileSystem.AllFiles.Count(), enumerable.ToList().Count());
         }
 
         [Fact, TestPriority(2)]
-        public async Task FileVersionEnumerable()
+        public async Task GetFileVersionEnumerable()
         {
             var request = new ListFileVersionRequest(BucketId);
             var enumerable = await Storage.Files.GetEnumerableAsync(request);
 
             Assert.Equal(typeof(FileVersionEnumerable), enumerable.GetType());
-            Assert.True(enumerable.ToList().Count() >= 1, "The actual count was not greater than one");
+            Assert.Equal(_fileSystem.AllFiles.Count(), enumerable.ToList().Count());
         }
 
         [Fact, TestPriority(2)]
@@ -82,7 +88,7 @@ namespace Backblaze.Tests.Integration
             {
                 if (results.IsSuccessStatusCode)
                 {
-                    var fileSha1 = FileSystem.File.OpenRead(fileList.FileName).ToSha1();
+                    var fileSha1 = _fileSystem.File.OpenRead(fileList.FileName).ToSha1();
                     if (!fileSha1.Equals(fileList.ContentSha1))
                         throw new InvalidOperationException();
 
@@ -90,7 +96,7 @@ namespace Backblaze.Tests.Integration
                 }
             }
 
-            Assert.Equal(3, response.Count());
+            Assert.Equal(_fileSystem.AllFiles.Count(), response.Count());
         }
 
         [Fact, TestPriority(2)]
@@ -107,7 +113,7 @@ namespace Backblaze.Tests.Integration
                 }
             }
 
-            Assert.Equal(4, response.Count());
+            Assert.Equal(_fileSystem.AllFiles.Count(), response.Count());
         }
 
         [Fact, TestPriority(3)]
@@ -123,23 +129,12 @@ namespace Backblaze.Tests.Integration
                 var results = await Storage.Files.GetInfoAsync(file.FileId);
                 if (results.IsSuccessStatusCode)
                 {
-                    if (!file.ContentLength.Equals(results.Response.ContentLength))
-                        throw new InvalidOperationException();
-
-                    if (!file.ContentSha1.Equals(results.Response.ContentSha1))
-                        throw new InvalidOperationException();
-
-                    if (!file.ContentType.Equals(results.Response.ContentType))
-                        throw new InvalidOperationException();
-
-                    if (!file.FileInfo.Equals(results.Response.FileInfo))
-                        throw new InvalidOperationException();
-
-                    if (!file.FileName.Equals(results.Response.FileName))
-                        throw new InvalidOperationException();
-
-                    if (!file.UploadTimestamp.Equals(results.Response.UploadTimestamp))
-                        throw new InvalidOperationException();
+                    Assert.Equal(file.ContentLength, results.Response.ContentLength);
+                    Assert.Equal(file.ContentSha1, results.Response.ContentSha1);
+                    Assert.Equal(file.ContentType, results.Response.ContentType);
+                    Assert.Equal(file.FileInfo, results.Response.FileInfo);
+                    Assert.Equal(file.FileName, results.Response.FileName);
+                    Assert.Equal(file.UploadTimestamp, results.Response.UploadTimestamp);
 
                     response.Add(results.Response);
                 }
@@ -149,11 +144,24 @@ namespace Backblaze.Tests.Integration
         }
 
         [Fact, TestPriority(4)]
+        public async Task GetUnfinishedEnumerable()
+        {
+            var results = await Storage.Parts.StartLargeFileAsync(BucketId, "unfinished-file.bin");
+            results.EnsureSuccessStatusCode();
+
+            var request = new ListUnfinishedLargeFilesRequest(BucketId);
+            var enumerable = await Storage.Files.GetEnumerableAsync(request);
+
+            Assert.Equal(typeof(UnfinishedEnumerable), enumerable.GetType());
+            Assert.Single(enumerable.ToList());
+        }
+
+        [Fact, TestPriority(5)]
         public async Task DownloadAsync()
         {
             var response = new List<DownloadFileResponse>();
             var fileSystem = new MockFileSystem();
-            var files = FileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
+            var files = _fileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
 
             foreach (var file in files)
             {
@@ -171,7 +179,7 @@ namespace Backblaze.Tests.Integration
                     }
                 }
 
-                var byte1 = FileSystem.File.ReadAllBytes(file);
+                var byte1 = _fileSystem.File.ReadAllBytes(file);
                 var byte2 = fileSystem.File.ReadAllBytes(file);
 
                 if (!byte1.SequenceEqual(byte2))
@@ -181,7 +189,7 @@ namespace Backblaze.Tests.Integration
             Assert.Equal(files.Count(), response.Count());
         }
 
-        [Fact, TestPriority(5)]
+        [Fact, TestPriority(6)]
         public async Task CopyAsync()
         {
             var response = new List<CopyFileResponse>();
@@ -202,122 +210,12 @@ namespace Backblaze.Tests.Integration
             Assert.Equal(files.Response.Files.Count(), response.Count());
         }
 
-        [Fact, TestPriority(10)]
-        public async Task LargeFiles_UploadAsync()
-        {
-            var response = new List<UploadFileResponse>();
-            var files = LargeFileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
-
-            foreach (var file in files)
-            {
-                using (var content = LargeFileSystem.File.OpenRead(file))
-                {
-                    var request = new UploadFileByBucketIdRequest(BucketId, file);
-                    var results = await Storage.UploadAsync(request, content, null, CancellationToken.None);
-                    if (results.IsSuccessStatusCode)
-                    {
-                        var fileSha1 = LargeFileSystem.File.OpenRead(file).ToSha1();
-                        if (!fileSha1.Equals(results.Response.ContentSha1))
-                            throw new InvalidOperationException();
-
-                        response.Add(results.Response);
-                    }
-                }
-            }
-
-            Assert.Equal(files.Count(), response.Count());
-        }
-
-        [Fact, TestPriority(11)]
-        public async Task LargeFiles_DownloadAsync()
-        {
-            var response = new List<DownloadFileResponse>();
-            var fileSystem = new MockFileSystem();
-            var files = LargeFileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
-
-            int progressEventCounter = 0;
-            long lastBytesTransferred = 0;
-            double lastProgress = 0;
-            var progress = new NaiveProgress<ICopyProgress>(x =>
-            {
-                progressEventCounter++;
-                //Assert.True(x.BytesTransferred > lastBytesTransferred);
-                lastBytesTransferred = x.BytesTransferred;
-                lastProgress = x.PercentComplete;
-            });
-            
-            foreach (var file in files)
-            {
-                if (!fileSystem.Directory.Exists(Path.GetDirectoryName(file)))
-                {
-                    fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(file));
-                }
-
-                using (var content = fileSystem.File.Create(file))
-                {
-                    var request = new DownloadFileByNameRequest(BucketName, file);
-                    var results = await Storage.DownloadAsync(request, content, progress,CancellationToken.None);
-                    if (results.IsSuccessStatusCode)
-                    {
-                        response.Add(results.Response);
-                    }
-                }
-
-                var byte1 = LargeFileSystem.File.ReadAllBytes(file);
-                var byte2 = fileSystem.File.ReadAllBytes(file);
-
-                if (!byte1.SequenceEqual(byte2))
-                    throw new InvalidOperationException();
-            }
-
-            Assert.True(progressEventCounter > 0);
-            Assert.Equal(1, lastProgress);
-            Assert.Equal(files.Count(), response.Count());
-        }
-
-        [Fact, TestPriority(12)]
-        public async Task LargeFiles_DownloadAsync_ById()
-        {
-            var response = new List<DownloadFileResponse>();
-            var fileSystem = new MockFileSystem();
-
-            var fileResults = await Storage.Files.ListNamesAsync(BucketId);
-            fileResults.EnsureSuccessStatusCode();
-
-            var files = fileResults.Response.Files.Where(x => x.FileName == "c:/six-megabyte.bin");
-
-            foreach (var file in files)
-            {
-                if (!fileSystem.Directory.Exists(Path.GetDirectoryName(file.FileName)))
-                {
-                    fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(file.FileName));
-                }
-
-                using (var content = fileSystem.File.Create(file.FileName))
-                {
-                    var results = await Storage.DownloadByIdAsync(file.FileId, content);
-                    if (results.IsSuccessStatusCode)
-                    {
-                        response.Add(results.Response);
-                    }
-                }
-
-                var byte1 = LargeFileSystem.File.ReadAllBytes(file.FileName);
-                var byte2 = fileSystem.File.ReadAllBytes(file.FileName);
-
-                if (!byte1.SequenceEqual(byte2))
-                    throw new InvalidOperationException();
-            }
-
-            Assert.Equal(files.Count(), response.Count());
-        }
-
-        [Fact, TestPriority(100)]
-        public async Task Files_DeleteAsync()
+        [Fact, TestPriority(7)]
+        public async Task DeleteAsync()
         {
             var response = new List<DeleteFileVersionResponse>();
 
-            var files = await Storage.Files.ListNamesAsync(BucketId);
+            var files = await Storage.Files.ListVersionsAsync(BucketId);
             files.EnsureSuccessStatusCode();
 
             foreach (var file in files.Response.Files)
@@ -331,39 +229,5 @@ namespace Backblaze.Tests.Integration
 
             Assert.Equal(files.Response.Files.Count(), response.Count());
         }
-
-        //[Fact, TestPriority(100)]
-        //public async Task Files_DeleteAllAsync()
-        //{
-        //    var response = new List<UploadFileResponse>();
-        //    var files = FileSystem.Directory.GetFiles(@"c:\", "*.*", SearchOption.AllDirectories);
-
-        //    foreach (var file in files)
-        //    {
-        //        using (var content = FileSystem.File.OpenRead(file))
-        //        {
-        //            var request = new UploadFileByBucketIdRequest(BucketId, file)
-        //            {
-        //                LastModified = FileSystem.File.GetLastWriteTime(file)
-        //            };
-        //            var results = await Storage.UploadAsync(request, content, null, CancellationToken.None);
-        //            if (results.IsSuccessStatusCode)
-        //            {
-        //                var fileSha1 = FileSystem.File.OpenRead(file).ToSha1();
-        //                if (!fileSha1.Equals(results.Response.ContentSha1))
-        //                    throw new InvalidOperationException();
-
-        //                response.Add(results.Response);
-        //            }
-        //        }
-        //    }
-
-        //    Assert.Equal(files.Count(), response.Count());
-
-        //    var deletedRequest = new ListFileVersionRequest(BucketId);
-        //    var deletedFiles = await Storage.Files.DeleteAllAsync(deletedRequest);
-            
-        //    Assert.Equal(files.Count(), deletedFiles.Count());
-        //}
     }
 }

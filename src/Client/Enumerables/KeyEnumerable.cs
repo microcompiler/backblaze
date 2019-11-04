@@ -34,18 +34,30 @@ namespace Bytewizer.Backblaze.Enumerables
         protected override List<KeyItem> GetNextPage(out bool isCompleted)
         {
             var results = _client.ListKeysAsync(_request, _cacheTTL, _cancellationToken).GetAwaiter().GetResult();
+            
             if (results.IsSuccessStatusCode)
             {
-                _logger.LogDebug($"Key adapter sent request for {_request.MaxKeyCount} keys including a next application key id of '{_request.StartApplicationKeyId}'");
-                _request.StartApplicationKeyId = results.Response.NextApplicationKeyId;
                 isCompleted = string.IsNullOrEmpty(results.Response.NextApplicationKeyId);
+                
+                if (isCompleted)
+                {
+                    _logger.LogDebug($"'{GetType().Name}' sent request for {_request.MaxKeyCount} keys");
+                }
+                else
+                {
+                    _logger.LogDebug($"'{GetType().Name}' sent request for {_request.MaxKeyCount} keys including a next key id of '{_request.StartApplicationKeyId}'");
+                }
+
+                _request.StartApplicationKeyId = results.Response.NextApplicationKeyId;
+                
                 return results.Response.Keys;
             }
             else
             {
-                _logger.LogError($"Key adapter failed sending request with error: {results.Error.Message}");
+                _logger.LogError($"'{GetType().Name}' failed sending request with error: {results.Error?.Message}");
                 isCompleted = true;
-                return new List<KeyItem>();
+
+                return default;
             }
         }
     }

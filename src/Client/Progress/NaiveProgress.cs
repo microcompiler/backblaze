@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Bytewizer.Backblaze.Command
+namespace Bytewizer.Backblaze.Progress
 {
     /// <summary>
     /// A really naive progress class which doesn't do any surprising synchronization, threading, etc. Reports are passed directly to the ProgressChanged event.

@@ -34,18 +34,30 @@ namespace Bytewizer.Backblaze.Enumerables
         protected override List<PartItem> GetNextPage(out bool isCompleted)
         {
             var results = _client.ListPartsAsync(_request, _cacheTTL, _cancellationToken).GetAwaiter().GetResult();
+
             if (results.IsSuccessStatusCode)
             {
-                _logger.LogDebug($"Part adapter sent request for {_request.MaxPartCount} file parts including a next part number of '{_request.StartPartNumber}'");
-                _request.StartPartNumber = results.Response.NextPartNumber;
                 isCompleted = string.IsNullOrEmpty(results.Response.NextPartNumber);
+                
+                if (isCompleted)
+                {
+                    _logger.LogDebug($"'{GetType().Name}' sent request for {_request.MaxPartCount} parts");
+                }
+                else
+                {
+                    _logger.LogDebug($"'{GetType().Name}' sent request for {_request.MaxPartCount} parts including a next part number of '{_request.StartPartNumber}'");
+                }
+
+                _request.StartPartNumber = results.Response.NextPartNumber;
+         
                 return results.Response.Parts;
             }
             else
             {
-                _logger.LogError($"Part adapter failed sending request with error: {results.Error.Message}");
+                _logger.LogError($"'{GetType().Name}' failed sending request with error: {results.Error?.Message}");
                 isCompleted = true;
-                return new List<PartItem>();
+                
+                return default;
             }
         }
     }

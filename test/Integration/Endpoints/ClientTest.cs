@@ -7,29 +7,24 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 using Bytewizer.Backblaze.Client;
+using Bytewizer.Backblaze.Models;
 
 using Xunit;
-using Bytewizer.Backblaze.Models;
 
 namespace Backblaze.Tests.Integration
 {
-    public class ClientTest : IClassFixture<StorageClientFixture>
+    public class ClientTest : BaseFixture
     {
         private BackblazeClient Client;
 
-        private static readonly string _keyName = $"{Guid.NewGuid().ToString()}";
+        private readonly string _keyName = $"{Guid.NewGuid().ToString()}";
+        private readonly string _bucketName = StorageClientFixture.BucketName;
 
         public ClientTest(StorageClientFixture fixture)
+             : base(fixture)
         {
-            Options = fixture.Options;
-            BucketId = fixture.bucketId;
+            Client = BackblazeClient.Initialize(Options.KeyId, Options.ApplicationKey);
         }
-
-        public IClientOptions Options { get; }
-
-        public string BucketName = StorageClientFixture.BucketName;
-        public string KeyName = StorageClientFixture.KeyName;
-        public string BucketId;
 
         [Fact]
         public async Task Agent_DependencyInjection()
@@ -54,19 +49,17 @@ namespace Backblaze.Tests.Integration
 
             var logger = serviceProvider.GetService<ILogger<StorageService>>();
             var client = serviceProvider.GetService<IStorageClient>();
-            
-            var results = await client.Buckets.FindByNameAsync(BucketName, TimeSpan.FromSeconds(60));
+
+            var results = await client.Buckets.FindByNameAsync(_bucketName, TimeSpan.FromSeconds(60));
 
             Assert.NotNull(logger);
             Assert.NotNull(client);
-            Assert.Equal(BucketName, results.BucketName);
+            Assert.Equal(_bucketName, results.BucketName);
         }
 
         [Fact]
         public async Task Client_InitializeWithAppKey()
         {
-            Client = BackblazeClient.Initialize(Options.KeyId, Options.ApplicationKey);
-
             var request = new CreateKeyRequest(Client.AccountId, _keyName, Capabilities.ReadOnly());
             var results = await Client.Keys.CreateAsync(request);
             results.EnsureSuccessStatusCode();
@@ -74,8 +67,8 @@ namespace Backblaze.Tests.Integration
             var options = results.Response;
             var client = BackblazeClient.Initialize(options.ApplicationKeyId, options.ApplicationKey);
 
-            var findResults = await client.Buckets.FindByNameAsync(BucketName);
-            Assert.Equal(BucketName, findResults.BucketName);
+            var findResults = await client.Buckets.FindByNameAsync(_bucketName);
+            Assert.Equal(_bucketName, findResults.BucketName);
 
             var deleteResults = await Client.Keys.DeleteAsync(options.ApplicationKeyId);
             Assert.Equal(typeof(DeleteKeyResponse), deleteResults.Response.GetType());
@@ -85,16 +78,14 @@ namespace Backblaze.Tests.Integration
         [Fact]
         public async Task Client_Initialize()
         {
-            Client = BackblazeClient.Initialize(Options.KeyId, Options.ApplicationKey);
-
-            var results = await Client.Buckets.FindByNameAsync(BucketName);
-            Assert.Equal(BucketName, results.BucketName);
+            var results = await Client.Buckets.FindByNameAsync(_bucketName);
+            Assert.Equal(_bucketName, results.BucketName);
         }
 
         [Fact]
         public async Task Client_Authentication()
         {
-            await Assert.ThrowsAsync<AuthenticationException>(async () =>  
+            await Assert.ThrowsAsync<AuthenticationException>(async () =>
             {
                 using (var client = new BackblazeClient())
                 {
@@ -110,8 +101,8 @@ namespace Backblaze.Tests.Integration
             {
                 client.Connect(Options.KeyId, Options.ApplicationKey);
 
-                var results = await client.Buckets.FindByNameAsync(BucketName);
-                Assert.Equal(BucketName, results.BucketName);
+                var results = await client.Buckets.FindByNameAsync(_bucketName);
+                Assert.Equal(_bucketName, results.BucketName);
             };
         }
 
@@ -135,8 +126,8 @@ namespace Backblaze.Tests.Integration
             {
                 client.Connect();
 
-                var results = await client.Buckets.FindByNameAsync(BucketName);
-                Assert.Equal(BucketName, results.BucketName);
+                var results = await client.Buckets.FindByNameAsync(_bucketName);
+                Assert.Equal(_bucketName, results.BucketName);
             }
         }
     }

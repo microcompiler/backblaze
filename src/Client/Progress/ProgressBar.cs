@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 using Bytewizer.Backblaze.Models;
 
-namespace Bytewizer.Backblaze.Command
+namespace Bytewizer.Backblaze.Progress
 {
     /// <summary>
     /// Represents a console progress bar which uses <see cref="IProgress{T}"/> for status updates.
@@ -67,8 +67,7 @@ namespace Bytewizer.Backblaze.Command
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgressBar"/> class.
         /// </summary>
-        public ProgressBar()
-        { }
+        public ProgressBar() { }
 
         /// <summary>
         /// Reports progress status to console.
@@ -146,7 +145,7 @@ namespace Bytewizer.Backblaze.Command
         /// Converts a file size into human-readable format.
         /// </summary>
         /// <param name="size">The file size to format.</param>
-        private string FormatFilesize(long size)
+        private static string FormatFilesize(long size)
         {
             double dSize = size;
             int index = 0;
