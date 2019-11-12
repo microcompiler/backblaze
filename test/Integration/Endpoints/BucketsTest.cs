@@ -107,6 +107,21 @@ namespace Backblaze.Tests.Integration
         }
 
         [Fact, TestPriority(2)]
+        public async Task ListAsync_WithRequest()
+        {
+            var request = new ListBucketsRequest(Storage.AccountId)
+            {
+                BucketTypes = new BucketTypes { BucketFilter.AllPrivate }
+            };
+
+            var results = await Storage.Buckets.ListAsync(request);
+            results.EnsureSuccessStatusCode();
+
+            Assert.Equal(typeof(ListBucketsResponse), results.Response.GetType());
+            Assert.True(results.Response.Buckets.Count >= 1, "The actual count was less than one");
+        }
+
+        [Fact, TestPriority(2)]
         public async Task GetAsync()
         {
             var results = await Storage.Buckets.GetAsync();

@@ -32,7 +32,7 @@ namespace Bytewizer.Backblaze.Client
         Task<IApiResults<CreateBucketResponse>> CreateAsync(CreateBucketRequest request);
 
         /// <summary>
-        /// Deletes the bucket specified. Only buckets that contain no version of any files can be deleted. 
+        /// Deletes the bucket id specified. Only buckets that contain no version of any files can be deleted. 
         /// </summary>
         /// <param name="bucketId">The buckete id to delete.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>

@@ -57,6 +57,22 @@ namespace Bytewizer.Backblaze.Models
             };
         }
 
+        /// <summary>
+        /// Initialized instance of <see cref="Capabilities"/> including bucket only capabilities.
+        /// </summary>
+        public static Capabilities BucketOnly()
+        {
+            return new Capabilities
+            {
+                Capability.ListBuckets,
+                Capability.ListFiles,
+                Capability.ReadFiles,
+                Capability.ShareFiles,
+                Capability.WriteFiles,
+                Capability.DeleteFiles,
+            };
+        }
+
         #region ICollection
 
         /// <summary>

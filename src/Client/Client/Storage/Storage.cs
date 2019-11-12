@@ -53,7 +53,7 @@ namespace Bytewizer.Backblaze.Client
                 _logger = logger ?? NullLogger.Instance; 
 
                 // Connect to the Backblaze B2 API server
-                _client.Connect();
+                //_client.Connect();
             }
             catch (Exception ex)
             {
@@ -110,7 +110,7 @@ namespace Bytewizer.Backblaze.Client
         public string AccountId => _client?.AccountInfo.AccountId;
 
         /// <summary>
-        /// The cancellation token associated with this <see cref="Storage"/> instance.
+        /// The cancellation token associated with this <see cref="ApiClient"/> instance.
         /// </summary>
         public CancellationToken CancellationToken
         {
@@ -128,7 +128,7 @@ namespace Bytewizer.Backblaze.Client
         /// </summary>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        public void Connect() => _client.Connect();
+        public AuthorizeAccountResponse Connect() => _client.Connect();
 
         /// <summary>
         /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
@@ -137,14 +137,14 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        public void Connect(string keyId, string applicationKey) => _client.Connect(keyId, applicationKey);
+        public AuthorizeAccountResponse Connect(string keyId, string applicationKey) => _client.Connect(keyId, applicationKey);
 
         /// <summary>
         /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
         /// </summary>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        public Task ConnectAsync() => _client.ConnectAsync();
+        public Task<AuthorizeAccountResponse> ConnectAsync() => _client.ConnectAsync();
 
         /// <summary>
         /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
@@ -153,7 +153,7 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        public Task ConnectAsync(string keyId, string applicationKey) => _client.ConnectAsync(keyId, applicationKey);
+        public Task<AuthorizeAccountResponse> ConnectAsync(string keyId, string applicationKey) => _client.ConnectAsync(keyId, applicationKey);
 
         #region UploadAsync
 

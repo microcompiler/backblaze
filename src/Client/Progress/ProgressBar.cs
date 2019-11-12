@@ -151,7 +151,7 @@ namespace Bytewizer.Backblaze.Progress
             int index = 0;
             for (; dSize > 1024; index++)
                 dSize /= 1024;
-            return dSize.ToString("0.000 " + new[] { "B", "KB", "MB", "GB", "TB" }[index]);
+            return dSize.ToString("0.000 " + new[] { "bytes", "KB", "MB", "GB", "TB" }[index]);
         }
     }
 }

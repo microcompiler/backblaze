@@ -64,6 +64,8 @@ namespace Backblaze.Tests.Integration
             Options = Services.GetService<IClientOptions>();
             Storage = Services.GetService<IStorageClient>();
 
+            Storage.Connect();
+
             lock (_lock)
             {
                 SeedStorage().GetAwaiter().GetResult();

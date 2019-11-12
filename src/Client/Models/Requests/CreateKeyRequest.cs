@@ -70,8 +70,9 @@ namespace Bytewizer.Backblaze.Models
         public string AccountId { get; private set; }
 
         /// <summary>
-        /// A list of strings, each one naming a capability the new key should have. Possibilities are: listKeys, writeKeys,
-        /// deleteKeys, listBuckets, writeBuckets, deleteBuckets, listFiles, readFiles, shareFiles, writeFiles, and deleteFiles. 
+        /// A list naming a capability the new key should have. Possibilities are: <see cref="Capability.ListKeys"/>, <see cref="Capability.WriteKeys"/>, 
+        /// <see cref="Capability.DeleteKeys"/>, <see cref="Capability.ListBuckets"/>, <see cref="Capability.WriteBuckets"/>, <see cref="Capability.DeleteBuckets"/>,
+        /// <see cref="Capability.ListFiles"/>, <see cref="Capability.ReadFiles"/>, <see cref="Capability.ShareFiles"/>, <see cref="Capability.WriteFiles"/>, and <see cref="Capability.DeleteFiles"/>. 
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public Capabilities Capabilities { get; private set; }

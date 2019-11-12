@@ -60,7 +60,7 @@ namespace Bytewizer.Backblaze.Models
         /// <summary>
         /// Cors rules for this bucket limited to 100 rules. 
         /// </summary>
-        public LifecycleRules CorsRules { get; set; } = new LifecycleRules();
+        public CorsRules CorsRules { get; set; }
 
         /// <summary>
         /// Lifecycle rules for this bucket limited to 100 rules. 

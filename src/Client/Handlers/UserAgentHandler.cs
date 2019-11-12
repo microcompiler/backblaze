@@ -44,7 +44,7 @@ namespace Bytewizer.Backblaze.Handlers
 
             UserAgentValues = new List<ProductInfoHeaderValue>
             {
-                new ProductInfoHeaderValue(applicationName.Replace(' ', '-'), applicationVersion),
+                new ProductInfoHeaderValue(applicationName.Replace(' ', '-'), applicationVersion.Replace(' ', '-').Replace(':', '-')),
                 new ProductInfoHeaderValue($"({Environment.OSVersion})"),
             };
         }

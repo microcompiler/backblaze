@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpClient.Sample", "HttpCl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpClient.Minimum", "HttpClient Minimum\HttpClient.Minimum.csproj", "{8BC73B0B-39E2-493F-B915-5C500ABA2C3D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Service", "Service\Backblaze.Service.csproj", "{561D1238-CE83-4409-A5DF-724E2B507950}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8BC73B0B-39E2-493F-B915-5C500ABA2C3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BC73B0B-39E2-493F-B915-5C500ABA2C3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BC73B0B-39E2-493F-B915-5C500ABA2C3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{561D1238-CE83-4409-A5DF-724E2B507950}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{561D1238-CE83-4409-A5DF-724E2B507950}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{561D1238-CE83-4409-A5DF-724E2B507950}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{561D1238-CE83-4409-A5DF-724E2B507950}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

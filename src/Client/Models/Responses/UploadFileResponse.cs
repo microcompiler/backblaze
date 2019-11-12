@@ -1,5 +1,7 @@
-﻿using Bytewizer.Backblaze.Extensions;
+﻿using System;
 using System.Diagnostics;
+
+using Bytewizer.Backblaze.Extensions;
 
 namespace Bytewizer.Backblaze.Models
 {
@@ -29,6 +31,15 @@ namespace Bytewizer.Backblaze.Models
             set { _contentSha1 = value; }
         }
         private string _contentSha1;
+
+        /// <summary>
+        /// The content has a last modified time concept.   
+        /// </summary>
+        public DateTime LastModified
+        {
+            get => FileInfo.GetLastModified();
+            set => FileInfo.SetLastModified(value);
+        }
 
         ///	<summary>
         ///	Debugger display for this object.

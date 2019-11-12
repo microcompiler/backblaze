@@ -13,6 +13,11 @@
         /// <summary>
         /// The files in this bucket require an authorization token to download. 
         /// </summary>
-		AllPrivate
+		AllPrivate,
+
+        /// <summary>
+        /// The files in this bucket indicate a private bucket containing a snapshot created on the B2 website.
+        /// </summary>
+        Snapshot
     }
 }

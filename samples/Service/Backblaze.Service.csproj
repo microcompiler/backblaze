@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>dotnet-WorkerService1-F4880FE0-7104-4F08-A11E-E3506EBD9483</UserSecretsId>
+    <Version>0.9.1</Version>
+    <Authors>Bytewizer Inc.</Authors>
+    <Product>Backblaze B2 Client Service</Product>
+    <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage API.</Description>
+    <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
+    <Copyright>2019 Bytewizer</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Backblaze.Agent" Version="0.9.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.0" />
+  </ItemGroup>
+</Project>

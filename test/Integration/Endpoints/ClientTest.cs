@@ -49,6 +49,7 @@ namespace Backblaze.Tests.Integration
 
             var logger = serviceProvider.GetService<ILogger<StorageService>>();
             var client = serviceProvider.GetService<IStorageClient>();
+            client.Connect();
 
             var results = await client.Buckets.FindByNameAsync(_bucketName, TimeSpan.FromSeconds(60));
 

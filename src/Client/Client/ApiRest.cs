@@ -120,9 +120,9 @@ namespace Bytewizer.Backblaze.Client
         /// <summary>
         /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
         /// </summary>
-        public void Connect()
+        public AuthorizeAccountResponse Connect()
         {
-            ConnectAsync(Options.KeyId, Options.ApplicationKey).GetAwaiter().GetResult();
+            return ConnectAsync(Options.KeyId, Options.ApplicationKey).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -130,17 +130,17 @@ namespace Bytewizer.Backblaze.Client
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
-        public void Connect(string keyId, string applicationKey)
+        public AuthorizeAccountResponse Connect(string keyId, string applicationKey)
         {
-            ConnectAsync(keyId, applicationKey).GetAwaiter().GetResult();
+            return ConnectAsync(keyId, applicationKey).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
         /// </summary>
-        public async Task ConnectAsync()
+        public async Task<AuthorizeAccountResponse> ConnectAsync()
         {
-            await ConnectAsync(Options.KeyId, Options.ApplicationKey).ConfigureAwait(false);
+            return await ConnectAsync(Options.KeyId, Options.ApplicationKey).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Bytewizer.Backblaze.Client
         /// </summary>
         /// <param name="keyId">The identifier for the key.</param>
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
-        public async Task ConnectAsync(string keyId, string applicationKey)
+        public async Task<AuthorizeAccountResponse> ConnectAsync(string keyId, string applicationKey)
         {
             Options.KeyId = keyId;
             Options.ApplicationKey = applicationKey;
@@ -178,7 +178,10 @@ namespace Bytewizer.Backblaze.Client
                 }
 
                 _logger.LogInformation("Client successfully authenticated to Backblaze B2 Cloud Storage.");
+                return results.Response;
             }
+            _logger.LogInformation("Client failed authenticating to Backblaze B2 Cloud Storage.");
+            return default;
         }
 
         #endregion

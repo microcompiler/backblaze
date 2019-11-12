@@ -13,7 +13,7 @@ namespace Backblaze.Tests.Integration
     public class KeysTest : BaseFixture
     {
         private static readonly string _keyName = $"{Guid.NewGuid().ToString()}";
-        private static string _keyId;
+        private static readonly string[] _keyId = new string[2];
 
         public KeysTest(StorageClientFixture fixture) 
             : base(fixture)
@@ -29,10 +29,30 @@ namespace Backblaze.Tests.Integration
             var results = await Storage.Keys.CreateAsync(request);
             results.EnsureSuccessStatusCode();
 
-            _keyId = results.Response.ApplicationKeyId;
+            _keyId[0] = results.Response.ApplicationKeyId;
 
             Assert.Equal(typeof(CreateKeyResponse), results.Response.GetType());
             Assert.Equal(Capabilities.ReadOnly(), results.Response.Capabilities);
+        }
+
+        [Fact, TestPriority(1)]
+        public async Task CreateAsync_With_BucketId()
+        {
+            var namePrefix = "prefix";
+            var request = new CreateKeyRequest(Storage.AccountId, $"{_keyName}-with-bucket-id", Capabilities.BucketOnly())
+            {
+                ValidDurationInSeconds = DateTime.Now.AddDays(5).Second,
+                BucketId = BucketId,
+                NamePrefix = namePrefix
+            };
+            var results = await Storage.Keys.CreateAsync(request);
+            results.EnsureSuccessStatusCode();
+
+            _keyId[1] = results.Response.ApplicationKeyId;
+
+            Assert.Equal(typeof(CreateKeyResponse), results.Response.GetType());
+            Assert.Equal(Capabilities.BucketOnly(), results.Response.Capabilities);
+            Assert.Equal(namePrefix, results.Response.NamePrefix);
         }
 
         [Fact, TestPriority(2)]
@@ -41,14 +61,14 @@ namespace Backblaze.Tests.Integration
             var results = await Storage.Keys.FindByNameAsync(_keyName);
 
             Assert.Equal(typeof(KeyItem), results.GetType());
-            Assert.Equal(_keyId, results.ApplicationKeyId);
+            Assert.Equal(_keyId[0], results.ApplicationKeyId);
             Assert.Equal(Capabilities.ReadOnly(), results.Capabilities);
         }
 
         [Fact, TestPriority(2)]
         public async Task FindByIdAsync()
         {
-            var results = await Storage.Keys.FindByIdAsync(_keyId);
+            var results = await Storage.Keys.FindByIdAsync(_keyId[0]);
 
             Assert.Equal(typeof(KeyItem), results.GetType());
             Assert.Equal(_keyName, results.KeyName);
@@ -87,11 +107,22 @@ namespace Backblaze.Tests.Integration
         [Fact, TestPriority(100)]
         public async Task DeleteAsync()
         {
-            var results = await Storage.Keys.DeleteAsync(_keyId);
+            foreach (var id in _keyId)
+            {
+                var results = await Storage.Keys.DeleteAsync(id);
+                results.EnsureSuccessStatusCode();
+
+                Assert.Equal(typeof(DeleteKeyResponse), results.Response.GetType());
+            }
+        }
+
+        [Fact, TestPriority(100)]
+        public async Task DeleteAsync_Invalid_KeyId()
+        {
+            var results = await Storage.Keys.DeleteAsync("34fddfeef");
             results.EnsureSuccessStatusCode();
 
             Assert.Equal(typeof(DeleteKeyResponse), results.Response.GetType());
-            Assert.Equal(Capabilities.ReadOnly(), results.Response.Capabilities);
         }
     }
 }

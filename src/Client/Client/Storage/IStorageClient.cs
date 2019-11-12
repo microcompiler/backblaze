@@ -48,11 +48,16 @@ namespace Bytewizer.Backblaze.Client
         string AccountId { get; }
 
         /// <summary>
+        /// The cancellation token associated with this <see cref="ApiClient"/> instance.
+        /// </summary>
+        CancellationToken CancellationToken { get; set; }
+
+        /// <summary>
         /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
         /// </summary>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        void Connect();
+        AuthorizeAccountResponse Connect();
 
         /// <summary>
         /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
@@ -61,14 +66,14 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        void Connect(string keyId, string applicationKey);
+        AuthorizeAccountResponse Connect(string keyId, string applicationKey);
 
         /// <summary>
         /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
         /// </summary>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task ConnectAsync();
+        Task<AuthorizeAccountResponse> ConnectAsync();
 
         /// <summary>
         /// Connect to Backblaze B2 Cloud Storage and initialize <see cref="AccountInfo"/>.
@@ -77,7 +82,7 @@ namespace Bytewizer.Backblaze.Client
         /// <param name="applicationKey">The secret part of the key. You can use either the master application key or a normal application key.</param>
         /// <exception cref="AuthenticationException">Thrown when authentication fails.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        Task ConnectAsync(string keyId, string applicationKey);
+        Task<AuthorizeAccountResponse> ConnectAsync(string keyId, string applicationKey);
 
         #region UploadAsync
 

@@ -91,7 +91,7 @@ namespace Bytewizer.Backblaze.Models
         }
 
         /// <summary>
-        /// Gets the closest bytes siz unit in which the value of this instance can be represented.
+        /// Gets the closest bytes size unit in which the value of this instance can be represented.
         /// <para>Example: 1023 bytes is "bytes"; 1024 bytes is "KB"</para>
         /// </summary>
         public string ClosestUnit
@@ -101,20 +101,26 @@ namespace Bytewizer.Backblaze.Models
                 if (Bytes < KiloByte) return "bytes";
                 else if (Bytes < MegaByte) return "KB";
                 else if (Bytes < GigaByte) return "MB";
-                else if (Bytes < TeraByte) return "MB";
+                else if (Bytes < TeraByte) return "GB";
                 else return "TB";
             }
         }
 
         /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents human-readable format.
         /// </summary>
         /// <returns>
         /// An equivalent <see cref="string" /> representing this instance.
         /// </returns>
-        public string Format(string format)
+        public string FormatUnit()
         {
-            return $"{Bytes.ToString(format)} {ClosestUnit}";
+            int i;
+            double size = Bytes;
+            
+            for (i = 0; size > KiloByte; i++)
+                size /= KiloByte;
+
+            return size.ToString("#,0.00 " + new[] { "bytes", "KB", "MB", "GB", "TB" }[i]);
         }
 
         /// <summary>

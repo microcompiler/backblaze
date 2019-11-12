@@ -52,7 +52,7 @@ namespace Bytewizer.Backblaze.Models
         /// "allPublic", "snapshot", and other values added in the future. A bad request error will be returned if "all" 
         /// is used with other bucketTypes, bucketTypes is empty, or invalid bucketTypes are requested. 
         /// </summary>
-        public string BucketType { get; set; }
+        public BucketTypes BucketTypes { get; set; }
 
         ///	<summary>
         ///	Debugger display for this object.
