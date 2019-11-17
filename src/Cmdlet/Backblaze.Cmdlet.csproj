@@ -39,8 +39,4 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="powershell.exe -noprofile -executionpolicy bypass -noninteractive -windowstyle hidden -file &quot;$(ProjectDir)Build-Manifest.ps1&quot;  -ProjectPath $(ProjectPath) -OutDir $(OutDir)" />
-  </Target>
-
 </Project>

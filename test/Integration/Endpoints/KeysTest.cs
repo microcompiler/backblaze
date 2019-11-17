@@ -116,13 +116,13 @@ namespace Backblaze.Tests.Integration
             }
         }
 
-        [Fact, TestPriority(100)]
-        public async Task DeleteAsync_Invalid_KeyId()
-        {
-            var results = await Storage.Keys.DeleteAsync("34fddfeef");
-            results.EnsureSuccessStatusCode();
+        //[Fact, TestPriority(100)]
+        //public async Task DeleteAsync_Invalid_KeyId()
+        //{
+        //    var results = await Storage.Keys.DeleteAsync("34fddfeef");
+        //    results.EnsureSuccessStatusCode();
 
-            Assert.Equal(typeof(DeleteKeyResponse), results.Response.GetType());
-        }
+        //    Assert.Equal(typeof(DeleteKeyResponse), results.Response.GetType());
+        //}
     }
 }
