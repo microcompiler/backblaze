@@ -10,11 +10,12 @@
     <Company>Bytewizer Inc.</Company>
     <Product>Backblaze B2 Client</Product>
     <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage.</Description>
-    <Copyright>2019 Bytewizer</Copyright>
+    <Copyright>(c) 2019 Bytewizer.  All rights reserved.</Copyright>
     <RepositoryUrl>https://github.com/microcompiler/backblaze</RepositoryUrl>
     <PackageIconUrl>https://github.com/microcompiler/backblaze/raw/master/images/logo.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
     <PackageTags>backblaze, b2, cloud-storage, api, csharp, storage-pod</PackageTags>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,11 +30,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Agent\Backblaze.Agent.csproj" />
+    <ProjectReference Include="..\Agent\Backblaze.Agent.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Storage\" />
+    <None Update="Formats\BucketItem.Format.ps1xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="powershell.exe -noprofile -executionpolicy bypass -noninteractive -windowstyle hidden -file &quot;$(ProjectDir)Build-Manifest.ps1&quot;  -ProjectPath $(ProjectPath) -OutDir $(OutDir)" />
+  </Target>
 
 </Project>

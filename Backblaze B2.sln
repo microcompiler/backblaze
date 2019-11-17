@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Tests.Unit", "tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Client", "src\Client\Backblaze.Client.csproj", "{09139E79-E5AB-4F62-A23F-6CA869F1A7C2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Cmdlet", "src\Cmdlet\Backblaze.Cmdlet.csproj", "{F32F4681-A122-419E-AF58-5B4A41657A00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{09139E79-E5AB-4F62-A23F-6CA869F1A7C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09139E79-E5AB-4F62-A23F-6CA869F1A7C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09139E79-E5AB-4F62-A23F-6CA869F1A7C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F32F4681-A122-419E-AF58-5B4A41657A00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F32F4681-A122-419E-AF58-5B4A41657A00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F32F4681-A122-419E-AF58-5B4A41657A00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F32F4681-A122-419E-AF58-5B4A41657A00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
