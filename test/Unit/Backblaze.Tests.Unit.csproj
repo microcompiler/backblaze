@@ -4,6 +4,22 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <Authors>Microcompiler</Authors>
+
+    <Company>Bytewizer Inc.</Company>
+
+    <Product>Backblaze B2 Client</Product>
+
+    <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage.</Description>
+
+    <Copyright>(c) 2019 Bytewizer.  All rights reserved.</Copyright>
+
+    <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
+
+    <RepositoryUrl>https://github.com/microcompiler/backblaze</RepositoryUrl>
+
+    <PackageTags>backblaze, b2, cloud-storage, api, csharp, storage-pod</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
