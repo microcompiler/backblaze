@@ -1,4 +1,4 @@
-version: 1.0.0-prerelease-{build}
+version: 1.0.0-preview-{build}
 configuration: Release
 image: Visual Studio 2019
 environment:
@@ -18,7 +18,7 @@ nuget:
     project_feed: false
     disable_publish_on_pr: true
 init:
-  - git config --global core.autocrlf input
+    - git config --global core.autocrlf input
 before_build:
     appveyor-retry dotnet restore --verbosity minimal
 build:
@@ -26,8 +26,6 @@ build:
     verbosity: minimal
 build_script:
 #    - dotnet build "src\Client\Backblaze.Client.csproj" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
-#    - dotnet build "src\Agent\Backblaze.Agent.csproj" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
-#    - dotnet build "src\Cmdlet\Backblaze.Cmdlet.csproj" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
 test: on
 test_script:
     - dotnet test "test\Unit\Backblaze.Tests.Unit.csproj" -c %CONFIGURATION%
@@ -40,5 +38,5 @@ artifacts:
     - path: .\artifacts\**\*.snupkg
       name: NuGetSymbols
 deploy_script:
-    - dotnet nuget push %APPVEYOR_BUILD_FOLDER%\artifacts\Backblaze.Client.%APPVEYOR_BUILD_VERSION%.nupkg -s https://api.nuget.org/v3/index.json -k %NUGET_API_KEY%
-    - dotnet nuget push %APPVEYOR_BUILD_FOLDER%\artifacts\Backblaze.Agent.%APPVEYOR_BUILD_VERSION%.nupkg -s https://api.nuget.org/v3/index.json -k %NUGET_API_KEY%
+#    - dotnet nuget push %APPVEYOR_BUILD_FOLDER%\artifacts\Backblaze.Client.%APPVEYOR_BUILD_VERSION%.nupkg -s https://api.nuget.org/v3/index.json -k %NUGET_API_KEY%
+#    - dotnet nuget push %APPVEYOR_BUILD_FOLDER%\artifacts\Backblaze.Agent.%APPVEYOR_BUILD_VERSION%.nupkg -s https://api.nuget.org/v3/index.json -k %NUGET_API_KEY%
