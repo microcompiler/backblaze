@@ -12,10 +12,10 @@
     <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage.</Description>
     <Copyright>(c) 2019 Bytewizer.  All rights reserved.</Copyright>
     <RepositoryUrl>https://github.com/microcompiler/backblaze</RepositoryUrl>
-    <PackageIconUrl>https://github.com/microcompiler/backblaze/raw/master/images/logo.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
     <PackageTags>backblaze, b2, cloud-storage, api, csharp, storage-pod</PackageTags>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageIcon>logo.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -39,4 +39,18 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\LICENSE.md" Link="LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\images\logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+  
 </Project>

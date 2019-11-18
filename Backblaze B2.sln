@@ -3,25 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Agent", "src\Agent\Backblaze.Agent.csproj", "{16C706DB-F611-4231-B061-F4B08DC8AAC1}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B89C1FC0-7893-4D07-8D41-9E22A8D51D48}"
 	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
 		CHANGELOG.md = CHANGELOG.md
 		nuget-key.txt = nuget-key.txt
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Client", "src\Client\Backblaze.Client.csproj", "{09139E79-E5AB-4F62-A23F-6CA869F1A7C2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Agent", "src\Agent\Backblaze.Agent.csproj", "{16C706DB-F611-4231-B061-F4B08DC8AAC1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Cmdlet", "src\Cmdlet\Backblaze.Cmdlet.csproj", "{F32F4681-A122-419E-AF58-5B4A41657A00}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Tests.Unit", "test\Unit\Backblaze.Tests.Unit.csproj", "{EE95492C-7B50-460F-B76D-7EC64DD9923B}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Tests.Integration", "test\Integration\Backblaze.Tests.Integration.csproj", "{41FC29F8-96BD-4017-A5CA-9FC056D36D9D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{16C706DB-F611-4231-B061-F4B08DC8AAC1} = {16C706DB-F611-4231-B061-F4B08DC8AAC1}
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Tests.Unit", "test\Unit\Backblaze.Tests.Unit.csproj", "{EE95492C-7B50-460F-B76D-7EC64DD9923B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Client", "src\Client\Backblaze.Client.csproj", "{09139E79-E5AB-4F62-A23F-6CA869F1A7C2}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Cmdlet", "src\Cmdlet\Backblaze.Cmdlet.csproj", "{F32F4681-A122-419E-AF58-5B4A41657A00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,26 +30,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{16C706DB-F611-4231-B061-F4B08DC8AAC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16C706DB-F611-4231-B061-F4B08DC8AAC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16C706DB-F611-4231-B061-F4B08DC8AAC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16C706DB-F611-4231-B061-F4B08DC8AAC1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{41FC29F8-96BD-4017-A5CA-9FC056D36D9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{41FC29F8-96BD-4017-A5CA-9FC056D36D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{41FC29F8-96BD-4017-A5CA-9FC056D36D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{41FC29F8-96BD-4017-A5CA-9FC056D36D9D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EE95492C-7B50-460F-B76D-7EC64DD9923B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE95492C-7B50-460F-B76D-7EC64DD9923B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE95492C-7B50-460F-B76D-7EC64DD9923B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE95492C-7B50-460F-B76D-7EC64DD9923B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{09139E79-E5AB-4F62-A23F-6CA869F1A7C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{09139E79-E5AB-4F62-A23F-6CA869F1A7C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09139E79-E5AB-4F62-A23F-6CA869F1A7C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09139E79-E5AB-4F62-A23F-6CA869F1A7C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16C706DB-F611-4231-B061-F4B08DC8AAC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16C706DB-F611-4231-B061-F4B08DC8AAC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16C706DB-F611-4231-B061-F4B08DC8AAC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16C706DB-F611-4231-B061-F4B08DC8AAC1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F32F4681-A122-419E-AF58-5B4A41657A00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F32F4681-A122-419E-AF58-5B4A41657A00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F32F4681-A122-419E-AF58-5B4A41657A00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F32F4681-A122-419E-AF58-5B4A41657A00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE95492C-7B50-460F-B76D-7EC64DD9923B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE95492C-7B50-460F-B76D-7EC64DD9923B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE95492C-7B50-460F-B76D-7EC64DD9923B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE95492C-7B50-460F-B76D-7EC64DD9923B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41FC29F8-96BD-4017-A5CA-9FC056D36D9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41FC29F8-96BD-4017-A5CA-9FC056D36D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41FC29F8-96BD-4017-A5CA-9FC056D36D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41FC29F8-96BD-4017-A5CA-9FC056D36D9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
