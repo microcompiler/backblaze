@@ -16,7 +16,7 @@ nuget:
 before_build:
     appveyor-retry dotnet restore --verbosity minimal
 build_script:
-    - dotnet build -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
+    - dotnet build ".\Backblaze B2.sln" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
 test: on
 test_script:
     - dotnet test "test\Unit\Backblaze.Tests.Unit.csproj" -c %CONFIGURATION%
