@@ -1,0 +1,28 @@
+version: 1.0.0-prerelease-{build}
+image: Visual Studio 2019
+dotnet_csproj:
+    patch: true
+    file: '**\*.csproj'
+    version: '{version}'
+    package_version: '{version}'
+    assembly_version: '{version}'
+    file_version: '{version}'
+    informational_version: '{version}'
+before_build:
+    appveyor-retry dotnet restore -v Minimal;
+build_script:
+    - dotnet build "src\Client\Backblaze.Client.csproj" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
+    - dotnet build "src\Agent\Backblaze.Agent.csproj" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
+    - dotnet build "src\Cmdlet\Backblaze.Cmdlet.csproj" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
+test: on
+test_script:
+    - dotnet test "test\Unit\Backblaze.Tests.Unit.csproj" -c %CONFIGURATION%
+after_test:
+  - dotnet pack "src\Client\Backblaze.Client.csproj" -c %CONFIGURATION% --no-build --include-symbols -p:SymbolPackageFormat=snupkg /p:Version=%APPVEYOR_BUILD_VERSION% -o %APPVEYOR_BUILD_FOLDER%\artifacts
+  - dotnet pack "src\Agent\Backblaze.Agent.csproj" -c %CONFIGURATION% --no-build --include-symbols -p:SymbolPackageFormat=snupkg /p:Version=%APPVEYOR_BUILD_VERSION% -o %APPVEYOR_BUILD_FOLDER%\artifacts
+  - dotnet pack "src\Cmdlet\Backblaze.Cmdlet.csproj" -c %CONFIGURATION% --no-build --include-symbols -p:SymbolPackageFormat=snupkg /p:Version=%APPVEYOR_BUILD_VERSION% -o %APPVEYOR_BUILD_FOLDER%\artifacts
+artifacts:
+    - path: .\artifacts\**\*.nupkg
+      name: NuGet
+    - path: .\artifacts\**\*.snupkg
+      name: NuGetSymbols
