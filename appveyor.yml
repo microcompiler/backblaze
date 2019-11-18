@@ -1,6 +1,10 @@
 version: 1.0.0-prerelease-{build}
 configuration: Release
 image: Visual Studio 2019
+environment:
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    NUGET_API_KEY:
+        secure: MYKEY
 dotnet_csproj:
     patch: true
     file: '**\*.csproj'
@@ -30,3 +34,6 @@ artifacts:
       name: NuGet
     - path: .\artifacts\**\*.snupkg
       name: NuGetSymbols
+deploy_script:
+  - dotnet nuget push %APPVEYOR_BUILD_FOLDER%\artifacts\Backblaze.Client.%APPVEYOR_BUILD_VERSION%.nupkg -s https://api.nuget.org/v3/index.json -k %NUGET_API_KEY%
+  - dotnet nuget push %APPVEYOR_BUILD_FOLDER%\artifacts\Backblaze.Agent.%APPVEYOR_BUILD_VERSION%.nupkg -s https://api.nuget.org/v3/index.json -k %NUGET_API_KEY%
