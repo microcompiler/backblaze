@@ -9,19 +9,20 @@ dotnet_csproj:
     assembly_version: '{version}'
     file_version: '{version}'
     informational_version: '{version}'
+nuget:
+    account_feed: false
+    project_feed: false
+    disable_publish_on_pr: true
 before_build:
-    dotnet restore --verbosity minimal
+    appveyor-retry dotnet restore --verbosity minimal
 build_script:
-    - dotnet build "src\Client\Backblaze.Client.csproj" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
-    - dotnet build "src\Agent\Backblaze.Agent.csproj" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
-    - dotnet build "src\Cmdlet\Backblaze.Cmdlet.csproj" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
+    - dotnet build -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
 test: on
 test_script:
     - dotnet test "test\Unit\Backblaze.Tests.Unit.csproj" -c %CONFIGURATION%
 after_test:
   - dotnet pack "src\Client\Backblaze.Client.csproj" -c %CONFIGURATION% --no-build --include-symbols -p:SymbolPackageFormat=snupkg /p:Version=%APPVEYOR_BUILD_VERSION% -o %APPVEYOR_BUILD_FOLDER%\artifacts
   - dotnet pack "src\Agent\Backblaze.Agent.csproj" -c %CONFIGURATION% --no-build --include-symbols -p:SymbolPackageFormat=snupkg /p:Version=%APPVEYOR_BUILD_VERSION% -o %APPVEYOR_BUILD_FOLDER%\artifacts
-  - dotnet pack "src\Cmdlet\Backblaze.Cmdlet.csproj" -c %CONFIGURATION% --no-build --include-symbols -p:SymbolPackageFormat=snupkg /p:Version=%APPVEYOR_BUILD_VERSION% -o %APPVEYOR_BUILD_FOLDER%\artifacts
 artifacts:
     - path: .\artifacts\**\*.nupkg
       name: NuGet
