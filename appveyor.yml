@@ -9,7 +9,7 @@ dotnet_csproj:
     file_version: '{version}'
     informational_version: '{version}'
 before_build:
-    appveyor-retry dotnet restore -v Minimal;
+    appveyor-retry dotnet restore --verbosity minimal;
 build_script:
     - dotnet build "src\Client\Backblaze.Client.csproj" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
     - dotnet build "src\Agent\Backblaze.Agent.csproj" -c %CONFIGURATION% --no-dependencies /p:Version=%APPVEYOR_BUILD_VERSION%
