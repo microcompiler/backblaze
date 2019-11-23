@@ -34,7 +34,7 @@ jobs:
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       - name: Test
         working-directory: ./test/unit
-        run: dotnet test Backblaze.Tests.Unit.csproj --configuration Release
+        run: dotnet test Backblaze.Tests.Unit.csproj --verbosity Minimal --configuration Release
 
   release:
     name: Release
@@ -52,7 +52,12 @@ jobs:
           DOTNET_CLI_TELEMETRY_OPTOUT: 1
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       - name: Pack
-        run: dotnet pack --configuration Release
+        run: dotnet pack --no-build --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ./artifacts/
+      - name: Artifacts
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: Packages
+          path: ./artifacts/
       - name: Release
         uses: actions/create-release@master
         env:
