@@ -33,7 +33,7 @@ jobs:
         run: |
            for f in ./artifacts/*.nupkg
            do
-             curl -vX PUT -u "microcompiler:${{ secrets.GHPackagesToken }}" -F package=@$f https://nuget.pkg.github.com/[microcompiler]/
+             curl -vX PUT -u "microcompiler:${{ secrets.GHPackagesToken }}" -F package=@$f https://nuget.pkg.github.com/microcompiler/
            done
         shell: bash
       - name: Release
