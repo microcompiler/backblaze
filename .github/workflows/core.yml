@@ -17,8 +17,6 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.0.100
-      - run: echo $(date "+%Y.%-m.%-d") > ./version
-      - run: echo ${{ github.ref }} > ./version && sed -ie 's/refs\/tags\///' ./version
       - name: Build
         run: dotnet build --verbosity Minimal --configuration Release
       - name: Test
