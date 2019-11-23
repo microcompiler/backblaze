@@ -24,7 +24,7 @@ jobs:
         run: dotnet test Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build
       - name: Publish Nuget to GitHub registry
         run: |
-          dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ./artifacts/
+          dotnet pack -c Release
           nuget source Add -Name "GitHub" -Source "https://nuget.pkg.github.com/microcompiler/index.json" -UserName microcompiler -Password ${{ secrets.GITHUB_TOKEN }}
           nuget push **/*.nupkg -Source "GitHub" -SkipDuplicate
       - name: Upload Artifacts
