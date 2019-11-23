@@ -13,8 +13,11 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.0.100
+      env:
+        DOTNET_CLI_TELEMETRY_OPTOUT: 1
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
     - name: Build
-      run: dotnet build --configuration Release
+      run: dotnet build --verbosity Minimal --configuration Release
 
   test:
     name: Test
@@ -26,6 +29,9 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.0.100
+        env:
+          DOTNET_CLI_TELEMETRY_OPTOUT: 1
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       - name: Test
         working-directory: ./test/unit
         run: dotnet test Backblaze.Tests.Unit.csproj --configuration Release
@@ -42,8 +48,11 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.0.100
+        env:
+          DOTNET_CLI_TELEMETRY_OPTOUT: 1
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       - name: Pack
-        run: dotnet pack --configuration Release --include-symbols -p:SymbolPackageFormat=snupkg -p:Version=${GITHUB_REF##*/v}
+        run: dotnet pack --configuration Release
       - name: Release
         uses: actions/create-release@master
         env:
