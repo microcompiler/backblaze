@@ -30,7 +30,7 @@ jobs:
           name: Packages
           path: d:/a/backblaze/backblaze/artifacts/
       - name: Publish Nuget to GitHub
-        run: dotnet nuget push d:\a\backblaze\backblaze\artifacts\Backblaze.Agent.1.0.1.nupkg --source "https://nuget.pkg.github.com/stoiveyp/index.json" --api-key microcompiler:${{ secrets.GITHUB_TOKEN }}
+        run: dotnet nuget push d:\a\backblaze\backblaze\artifacts\Backblaze.Agent.1.0.1.nupkg --source "https://nuget.pkg.github.com/microcompiler/index.json" --api-key microcompiler:${{ secrets.GITHUB_TOKEN }}
       - name: Release
         uses: actions/create-release@master
         env:
