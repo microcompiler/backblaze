@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: Packages
-          path: ./artifacts
+          path: ../artifacts
       - name: Publish Nuget to GitHub
         run: dotnet nuget push ./Backblaze.Agent.1.0.1.nupkg --source "https://nuget.pkg.github.com/microcompiler/index.json" --api-key microcompiler:${{ secrets.GITHUB_TOKEN }}
       - name: Release
