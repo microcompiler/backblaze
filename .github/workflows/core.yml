@@ -30,7 +30,7 @@ jobs:
           name: Packages
           path: ./artifacts/
       - name: Publish Nuget to GitHub registry
-        run: dotnet nuget push ./artifacts/**/*.nupkg --source "https://nuget.pkg.github.com/stoiveyp/index.json" --api-key microcompiler:${{ secrets.GH_PACKAGE }}
+        run: dotnet nuget push ./artifacts/ --source "https://nuget.pkg.github.com/stoiveyp/index.json" --api-key microcompiler:${{ secrets.GH_PACKAGE }}
       - name: Release
         uses: actions/create-release@master
         env:
