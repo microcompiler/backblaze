@@ -2,6 +2,10 @@ name: Github Actions CI
 
 on: [push]
 
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+
 jobs:
   release:
     name: Release
@@ -13,21 +17,21 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.0.100
-        env:
-          DOTNET_CLI_TELEMETRY_OPTOUT: 1
-          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       - name: Build
         run: dotnet build --verbosity Minimal --configuration Release
       - name: Test
         working-directory: ./test/unit
         run: dotnet test Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build
-      - name: Pack
+      - name: Pack Nuget
         run: dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ./artifacts/
       - name: Artifacts
-        uses: actions/upload-artifact@v1.0.0
+        uses: actions/upload-artifact@v1
         with:
           name: Packages
           path: ./artifacts/
+      - name: Publish Nuget to GitHub registry
+          run: dotnet pack nuget source Add -Name "GitHub" -Source "https://nuget.pkg.github.com/microcompiler/index.json" -UserName microcompiler -Password ${{ secrets.GITHUB_TOKEN }}
+          run: dotnet pack nuget push ./artifacts/**/*.nupkg -Source "GitHub" -SkipDuplicate
       - name: Release
         uses: actions/create-release@master
         env:
