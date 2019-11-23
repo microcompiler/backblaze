@@ -23,14 +23,14 @@ jobs:
         working-directory: ./test/unit
         run: dotnet test Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build
       - name: Pack Nuget
-        run: dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ./artifacts/
+        run: dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o artifacts/
       - name: Upload Artifacts
         uses: actions/upload-artifact@v1
         with:
           name: Packages
           path: ./artifacts/
       - name: Publish Nuget to GitHub
-        run: dotnet nuget push ./artifacts/Backblaze.Agent.0.9.1.nupkg --source "https://nuget.pkg.github.com/stoiveyp/index.json" --api-key microcompiler:${{ secrets.GITHUB_TOKEN }}
+        run: dotnet nuget push ./artifacts/*.nupkg --source "https://nuget.pkg.github.com/stoiveyp/index.json" --api-key microcompiler:${{ secrets.GITHUB_TOKEN }}
       - name: Release
         uses: actions/create-release@master
         env:
