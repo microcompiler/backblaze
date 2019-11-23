@@ -22,16 +22,16 @@ jobs:
       - name: Test
         working-directory: ./test/unit
         run: dotnet test Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build
-      - name: Pack Nuget
-        run: dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ./artifacts/
-      - name: Artifacts
+      - name: Publish Nuget to GitHub registry
+        run: |
+          dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o ./artifacts/
+          nuget source Add -Name "GitHub" -Source "https://nuget.pkg.github.com/microcompiler/index.json" -UserName microcompiler -Password ${{ secrets.GITHUB_TOKEN }}
+          nuget push **/*.nupkg -Source "GitHub" -SkipDuplicate
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v1
         with:
           name: Packages
           path: ./artifacts/
-      - name: Publish Nuget to GitHub registry
-          run: dotnet pack nuget source Add -Name "GitHub" -Source "https://nuget.pkg.github.com/microcompiler/index.json" -UserName microcompiler -Password ${{ secrets.GITHUB_TOKEN }}
-          run: dotnet pack nuget push ./artifacts/**/*.nupkg -Source "GitHub" -SkipDuplicate
       - name: Release
         uses: actions/create-release@master
         env:
