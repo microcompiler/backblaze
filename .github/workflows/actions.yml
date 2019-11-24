@@ -30,7 +30,7 @@ jobs:
     - name: Run Build
       run: dotnet build --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }}
     - name: Run Tests
-      run: dotnet test --verbosity  ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --results-directory artifacts --logger:trx
+      run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity  ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --results-directory artifacts --logger:trx
       env:
         Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
         Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
