@@ -20,15 +20,14 @@ jobs:
       - name: Build
         run: dotnet build --verbosity Minimal --configuration Release
       - name: Test
-        working-directory: ./test/unit
-        run: dotnet test Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory ../../artifacts --logger:trx
+        run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory ./artifacts --logger:trx
       - name: Upload Artifacts
         uses: actions/upload-artifact@v1
         with:
           name: Packages
-          path: ./artifacts/
+          path: ./artifacts
       - name: Pack Nuget
-        run: dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output ../../publish/
+        run: dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output ./publish
       - name: Publish Nuget to GitHub
         run: dotnet nuget push ./publish/Backblaze.Agent.1.0.1.nupkg --source "https://nuget.pkg.github.com/microcompiler/index.json" --api-key microcompiler:${{ secrets.GITHUB_TOKEN }}
       - name: Release
