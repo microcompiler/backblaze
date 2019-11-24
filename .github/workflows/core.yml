@@ -12,46 +12,26 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
 jobs:
-  Release:
-    name: Release
-    runs-on: windows-latest
+  Build:
+    name: Build on ${{ matrix.dotnet }} and ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        dotnet: ['3.0.100']
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Setup .Net Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 3.0.100
-      - name: Build
-        run: dotnet build --verbosity Minimal --configuration Release
-      - name: Test
-        run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory ./artifacts/logs --logger:trx
-      - name: Pack Nuget
-        run: dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output ./artifacts/packages
-      - name: Publish Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: true
-      - name: Publish Package to GitHub
-        run: dotnet nuget push ./artifacts/packages/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${GITHUB_TOKEN}  
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish Package to Nuget
-        run: dotnet nuget push ./artifacts/packages/*.* -s "https://api.nuget.org/v3/index.json" -k ${NUGET_API_KEY}  
-        env:
-          GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
-      - name: Upload Packages Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: Packages
-          path: ./artifacts/packages/
-      - name: Upload Logs Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: Logs
-          path: ./artifacts/logs/
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Setup .Net Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ matrix.dotnet }}
+    - name: Build
+      run: dotnet build --verbosity Minimal --configuration Release
+    - name: Test
+      run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory ./artifacts --logger:trx
+    - name: Upload Logs Artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: Logs
+        path: ./artifacts
