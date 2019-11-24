@@ -64,4 +64,3 @@ jobs:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Publish Package to Nuget
       run: dotnet nuget push artifacts/*.* -s "https://api.nuget.org2/v3/index.json" -k ${{ secrets.NUGET_API_KEY }}
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
