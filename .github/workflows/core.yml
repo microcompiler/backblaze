@@ -24,7 +24,7 @@ jobs:
       - name: Pack Nuget
         run: dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output ./artifacts/packages
       - name: Publish Package to GitHub
-        run: dotnet nuget push ./artifacts/packages/*.nupkg --api-key microcompiler:${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/microcompiler/index.json"
+        run: dotnet nuget push ./artifacts/packages/Backblaze.Client.1.0.0.nupkg --api-key microcompiler:${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/microcompiler/index.json"
       - name: Upload Packages Artifact
         uses: actions/upload-artifact@v1
         with:
