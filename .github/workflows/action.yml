@@ -25,7 +25,7 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}
     - name: Run Build
-      run: dotnet build --verbosity ${ VERBOSITY } --configuration ${ CONFIGURATION }
+      run: dotnet build --verbosity ${ env:VERBOSITY } --configuration ${ env:CONFIGURATION }
     - name: Run Tests
       run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory artifacts --logger:trx
     - name: Upload Artifacts
