@@ -29,8 +29,8 @@ jobs:
     - name: Run Tests
       run: dotnet test --verbosity  ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --results-directory artifacts --logger:trx
       env:
-        Agent__ApplicationKey: ${{ AGENT_APPLICATION_KEY }}
-        Agent__KeyId: ${{ AGENT_KEY_ID }}
+        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
+        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
@@ -55,7 +55,7 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}             
     - name: Pack Nuget
-      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} -p:PackageVersion=$RELEASE_VERSION  --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
+      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
