@@ -60,7 +60,7 @@ jobs:
 #        run: dotnet nuget push ./artifacts/packages/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${GITHUB_TOKEN}  
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish Package to Nuget
-        run: dotnet nuget push ./artifacts/packages/*.* -s "https://api.nuget.org2/v3/index.json" -k ${NUGET_API_KEY}  
-        env:
-          GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
+    - name: Publish Package to Nuget
+      run: dotnet nuget push ./artifacts/packages/*.* -s "https://api.nuget.org2/v3/index.json" -k ${NUGET_API_KEY}  
+      env:
+        GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
