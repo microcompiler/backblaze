@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        dotnet: ['3.0.100', '2.2.207']
+        dotnet: ['3.0.100']
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -31,3 +31,43 @@ jobs:
       with:
         name: Results
         path: artifacts
+         Release:
+    name: Release on ${{ matrix.dotnet }}
+    runs-on: ${{ matrix.os }}
+    needs: [build]
+    if: github.event_name == 'push'
+    strategy:
+      matrix:
+        os: [windows-latest]
+        dotnet: ['3.0.100']
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Setup .Net Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ matrix.dotnet }}          
+      - name: Publish Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: true    
+      - name: Pack Nuget
+        run: dotnet pack --verbosity  Minimal --configuration Release --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
+      - name: Upload Packages Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Packages
+          path: artifacts/packages/
+#      - name: Publish Package to GitHub
+#        run: dotnet nuget push ./artifacts/packages/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${GITHUB_TOKEN}  
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Publish Package to Nuget
+#        run: dotnet nuget push ./artifacts/packages/*.* -s "https://api.nuget.org/v3/index.json" -k ${NUGET_API_KEY}  
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
