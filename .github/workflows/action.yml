@@ -46,16 +46,7 @@ jobs:
     - name: Setup .Net Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: ${{ matrix.dotnet }}          
-#    - name: Publish Release
-#      uses: actions/create-release@v1
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      with:
-#        tag_name: ${{ github.ref }}
-#        release_name: Release ${{ github.ref }}
-#        draft: false
-#        prerelease: true    
+        dotnet-version: ${{ matrix.dotnet }}             
     - name: Pack Nuget
       run: dotnet pack --verbosity  Minimal --configuration Release --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
     - name: Upload Packages Artifact
@@ -63,6 +54,15 @@ jobs:
       with:
         name: Packages
         path: artifacts/packages/
+    - name: Publish Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: true 
 #      - name: Publish Package to GitHub
 #        run: dotnet nuget push ./artifacts/packages/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${GITHUB_TOKEN}  
 #        env:
