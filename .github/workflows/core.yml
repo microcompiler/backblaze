@@ -12,7 +12,7 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
 jobs:
-  release:
+  Release:
     name: Release
     runs-on: windows-latest
     steps:
@@ -28,10 +28,23 @@ jobs:
         run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory ./artifacts/logs --logger:trx
       - name: Pack Nuget
         run: dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output ./artifacts/packages
-      - name: Publish Package to GitHub
-        run: dotnet nuget push ./artifacts/packages/Backblaze.Client.1.0.0.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${GITHUB_TOKEN}  
+      - name: Publish Release
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: true
+      - name: Publish Package to GitHub
+        run: dotnet nuget push ./artifacts/packages/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${GITHUB_TOKEN}  
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish Package to Nuget
+        run: dotnet nuget push ./artifacts/packages/*.* -s "https://api.nuget.org/v3/index.json" -k ${NUGET_API_KEY}  
+        env:
+          GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
       - name: Upload Packages Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -42,12 +55,3 @@ jobs:
         with:
           name: Logs
           path: ./artifacts/logs/
-      - name: Release
-        uses: actions/create-release@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: true
