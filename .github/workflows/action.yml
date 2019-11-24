@@ -13,8 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        dotnet: ['3.0.100']
         os: [windows-latest]
+        dotnet: ['3.0.100']
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -24,10 +24,10 @@ jobs:
         dotnet-version: ${{ matrix.dotnet }}
     - name: Run Build
       run: dotnet build --verbosity Minimal --configuration Release
-    - name: Run Test
+    - name: Run Tests
       run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory ./artifacts --logger:trx
-    - name: Upload Logs Artifact
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: Logs
+        name: Results
         path: ./artifacts
