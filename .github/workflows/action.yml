@@ -27,7 +27,7 @@ jobs:
     - name: Run Build
       run: dotnet build --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }}
     - name: Run Tests
-      run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity  ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --results-directory artifacts --logger:trx
+      run: dotnet test --verbosity  ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --results-directory artifacts --logger:trx
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
@@ -58,7 +58,7 @@ jobs:
       with:
         name: Packages
         path: artifacts
-    - name: Publish Package to GitHub
-      run: dotnet nuget push artifacts/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${{ secrets.GITHUB_TOKEN }}
+#    - name: Publish Package to GitHub
+#      run: dotnet nuget push artifacts/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${{ secrets.GITHUB_TOKEN }}
     - name: Publish Package to Nuget
       run: dotnet nuget push artifacts/*.* -s "https://api.nuget.org2/v3/index.json" -k ${{ secrets.NUGET_API_KEY }}
