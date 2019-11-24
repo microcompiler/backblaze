@@ -1,16 +1,12 @@
-name: Github Actions CI
-
 on:
   push:
     branches:
       - master
     tags:
       - v.[0-9]+.[0-9]+.[0-9]+
-
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-
 jobs:
   Build:
     name: Build on ${{ matrix.dotnet }} and ${{ matrix.os }}
@@ -18,7 +14,7 @@ jobs:
     strategy:
       matrix:
         dotnet: ['3.0.100']
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest]
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -26,9 +22,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
-    - name: Build
+    - name: Run Build
       run: dotnet build --verbosity Minimal --configuration Release
-    - name: Test
+    - name: Run Test
       run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory ./artifacts --logger:trx
     - name: Upload Logs Artifact
       uses: actions/upload-artifact@v1
