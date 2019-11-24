@@ -20,13 +20,22 @@ jobs:
       - name: Build
         run: dotnet build --verbosity Minimal --configuration Release
       - name: Test
-        run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory ./artifacts --logger:trx
+        run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory ./artifacts/logs --logger:trx
       - name: Pack Nuget
-        run: dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output ./publish
+        run: dotnet pack --verbosity  Minimal --configuration Release --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output ./artifacts/packages
       - name: Publish Package to GitHub
-        run: dotnet nuget push ./publish/*.nupkg --api-key microcompiler:${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/microcompiler/index.json"
+        run: dotnet nuget push ./artifacts/packages/*.nupkg --api-key microcompiler:${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/microcompiler/index.json"
       - name: Publish Package to Nuget
-        #run: dotnet nuget push ./publish/Backblaze.Agent.1.0.1.nupkg --source "https://nuget.pkg.github.com/microcompiler/index.json" --api-key microcompiler:${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Packages Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Packages
+          path: ./artifacts/packages/
+      - name: Upload Logs Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Logs
+          path: ./artifacts/logs/
       - name: Release
         uses: actions/create-release@master
         env:
@@ -36,8 +45,3 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: true
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: Packages
-          path: ./artifacts
