@@ -58,9 +58,7 @@ jobs:
       with:
         name: Packages
         path: artifacts
-#      - name: Publish Package to GitHub
-#        run: dotnet nuget push ./artifacts/packages/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${GITHUB_TOKEN}  
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish Package to GitHub
+      run: dotnet nuget push artifacts/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${{ secrets.GITHUB_TOKEN }}
     - name: Publish Package to Nuget
       run: dotnet nuget push artifacts/*.* -s "https://api.nuget.org2/v3/index.json" -k ${{ secrets.NUGET_API_KEY }}
