@@ -5,6 +5,8 @@ on:
     tags:
       - v.[0-9]+.[0-9]+.[0-9]+
 env:
+  CONFIGURATION: Release
+  VERBOSITY: Minimal
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 jobs:
@@ -23,7 +25,7 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}
     - name: Run Build
-      run: dotnet build --verbosity Minimal --configuration Release
+      run: dotnet build --verbosity $VERBOSITY --configuration $CONFIGURATION
     - name: Run Tests
       run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory artifacts --logger:trx
     - name: Upload Artifacts
@@ -48,26 +50,17 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}             
     - name: Pack Nuget
-      run: dotnet pack --verbosity  Minimal --configuration Release --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
-    - name: Upload Packages Artifact
+      run: dotnet pack --verbosity  Minimal --configuration Release --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
         name: Packages
-        path: artifacts/packages/
-    - name: Publish Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: true 
+        path: artifacts
 #      - name: Publish Package to GitHub
 #        run: dotnet nuget push ./artifacts/packages/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${GITHUB_TOKEN}  
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      - name: Publish Package to Nuget
-#        run: dotnet nuget push ./artifacts/packages/*.* -s "https://api.nuget.org/v3/index.json" -k ${NUGET_API_KEY}  
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
+      - name: Publish Package to Nuget
+        run: dotnet nuget push ./artifacts/packages/*.* -s "https://api.nuget.org2/v3/index.json" -k ${NUGET_API_KEY}  
+        env:
+          GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
