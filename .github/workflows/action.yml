@@ -1,5 +1,8 @@
 on:
   push:
+    paths-ignore:
+    - 'changelog.md'
+    - 'readme.md'
     branches:
       - master
     tags:
@@ -20,7 +23,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
-    - name: Setup .Net Core
+    - name: Setup .Net Core - ${{ matrix.dotnet }}@${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
@@ -39,8 +42,8 @@ jobs:
   Release:
     name: Release on ${{ matrix.dotnet }}
     runs-on: ${{ matrix.os }}
-    needs: [build]
-    if: github.event_name == 'push'
+    needs: [Build]
+    if: github.event.action == 'published'
     strategy:
       matrix:
         configuration: ['Release']
