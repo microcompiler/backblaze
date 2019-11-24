@@ -27,7 +27,7 @@ jobs:
     - name: Run Build
       run: dotnet build --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }}
     - name: Run Tests
-      run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory artifacts --logger:trx
+      run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity  ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --results-directory artifacts --logger:trx
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
@@ -40,6 +40,8 @@ jobs:
     if: github.event_name == 'push'
     strategy:
       matrix:
+        configuration: ['Release']
+        verbosity: ['Minimal']
         os: [windows-latest]
         dotnet: ['3.0.100']
     steps:
@@ -50,7 +52,7 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}             
     - name: Pack Nuget
-      run: dotnet pack --verbosity  Minimal --configuration Release --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
+      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
@@ -61,6 +63,6 @@ jobs:
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Publish Package to Nuget
-      run: dotnet nuget push ./artifacts/packages/*.* -s "https://api.nuget.org2/v3/index.json" -k ${ NUGET_API_KEY }  
+      run: dotnet nuget push artifacts/*.* -s "https://api.nuget.org2/v3/index.json" -k ${ NUGET_API_KEY }  
       env:
-        GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
