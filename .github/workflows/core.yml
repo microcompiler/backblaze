@@ -9,12 +9,12 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 jobs:
   Build:
-    name: Build on ${{ matrix.dotnet }} and ${{ matrix.os }}
+    name: Build on ${{ matrix.os }} (${{ matrix.dotnet }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         dotnet: ['3.0.100']
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -25,9 +25,9 @@ jobs:
     - name: Run Build
       run: dotnet build --verbosity Minimal --configuration Release
     - name: Run Test
-      run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory ./artifacts --logger:trx
+      run: dotnet test /test/unit/Backblaze.Tests.Unit.csproj --verbosity  Minimal --configuration Release --no-build --results-directory /artifacts --logger:trx
     - name: Upload Logs Artifact
       uses: actions/upload-artifact@v1
       with:
         name: Logs
-        path: ./artifacts
+        path: /artifacts
