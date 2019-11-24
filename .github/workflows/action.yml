@@ -31,7 +31,7 @@ jobs:
       with:
         name: Results
         path: artifacts
-         Release:
+  Release:
     name: Release on ${{ matrix.dotnet }}
     runs-on: ${{ matrix.os }}
     needs: [build]
