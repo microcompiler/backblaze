@@ -3,6 +3,7 @@
 ## 0.9.3
 *   Added BucketFilter enum type to bucket requests
 *   Change log
+*   Change log again
 
 ## 0.9.2 - November 3, 2019
 
