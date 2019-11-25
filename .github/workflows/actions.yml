@@ -47,7 +47,6 @@ jobs:
         path: artifacts/packages
   Release:
     name: Release on ${{ matrix.dotnet }}
-    if: github.event.action == 'published'
     runs-on: ${{ matrix.os }}
     needs: [Build]
     strategy:
@@ -68,17 +67,8 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: Packages
+        name: Release
         path: artifacts
-    - name: Create Release
-      uses: actions/create-release@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: true
-        prerelease: true
 #    - name: Publish Package to GitHub
 #      run: dotnet nuget push artifacts/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${{ secrets.GITHUB_TOKEN }}
 #    - name: Publish Package to Nuget
