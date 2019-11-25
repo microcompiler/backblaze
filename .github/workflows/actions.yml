@@ -49,6 +49,7 @@ jobs:
     name: Release on ${{ matrix.dotnet }}
     runs-on: ${{ matrix.os }}
     needs: [Build]
+    if: github.event.action == 'published'
     strategy:
       matrix:
         configuration: ['Release']
@@ -58,13 +59,13 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
-    - name: Setup .Net Core
+    - name: Setup .Net Core (${{ matrix.dotnet }})
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}             
     - name: Pack Nuget
-      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} -p:Version=${GITHUB_REF##*/v} --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
-    - name: Upload Artifacts
+      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
+    - name: Upload Release Artifacts
       uses: actions/upload-artifact@v1
       with:
         name: Release
