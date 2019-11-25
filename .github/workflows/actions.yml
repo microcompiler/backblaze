@@ -1,3 +1,4 @@
+name: Github Actions CI
 on:
   push:
     paths-ignore:
@@ -23,7 +24,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
-    - name: Setup .Net Core - ${{ matrix.dotnet }}@${{ matrix.os }}
+    - name: Setup .Net Core (${{ matrix.dotnet }})
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
@@ -34,11 +35,18 @@ jobs:
       env:
         Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
         Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
-    - name: Upload Artifacts
+    - name: Upload Tests Artifacts
       uses: actions/upload-artifact@v1
       with:
         name: Results
         path: artifacts
+    - name: Pack Nuget
+      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
+    - name: Upload Nuget Artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: Packages
+        path: artifacts/*.*nupkg
   Release:
     name: Release on ${{ matrix.dotnet }}
     runs-on: ${{ matrix.os }}
