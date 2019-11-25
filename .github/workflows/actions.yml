@@ -31,7 +31,7 @@ jobs:
     - name: Run Build
       run: dotnet build --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }}
     - name: Run Tests
-      run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity  ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --results-directory artifacts --logger:trx
+      run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity  ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --results-directory artifacts/logs --logger:trx
       env:
         Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
         Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
@@ -39,14 +39,14 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: Results
-        path: artifacts
+        path: artifacts/logs
     - name: Pack Nuget
-      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
+      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
     - name: Upload Nuget Artifacts
       uses: actions/upload-artifact@v1
       with:
         name: Packages
-        path: artifacts/*.*nupkg
+        path: artifacts/packages
   Release:
     name: Release on ${{ matrix.dotnet }}
     runs-on: ${{ matrix.os }}
