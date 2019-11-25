@@ -2,9 +2,9 @@ name: Github Actions CI
 on:
   push:
     branches:
-      - master
+    - master
     tags:
-      - v.[0-9]+.[0-9]+.[0-9]+
+    - '*'
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
