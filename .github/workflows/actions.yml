@@ -46,6 +46,7 @@ jobs:
         path: artifacts/packages
   Release:
     name: Release on ${{ matrix.dotnet }}
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ${{ matrix.os }}
     needs: [Build]
     strategy:
