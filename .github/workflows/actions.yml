@@ -35,14 +35,14 @@ jobs:
     - name: Upload Tests Artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: Results
+        name: Test
         path: artifacts/logs
     - name: Pack Nuget
       run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
     - name: Upload Nuget Artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: Packages
+        name: Build
         path: artifacts/packages
   Release:
     name: Release on ${{ matrix.dotnet }}
