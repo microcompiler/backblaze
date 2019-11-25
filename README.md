@@ -3,6 +3,7 @@
 [![NuGet Version](https://img.shields.io/nuget/vpre/Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/Backblaze.Agent)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/Backblaze.Agent)
 [![Build status](https://img.shields.io/appveyor/ci/microcompiler/backblaze?style=flat-square)](https://ci.appveyor.com/project/microcompiler/backblaze/branch/master)
+[![Build Status](https://github.com/microcompiler/backblaze/workflows/.github/workflows/actions.yml/badge.svg)](https://ci.appveyor.com/project/microcompiler/backblaze/branch/master)
 [![Code Quality](https://img.shields.io/codacy/grade/9af3e637b4fe400b80a63561f316bb14.svg?style=flat-square)](https://app.codacy.com/manual/microcompiler/backblaze/dashboard)
 
 The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaze B2 Cloud Storage API](https://www.backblaze.com/b2/cloud-storage.html). Backblaze B2 Cloud Storage provides the cheapest cloud storage available on the internet. Backblaze B2 Cloud Storage is ¼ of the price of other storage providers. Give it a try as the first 10 GB of storage is free.
@@ -241,6 +242,17 @@ The following test mode options are available to verify that your code correctly
 ## Disclaimer
 
 All source, documentation, instructions and products of this project are provided as-is without warranty. No liability is accepted for any damages, data loss or costs incurred by its use.
+
+## Branches
+
+### master
+
+This is the branch containing the latest release - no contributions should be made directly to this branch.
+
+### dev
+
+This is the development branch to which contributions should be proposed by contributors as pull requests.
+This development branch will periodically be merged to the master branch, and be released to [NuGet Gallery](https://www.nuget.org).
 
 ## Contributions
 
