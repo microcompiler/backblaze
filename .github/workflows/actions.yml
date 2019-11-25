@@ -62,7 +62,7 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}             
     - name: Pack Nuget
-      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} -p:Version=${GITHUB_REF##*/v} --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
+      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
