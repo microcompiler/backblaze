@@ -51,7 +51,7 @@ jobs:
     name: Release on ${{ matrix.dotnet }}
     runs-on: ${{ matrix.os }}
     needs: [Build]
-    if: github.event.action == 'published'
+    if: startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         configuration: ['Release']
