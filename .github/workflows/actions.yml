@@ -1,9 +1,6 @@
 name: Github Actions CI
 on:
   push:
-    paths-ignore:
-      - 'changelog.md'
-      - 'readme.md'
     branches:
       - master
     tags:
