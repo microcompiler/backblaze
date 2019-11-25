@@ -38,7 +38,7 @@ jobs:
         name: Results
         path: artifacts/logs
     - name: Pack Nuget
-      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} -p:Version=${GITHUB_REF##*/v} --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
+      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --no-build --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
     - name: Upload Nuget Artifacts
       uses: actions/upload-artifact@v1
       with:
@@ -63,7 +63,7 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}             
     - name: Pack Nuget
-      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
+      run: dotnet pack --verbosity ${{ matrix.verbosity }} --configuration ${{ matrix.configuration }} -p:Version=${GITHUB_REF##*/v} --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
