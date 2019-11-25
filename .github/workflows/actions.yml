@@ -3,6 +3,8 @@ on:
   push:
     branches:
     - master
+    tags:
+    - 'v*'
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -46,7 +48,6 @@ jobs:
     name: Release on ${{ matrix.dotnet }}
     runs-on: ${{ matrix.os }}
     needs: [Build]
-    if: startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         configuration: ['Release']
