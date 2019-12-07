@@ -24,7 +24,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         dotnet: ['3.0.100']
-        target-rid: [win-x64]
+        target-rid: [linux-x64, win-x64]
     
     steps:
     
