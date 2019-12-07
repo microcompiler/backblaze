@@ -1,0 +1,32 @@
+name: Publish Release
+
+on:
+  release:
+      types: [published]
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  CONFIGURATION: 'Release'
+  VERBOSITY:  'Minimal'
+
+jobs:  
+  Build:
+    name: Build on ${{ matrix.dotnet }
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        dotnet: ['3.0.100']
+        target-rid: [linux-x64, win-x64]
+    
+    - name: Checkout
+      uses: actions/checkout@v1
+    
+    - name: Setup .Net Core (${{ matrix.dotnet }})
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ matrix.dotnet }}
+    
+    - name: Restore .Net Core (${{ matrix.target-rid }})
+      run: dotnet restore --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY}
