@@ -1,7 +1,6 @@
 name: Publish Release
 
 on:
-#  push
   release:
       types: [published]
 
@@ -13,13 +12,11 @@ env:
   
 jobs:
   Build:
-    name: Build on ${{ matrix.target-rid }}
-    runs-on: ${{ matrix.os }}
+    name: Build on ${{ matrix.os }}
+    runs-on: [ubuntu-latest]
     strategy:
       matrix:
-        os: [ubuntu-latest]
         dotnet: ['3.0.100']
-        target-rid: [win-x64]
 
     steps:
     - name: Checkout
@@ -39,14 +36,14 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}
     
-    - name: Restore dotnet core (${{ matrix.target-rid }})
-      run: dotnet restore --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY}
+    - name: Restore dotnet core (${{ matrix.dotnet }})
+      run: dotnet restore --verbosity ${VERBOSITY}
     
-    - name: Build dotnet core (${{ matrix.target-rid }})
-      run: dotnet build -p:Version=${GITHUB_REF##*/v} --no-restore --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} 
+    - name: Build dotnet core (${{ matrix.dotnet }})
+      run: dotnet build -p:Version=${GITHUB_REF##*/v} --no-restore --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} 
       
-    - name: Pack dotnet core (${{ matrix.target-rid }})
-      run: dotnet pack --runtime ${{ matrix.target-rid }} -p:PackageVersion=${GITHUB_REF##*/v} --no-build --no-restore --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
+    - name: Pack dotnet core (${{ matrix.dotnet }})
+      run: dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts/packages
     
     - name: Upload release artifacts
       uses: actions/upload-artifact@v1
