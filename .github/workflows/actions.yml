@@ -43,7 +43,7 @@ jobs:
       run: dotnet build --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION}
     
     - name: Run .Net Core Tests
-      run: dotnet test ${GITHUB_WORKSPACE}/test/unit/Backblaze.Tests.Unit.csproj --verbosity  ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory ${GITHUB_WORKSPACE}/artifacts/logs --logger:trx
+      run: dotnet test /test/unit/Backblaze.Tests.Unit.csproj --verbosity  ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory ${GITHUB_WORKSPACE}/artifacts/logs --logger:trx
       env:
         Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
         Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
