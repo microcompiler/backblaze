@@ -38,4 +38,4 @@ jobs:
         dotnet-version: ${{ matrix.dotnet }}
     
     - name: Restore .Net Core (${{ matrix.target-rid }})
-      run: dotnet restore ${GITHUB_WORKSPACE}/src/Cmdlet/Backblaze.csproj --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY}
+      run: dotnet restore --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY}
