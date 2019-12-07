@@ -42,11 +42,11 @@ jobs:
     - name: Build .Net Core (${{ matrix.target-rid }})
       run: dotnet build --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION}
     
-    - name: Run .Net Core Tests
-      run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory ${GITHUB_WORKSPACE}/artifacts/logs --logger:trx
-      env:
-        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
-        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
+#    - name: Run .Net Core Tests
+#      run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory ${GITHUB_WORKSPACE}/artifacts/logs --logger:trx
+#      env:
+#        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
+#        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
     
     - name: Upload Tests Artifacts
       uses: actions/upload-artifact@v1
