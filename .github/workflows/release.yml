@@ -12,7 +12,7 @@ env:
 
 jobs:  
   Build:
-    name: Build on ${{ matrix.dotnet }
+    name: Build on ${{ target-rid }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
