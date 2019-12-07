@@ -28,11 +28,13 @@ jobs:
     - name: Show release event information
       run: |
         echo "release.name        = ${{ github.event.release.name }}"
+        echo "release.body        = ${{ github.event.release.body }}"
         echo "release.html_url    = ${{ github.event.release.html_url }}"
         echo "release.tag_name    = ${{ github.event.release.tag_name }}"
+        echo "release.draft       = ${{ github.event.release.draft }}"
         echo "release.prerelease  = ${{ github.event.release.prerelease }}"
-    
-    - name: Setup .Net core (${{ matrix.dotnet }})
+        
+    - name: Setup dotnet core (${{ matrix.dotnet }})
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
@@ -44,10 +46,15 @@ jobs:
       run: dotnet build -p:Version=${GITHUB_REF##*/v} --no-restore --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} 
       
     - name: Pack dotnet core (${{ matrix.target-rid }})
-      run: dotnet pack --runtime ${{ matrix.target-rid }} -p:PackageVersion=${GITHUB_REF##*/v} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --no-restore --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
+      run: dotnet pack --runtime ${{ matrix.target-rid }} -p:PackageVersion=${GITHUB_REF##*/v} --no-build --no-restore --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
     
     - name: Upload release artifacts
       uses: actions/upload-artifact@v1
       with:
         name: Release
         path: artifacts/packages
+    
+#    - name: Publish package to Nuget
+#      run: dotnet nuget push artifacts/*.* -s "https://int.nugettest.org" -k ${{ secrets.NUGET_API_KEY }}
+#    - name: Publish package to GitHub
+#      run: dotnet nuget push artifacts/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${{ secrets.GITHUB_TOKEN }}
