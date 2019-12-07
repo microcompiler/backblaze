@@ -24,7 +24,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         dotnet: ['3.0.100']
-        target-rid: [win-x86, win-x64]
+        target-rid: [win-x64]
     
     steps:
     
@@ -41,6 +41,14 @@ jobs:
     
     - name: Build .Net Core (${{ matrix.target-rid }})
       run: dotnet build --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION}
+    
+    - name: Show Environment
+      run: env
+      shell: bash
+    
+    - name: Show Directory
+      run: find .
+      shell: bash
     
     - name: Run .Net Core Tests
       run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory artifacts/logs --logger:trx
