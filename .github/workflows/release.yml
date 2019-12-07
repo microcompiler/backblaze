@@ -44,4 +44,10 @@ jobs:
       run: dotnet build -p:Version=${GITHUB_REF##*/v} --no-restore --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} 
       
     - name: Pack dotnet core (${{ matrix.target-rid }})
-      run: dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --no-restore --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
+      run: dotnet pack --runtime ${{ matrix.target-rid }} -p:PackageVersion=${GITHUB_REF##*/v} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --no-restore --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
+    
+    - name: Upload release artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: Release
+        path: artifacts/packages
