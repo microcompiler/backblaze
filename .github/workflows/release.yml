@@ -32,10 +32,16 @@ jobs:
         echo "release.tag_name    = ${{ github.event.release.tag_name }}"
         echo "release.prerelease  = ${{ github.event.release.prerelease }}"
     
-    - name: Setup .Net Core (${{ matrix.dotnet }})
+    - name: Setup .Net core (${{ matrix.dotnet }})
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
     
-    - name: Restore .Net Core (${{ matrix.target-rid }})
+    - name: Restore dotnet core (${{ matrix.target-rid }})
       run: dotnet restore --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY}
+    
+    - name: Build dotnet core (${{ matrix.target-rid }})
+      run: dotnet build -p:Version=${GITHUB_REF##*/v} --no-restore --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} 
+      
+    - name: Pack dotnet core (${{ matrix.target-rid }})
+      run: dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --no-restore --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
