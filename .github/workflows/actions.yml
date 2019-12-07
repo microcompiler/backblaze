@@ -42,26 +42,26 @@ jobs:
     - name: Build .Net Core (${{ matrix.target-rid }})
       run: dotnet build --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION}
     
-#    - name: Run .Net Core Tests
-#      run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory ${GITHUB_WORKSPACE}/artifacts/logs --logger:trx
-#      env:
-#        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
-#        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
+    - name: Run .Net Core Tests
+      run: dotnet test test/unit/Backblaze.Tests.Unit.csproj --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory artifacts/logs --logger:trx
+      env:
+        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
+        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
     
     - name: Upload Tests Artifacts
       uses: actions/upload-artifact@v1
       with:
         name: Test
-        path: ${GITHUB_WORKSPACE}/artifacts/logs
+        path: artifacts/logs
     
     - name: Pack Nuget
-      run: dotnet pack --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --no-restore --include-symbols -p:SymbolPackageFormat=snupkg --output ${GITHUB_WORKSPACE}/artifacts/packages
+      run: dotnet pack --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --no-restore --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
     
     - name: Upload Nuget Artifacts
       uses: actions/upload-artifact@v1
       with:
         name: Build
-        path: ${GITHUB_WORKSPACE}/artifacts/packages
+        path: artifacts/packages
   
   Release:
     
@@ -96,7 +96,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: Release
-        path: ${GITHUB_WORKSPACE}/artifacts
+        path: artifacts
 #    - name: Publish Package to Nuget
 #      run: dotnet nuget push artifacts/*.* -s "https://int.nugettest.org" -k ${{ secrets.NUGET_API_KEY }}
 #    - name: Publish Package to GitHub
