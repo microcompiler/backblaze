@@ -20,13 +20,14 @@ jobs:
         dotnet: ['3.0.100']
         target-rid: [linux-x64, win-x64]
     
+    steps: 
     - name: Checkout
       uses: actions/checkout@v1
-    
+
     - name: Setup .Net Core (${{ matrix.dotnet }})
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
-    
+
     - name: Restore .Net Core (${{ matrix.target-rid }})
       run: dotnet restore --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY}
