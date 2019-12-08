@@ -7,6 +7,7 @@ on:
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  VERSION: $(date "+%Y.%m.%d.%H%M")
   CONFIGURATION: 'Release'
   VERBOSITY:  'Minimal'
 
@@ -31,7 +32,7 @@ jobs:
       run: dotnet restore --verbosity ${VERBOSITY}
     
     - name: Build dotnet core (${{ matrix.dotnet }})
-      run: dotnet build --no-restore --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} 
+      run: dotnet build -p:Version=${VERSION} --no-restore --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} 
       
 #    - name: Run dotnet core tests
 #      run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory artifacts --logger:trx
@@ -40,7 +41,7 @@ jobs:
 #        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
-      run: dotnet pack -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts
+      run: dotnet pack -p:PackageVersion=${VERSION} -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts
     
     - name: Upload build artifacts
       uses: actions/upload-artifact@v1
