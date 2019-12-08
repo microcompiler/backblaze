@@ -57,7 +57,6 @@ namespace Backblaze.Tests.Integration
 
         public StorageClientFixture()
         {
- 
             var services = new ServiceCollection();
 
             var config = new ConfigurationBuilder()
@@ -69,8 +68,8 @@ namespace Backblaze.Tests.Integration
             services.AddLogging(builder =>
             {
                 builder.AddConfiguration(config.GetSection("Logging"));
+                builder.AddConsole();
                 builder.AddDebug();
-                
             });
 
             services.AddMemoryCache();
