@@ -2,6 +2,7 @@
 
 [![NuGet Version](https://img.shields.io/nuget/vpre/Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/Backblaze.Agent)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/Backblaze.Agent)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fmicrocompiler%2Fbackblaze%2Fbadge&style=flat-square)](https://actions-badge.atrox.dev/microcompiler/backblaze/goto)
 [![Build Status](https://github.com/microcompiler/backblaze/workflows/.github/workflows/actions.yml/badge.svg)]()
 [![Code Quality](https://img.shields.io/codacy/grade/9af3e637b4fe400b80a63561f316bb14.svg?style=flat-square)](https://app.codacy.com/manual/microcompiler/backblaze/dashboard)
 

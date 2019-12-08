@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,7 +34,6 @@ namespace Bytewizer.Backblaze.Handlers
             _logger.LogTrace($"Request: {request}");
             try
             {
-                // base.SendAsync calls the inner handler
                 var response = await base.SendAsync(request, cancellationToken);
                 _logger.LogTrace($"Response: {response}");
                 return response;
