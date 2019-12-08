@@ -40,13 +40,7 @@ jobs:
 #      env:
 #        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
 #        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
-    
-    - name: Upload tests artifacts
-      uses: actions/upload-artifact@v1
-      with:
-        name: Logs
-        path: artifacts/logs
-    
+        
     - name: Pack dotnet core (${{ matrix.dotnet }})
       run: dotnet pack -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts
     
