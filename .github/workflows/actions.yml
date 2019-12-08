@@ -44,7 +44,14 @@ jobs:
 #        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
-      run: dotnet pack -p:PackageVersion=$(date "+%Y.%m.%d.%H%M") -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts
+      run: >- 
+        dotnet pack -p:PackageVersion=$(date "+%Y.%m.%d.%H%M") -p:SymbolPackageFormat=snupkg 
+        --include-symbols 
+        --no-restore 
+        --no-build 
+        --verbosity ${VERBOSITY} 
+        --configuration ${CONFIGURATION} 
+        --output artifacts
     
     - name: Upload build artifacts
       uses: actions/upload-artifact@v1
