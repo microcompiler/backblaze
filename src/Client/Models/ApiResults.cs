@@ -136,7 +136,7 @@ namespace Bytewizer.Backblaze.Models
                 if (Error != null)
                     message = $", {nameof(Error.Message)}: {Error.Message}";
 
-                if (Response != default)
+                if (Response != null)
                     message = $", ResponseType: {Response.GetType()}";
 
                 return $"{{{nameof(StatusCode)}: {StatusCode.ToString()}{message}}}";

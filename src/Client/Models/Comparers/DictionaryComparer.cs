@@ -85,8 +85,8 @@ namespace Bytewizer.Backblaze.Models
             {
                 foreach (var value in obj)
                 {
-                    hash = hash * 896954327 + (value.Key != default ? _elementComparer.GetHashCode(value.Key) : 126954565);
-                    hash = hash * 896954327 + (value.Value != default ? _elementComparer.GetHashCode(value.Value) : 126954565);
+                    hash = hash * 896954327 + (value.Key != null ? _elementComparer.GetHashCode(value.Key) : 126954565);
+                    hash = hash * 896954327 + (value.Value != null ? _elementComparer.GetHashCode(value.Value) : 126954565);
                 }
             }
             return hash;

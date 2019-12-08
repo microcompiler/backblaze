@@ -173,6 +173,20 @@ foreach (var filePath in Directory.GetFiles(@"c:\my\directory"))
 }
 ```
 
+Download File Stream
+
+```csharp
+var files = new string[] { @"c:\my\directory\file1.txt", "file2.bat" };
+
+foreach (var fileName in files)
+{
+  using (var stream = File.Create(fileName))
+  {
+      var results = await Client.DownloadAsync("[BucketName]", fileName, stream);
+  }
+}
+```
+
 ## Microsoft Logging Integration
 
 Install the Microsoft.Extensions.Logging packages:

@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Bytewizer.Backblaze.Client;
 using Bytewizer.Backblaze.Models;
-using Bytewizer.Extensions.Console;
 
 using System.IO.Abstractions.TestingHelpers;
+using System.IO;
 
 namespace Backblaze.Tests.Integration
 {
@@ -57,12 +57,31 @@ namespace Backblaze.Tests.Integration
 
         public StorageClientFixture()
         {
-            Services = CreateConsoleBuilder(null).Build().Services;
+ 
+            var services = new ServiceCollection();
 
-            Config = Services.GetService<IConfiguration>();
-            Logger = Services.GetService<ILogger<StorageClientFixture>>();
-            Options = Services.GetService<IClientOptions>();
-            Storage = Services.GetService<IStorageClient>();
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("settings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            services.AddLogging(builder =>
+            {
+                builder.AddConfiguration(config.GetSection("Logging"));
+                builder.AddDebug();
+                
+            });
+
+            services.AddMemoryCache();
+            services.AddBackblazeAgent(config.GetSection("Agent"));
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            Config = serviceProvider.GetService<IConfiguration>();
+            Logger = serviceProvider.GetService<ILogger<StorageClientFixture>>();
+            Options = serviceProvider.GetService<IClientOptions>();
+            Storage = serviceProvider.GetService<IStorageClient>();
 
             Storage.Connect();
 
@@ -71,14 +90,6 @@ namespace Backblaze.Tests.Integration
                 SeedStorage().GetAwaiter().GetResult();
             }
         }
-
-        public static IApplicationBuilder CreateConsoleBuilder(string[] args) =>
-        ConsoleApplication.CreateDefaultBuilder(args)
-            .ConfigureServices((context, services) =>
-            {
-                services.AddMemoryCache();
-                services.AddBackblazeAgent(context.Configuration.GetSection("Agent"));
-            });
 
         private async Task SeedStorage()
         {
@@ -91,7 +102,7 @@ namespace Backblaze.Tests.Integration
                 // Create bucket
                 var createResults = await Storage.Buckets.CreateAsync(BucketName, BucketType.AllPrivate);
                 createResults.EnsureSuccessStatusCode();
-                Logger.LogDebug($"Bucket '{BucketName}' created during storage seed initialization.");
+                //Logger.LogDebug($"Bucket '{BucketName}' created during storage seed initialization.");
 
                 // Set bucket id
                 bucketId = createResults.Response.BucketId;
