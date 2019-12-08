@@ -4,6 +4,9 @@ on:
   push:
     branches:
     - master
+    paths:
+      - '!README.md'
+      - '!CHANGELOG.md'
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
