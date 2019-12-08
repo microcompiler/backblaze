@@ -37,11 +37,18 @@ jobs:
         --verbosity ${VERBOSITY}
         --configuration ${CONFIGURATION} 
       
-#    - name: Run dotnet core tests
-#      run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory artifacts --logger:trx
-#      env:
-#        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
-#        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
+    - name: Run dotnet core tests (${{ matrix.dotnet }})
+      run: >-
+        dotnet test
+        --no-restore 
+        --no-build 
+        --verbosity ${VERBOSITY} 
+        --configuration ${CONFIGURATION} 
+        --results-directory artifacts 
+        --logger:trx
+      env:
+        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
+        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
       run: >- 
