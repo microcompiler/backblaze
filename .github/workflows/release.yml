@@ -31,8 +31,7 @@ jobs:
         echo "release.draft       = ${{ github.event.release.draft }}"
         echo "release.prerelease  = ${{ github.event.release.prerelease }}"
         echo $(git describe --tags) |sed "s/^[v]\{1,\}//g"
-        echo `date +%Y%m%d-%H%M`
-        echo $(date "+%Y.%m.%d")
+        echo $(date "+%Y.%m.%d.%h%m")
         
     - name: Setup dotnet core (${{ matrix.dotnet }})
       uses: actions/setup-dotnet@v1
