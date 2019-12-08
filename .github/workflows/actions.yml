@@ -37,9 +37,9 @@ jobs:
         --verbosity ${VERBOSITY}
         --configuration ${CONFIGURATION} 
       
-    - name: Run dotnet core tests
+    - name: Run dotnet core tests (${{ matrix.dotnet }})
       run: >-
-        dotnet test ./test/unit/Backblaze.Tests.Unit.csproj 
+        dotnet test
         --no-restore 
         --no-build 
         --verbosity ${VERBOSITY} 
