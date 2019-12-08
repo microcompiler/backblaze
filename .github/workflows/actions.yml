@@ -28,6 +28,9 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}
     
+    - name: Display version
+      run: echo $(date "+%Y.%m.%d.%H%M")
+      
     - name: Restore dotnet core (${{ matrix.dotnet }})
       run: dotnet restore --verbosity ${VERBOSITY}
     
