@@ -35,11 +35,8 @@ jobs:
     - name: Build dotnet core (${{ matrix.dotnet }})
       run: dotnet build --no-restore --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} 
       
-    - name: Pack dotnet core (${{ matrix.dotnet }})
-      run: dotnet pack -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts/packages
-    
 #    - name: Run dotnet core tests
-#      run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory artifacts/logs --logger:trx
+#      run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory artifacts --logger:trx
 #      env:
 #        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
 #        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
@@ -47,15 +44,14 @@ jobs:
     - name: Upload tests artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: Test
+        name: Logs
         path: artifacts/logs
     
     - name: Pack dotnet core (${{ matrix.dotnet }})
-      run: dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts/packages
+      run: dotnet pack -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts
     
-    - name: Upload release artifacts
+    - name: Upload build artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: Release
-        path: artifacts/packages
-  
+        name: Build
+        path: artifacts
