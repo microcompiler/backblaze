@@ -43,13 +43,13 @@ jobs:
       run: dotnet build -p:Version=${GITHUB_REF##*/v} --no-restore --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} 
       
     - name: Pack dotnet core (${{ matrix.dotnet }})
-      run: dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts/packages
+      run: dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts
     
     - name: Upload release artifacts
       uses: actions/upload-artifact@v1
       with:
         name: Release
-        path: artifacts/packages
+        path: artifacts
     
 #    - name: Publish package to Nuget
 #      run: dotnet nuget push artifacts/*.* -s "https://int.nugettest.org" -k ${{ secrets.NUGET_API_KEY }}
