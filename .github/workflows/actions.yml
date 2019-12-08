@@ -4,9 +4,6 @@ on:
   push:
     branches:
     - master
-  release:
-      types: [published]
-
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -16,97 +13,49 @@ env:
 jobs:
   
   Build:
-    name: Build on ${{ matrix.dotnet }}
-    
-    runs-on: ${{ matrix.os }}
-    
+    name: Build on ${{ matrix.dotnet }}    
+    runs-on: [ubuntu-latest]
     strategy:
       matrix:
-        os: [ubuntu-latest]
         dotnet: ['3.0.100']
-        target-rid: [linux-x64, win-x64]
     
     steps:
     
     - name: Checkout
       uses: actions/checkout@v1
     
-    - name: Setup .Net Core (${{ matrix.dotnet }})
+    - name: Setup dotnet core (${{ matrix.dotnet }})
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
     
-    - name: Restore .Net Core (${{ matrix.target-rid }})
-      run: dotnet restore --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY}
+    - name: Restore dotnet core (${{ matrix.dotnet }})
+      run: dotnet restore --verbosity ${VERBOSITY}
     
-    - name: Build .Net Core (${{ matrix.target-rid }})
-      run: dotnet build --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION}
+    - name: Build dotnet core (${{ matrix.dotnet }})
+      run: dotnet build --no-restore --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} 
+      
+    - name: Pack dotnet core (${{ matrix.dotnet }})
+      run: dotnet pack -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts/packages
     
-    - name: Show Environment
-      run: env
-      shell: bash
-    
-    - name: Show Directory
-      run: find .
-      shell: bash
-    
-#    - name: Run .Net Core Tests
+#    - name: Run dotnet core tests
 #      run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory artifacts/logs --logger:trx
 #      env:
 #        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
 #        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
     
-    - name: Upload Tests Artifacts
+    - name: Upload tests artifacts
       uses: actions/upload-artifact@v1
       with:
         name: Test
         path: artifacts/logs
     
-    - name: Pack Nuget
-      run: dotnet pack --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --no-restore --include-symbols -p:SymbolPackageFormat=snupkg --output artifacts/packages
+    - name: Pack dotnet core (${{ matrix.dotnet }})
+      run: dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:SymbolPackageFormat=snupkg --include-symbols --no-restore --no-build --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --output artifacts/packages
     
-    - name: Upload Nuget Artifacts
-      uses: actions/upload-artifact@v1
-      with:
-        name: Build
-        path: artifacts/packages
-  
-  Release:
-    
-    name: Release on ${{ matrix.dotnet }}
-    
-    runs-on: ${{ matrix.os }}
-    
-    needs: [Build]
-    
-    if: github.event.action == 'published'
-    
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        dotnet: ['3.0.100']
-        target-rid: [win-x86, win-x64]
-    
-    steps:
-    
-    - name: Checkout
-      uses: actions/checkout@v1
-    
-    - name: Setup .Net Core (${{ matrix.dotnet }})
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ matrix.dotnet }}             
-    
-    - name: Pack Nuget
-      run: dotnet pack --runtime ${{ matrix.target-rid }} --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --include-symbols -p:SymbolPackageFormat=snupkg --output ${GITHUB_WORKSPACE}/artifacts
-    
-    - name: Upload Release Artifacts
+    - name: Upload release artifacts
       uses: actions/upload-artifact@v1
       with:
         name: Release
-        path: artifacts
-#    - name: Publish Package to Nuget
-#      run: dotnet nuget push artifacts/*.* -s "https://int.nugettest.org" -k ${{ secrets.NUGET_API_KEY }}
-#    - name: Publish Package to GitHub
-#      run: dotnet nuget push artifacts/*.nupkg -s "https://nuget.pkg.github.com/microcompiler/index.json" -k ${{ secrets.GITHUB_TOKEN }}
-
+        path: artifacts/packages
+  
