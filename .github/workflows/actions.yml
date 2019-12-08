@@ -26,15 +26,16 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
-    
-    - name: Display version
-      run: echo $(date "+%Y.%m.%d.%H%M")
       
     - name: Restore dotnet core (${{ matrix.dotnet }})
       run: dotnet restore --verbosity ${VERBOSITY}
     
     - name: Build dotnet core (${{ matrix.dotnet }})
-      run: dotnet build -p:Version=$(date "+%Y.%m.%d.%H%M") --no-restore --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} 
+      run: >-
+        dotnet build -p:Version=$(date "+%Y.%m.%d.%H%M") 
+        --no-restore
+        --verbosity ${VERBOSITY}
+        --configuration ${CONFIGURATION} 
       
 #    - name: Run dotnet core tests
 #      run: dotnet test ./test/unit/Backblaze.Tests.Unit.csproj --verbosity ${VERBOSITY} --configuration ${CONFIGURATION} --no-build --results-directory artifacts --logger:trx
