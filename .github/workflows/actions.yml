@@ -4,6 +4,14 @@ on:
   push:
     branches:
     - master
+    paths:
+    - '*'
+    - '!.editorconfig'
+    - '!.gitattributes'
+    - '!.gitignore'
+    - '!*.md'
+    - '!LICENSE'
+
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -39,7 +47,7 @@ jobs:
       
     - name: Run dotnet core tests (${{ matrix.dotnet }})
       run: >-
-        dotnet test
+        dotnet test -p:CollectCoverage=true -p:Exclude="[xunit.*]*" -p:CoverletOutputFormat=cobertura
         --no-restore 
         --no-build 
         --verbosity ${VERBOSITY} 
