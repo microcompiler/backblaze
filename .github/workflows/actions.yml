@@ -50,7 +50,7 @@ jobs:
       
     # - name: Run dotnet core tests (${{ matrix.dotnet }})
     #   run: >-
-    #     dotnet test -p:CollectCoverage=true -p:Exclude='[xunit.*]*' -p:CoverletOutputFormat=cobertura
+    #     dotnet test
     #     --no-restore 
     #     --no-build 
     #     --verbosity ${VERBOSITY} 
