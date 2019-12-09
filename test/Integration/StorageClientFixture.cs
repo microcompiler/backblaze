@@ -57,35 +57,35 @@ namespace Backblaze.Tests.Integration
 
         public StorageClientFixture()
         {
-            var services = new ServiceCollection();
-
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            services.AddLogging(builder =>
-            {
-                builder.AddConfiguration(config.GetSection("Logging"));
-                builder.AddConsole();
-                builder.AddDebug();
-            });
-
-            services.AddMemoryCache();
-            services.AddBackblazeAgent(config.GetSection("Agent"));
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            Config = serviceProvider.GetService<IConfiguration>();
-            Logger = serviceProvider.GetService<ILogger<StorageClientFixture>>();
-            Options = serviceProvider.GetService<IClientOptions>();
-            Storage = serviceProvider.GetService<IStorageClient>();
-
-            Storage.Connect();
-
             lock (_lock)
             {
+                var services = new ServiceCollection();
+
+                var config = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("settings.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+
+                services.AddLogging(builder =>
+                {
+                    builder.AddConfiguration(config.GetSection("Logging"));
+                    builder.AddConsole();
+                    builder.AddDebug();
+                });
+
+                services.AddMemoryCache();
+                services.AddBackblazeAgent(config.GetSection("Agent"));
+
+                var serviceProvider = services.BuildServiceProvider();
+
+                Config = serviceProvider.GetService<IConfiguration>();
+                Logger = serviceProvider.GetService<ILogger<StorageClientFixture>>();
+                Options = serviceProvider.GetService<IClientOptions>();
+                Storage = serviceProvider.GetService<IStorageClient>();
+
+                Storage.Connect();
+
                 SeedStorage().GetAwaiter().GetResult();
             }
         }
