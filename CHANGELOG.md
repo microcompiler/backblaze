@@ -1,6 +1,7 @@
 # Change Log
 
 ## 0.9.3
+*   Added suport for github actions for both CI and release builds
 *   Added BucketFilter enum type to bucket requests
 *   Change log
 *   Change log again
