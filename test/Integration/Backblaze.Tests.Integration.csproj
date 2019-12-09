@@ -20,6 +20,8 @@
     <RepositoryUrl>https://github.com/microcompiler/backblaze</RepositoryUrl>
 
     <PackageTags>backblaze, b2, cloud-storage, api, csharp, storage-pod</PackageTags>
+
+    <Version>0.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
