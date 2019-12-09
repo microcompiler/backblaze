@@ -6,6 +6,11 @@ on:
     - master
     paths: 
       - '**'
+      - '!.editorconfig'
+      - '!.gitattributes'
+      - '!.gitignore'
+      - '!*.md'
+      - '!LICENSE'
 
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
