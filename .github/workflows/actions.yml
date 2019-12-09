@@ -43,14 +43,14 @@ jobs:
     
     - name: Build dotnet core (${{ matrix.dotnet }})
       run: >-
-        dotnet build -p:Version=$(date "+%Y.%m.%d.%H%M") 
+        dotnet build -p:Version=$(date '+%Y.%m.%d.%H%M') 
         --no-restore
         --verbosity ${VERBOSITY}
         --configuration ${CONFIGURATION} 
       
     # - name: Run dotnet core tests (${{ matrix.dotnet }})
     #   run: >-
-    #     dotnet test -p:CollectCoverage=true -p:Exclude="[xunit.*]*" -p:CoverletOutputFormat=cobertura
+    #     dotnet test -p:CollectCoverage=true -p:Exclude='[xunit.*]*' -p:CoverletOutputFormat=cobertura
     #     --no-restore 
     #     --no-build 
     #     --verbosity ${VERBOSITY} 
@@ -63,7 +63,7 @@ jobs:
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
       run: >- 
-        dotnet pack -p:PackageVersion=$(date "+%Y.%m.%d.%H%M") -p:SymbolPackageFormat=snupkg 
+        dotnet pack -p:PackageVersion=$(date '+%Y.%m.%d.%H%M') -p:SymbolPackageFormat=snupkg 
         --include-symbols 
         --no-restore 
         --no-build 
