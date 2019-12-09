@@ -35,7 +35,7 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}
       
-    - name: Display dotnet core information
+    - name: Display dotnet core (${{ matrix.dotnet }})
       run: dotnet --info
 
     - name: Restore dotnet core (${{ matrix.dotnet }})
