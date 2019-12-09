@@ -4,6 +4,8 @@ on:
   push:
     branches:
     - master
+    paths: 
+      - '**'
 
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
