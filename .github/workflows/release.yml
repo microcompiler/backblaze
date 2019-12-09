@@ -50,14 +50,14 @@ jobs:
         --configuration ${CONFIGURATION} 
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
-    run: >- 
-      dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:SymbolPackageFormat=snupkg 
-      --include-symbols 
-      --no-restore 
-      --no-build 
-      --verbosity ${VERBOSITY} 
-      --configuration ${CONFIGURATION} 
-      --output .builds/artifacts
+      run: >- 
+        dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:SymbolPackageFormat=snupkg 
+        --include-symbols 
+        --no-restore 
+        --no-build 
+        --verbosity ${VERBOSITY} 
+        --configuration ${CONFIGURATION} 
+        --output .builds/artifacts
       
     - name: Upload release artifacts
       uses: actions/upload-artifact@v1
