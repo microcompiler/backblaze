@@ -5,11 +5,8 @@ VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B89C1FC0-7893-4D07-8D41-9E22A8D51D48}"
 	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		.github\workflows\actions.yml = .github\workflows\actions.yml
 		CHANGELOG.md = CHANGELOG.md
 		README.md = README.md
-		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Client", "src\Client\Backblaze.Client.csproj", "{09139E79-E5AB-4F62-A23F-6CA869F1A7C2}"
@@ -19,6 +16,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Tests.Integration", "test\Integration\Backblaze.Tests.Integration.csproj", "{B0CAD29D-D787-4EEE-BD39-398F87A0866F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Tests.Unit", "test\Unit\Backblaze.Tests.Unit.csproj", "{6B57FB13-7D72-40D2-AE16-650A7B4990EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9A70FFC5-6F45-48F6-8165-185D39517638}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\actions.yml = .github\workflows\actions.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +48,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9A70FFC5-6F45-48F6-8165-185D39517638} = {B89C1FC0-7893-4D07-8D41-9E22A8D51D48}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DAA59421-E9E6-427B-942E-F64F5F490239}
