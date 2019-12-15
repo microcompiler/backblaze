@@ -26,6 +26,7 @@ jobs:
       run: |
         echo "release.name        = ${{ github.event.release.name }}"
         echo "release.body        = ${{ github.event.release.body }}"
+        echo "release.upload_url" = ${{ github.event.release.upload_url }}"
         echo "release.html_url    = ${{ github.event.release.html_url }}"
         echo "release.tag_name    = ${{ github.event.release.tag_name }}"
         echo "release.draft       = ${{ github.event.release.draft }}"
@@ -51,7 +52,7 @@ jobs:
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
       run: >- 
-        dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:SymbolPackageFormat=snupkg 
+        dotnet pack -p:PackageVersion=${GITHUB_REF##*/v}
         --include-symbols 
         --no-restore 
         --no-build 
@@ -64,6 +65,21 @@ jobs:
       with:
         name: Release
         path: .builds/artifacts
+    
+    - name: Create release asset
+      run: | 
+        zip .builds/package.zip -r .builds/artifacts/*.nupkg
+        zip .builds/package-symbols.zip -r .builds/artifacts/*.snupkg
+
+    - name: Upload release asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: .builds/package.zip
+        asset_name: Packages
+        asset_content_type: application/zip
     
 #    - name: Publish package to Nuget
 #      run: dotnet nuget push artifacts/*.* -s "https://int.nugettest.org" -k ${{ secrets.NUGET_API_KEY }}
