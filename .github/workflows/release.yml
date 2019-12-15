@@ -67,7 +67,7 @@ jobs:
         path: .builds/artifacts
     
     - name: Create release asset
-      run: zip .builds/packages.zip -r .builds/artifacts/*.nupkg
+      run: zip .builds/packages.zip .builds/artifacts/*.*nupkg
       
     - name: Upload release asset
       uses: actions/upload-release-asset@v1.0.1
@@ -76,7 +76,7 @@ jobs:
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: .builds/packages.zip
-        asset_name: NuGet Packages.zip
+        asset_name: Packages.zip
         asset_content_type: application/zip
     
 #    - name: Publish package to Nuget
