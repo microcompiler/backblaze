@@ -26,7 +26,7 @@ jobs:
       run: |
         echo "release.name        = ${{ github.event.release.name }}"
         echo "release.body        = ${{ github.event.release.body }}"
-        echo "release.upload_url" = ${{ github.event.release.upload_url }}"
+        echo "release.upload_url  = ${{ github.event.release.upload_url }}"
         echo "release.html_url    = ${{ github.event.release.html_url }}"
         echo "release.tag_name    = ${{ github.event.release.tag_name }}"
         echo "release.draft       = ${{ github.event.release.draft }}"
