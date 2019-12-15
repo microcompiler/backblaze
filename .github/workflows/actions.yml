@@ -38,6 +38,23 @@ jobs:
     - name: Display dotnet core (${{ matrix.dotnet }})
       run: dotnet --info
 
+    - name: Extract branch name, short SHA, date etc. into variables
+      run: |
+        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        echo "##[set-output name=commit;]$(echo ${GITHUB_SHA:0:7})"
+        echo "##[set-output name=date;]$(echo $(date -u --iso-8601=seconds))"
+        echo "##[set-output name=date_version;]$(echo $(date -u +%Y%m%d.%H%M%S))"
+        echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Sevenate)"
+      id: info
+    
+    - name: Print variables
+      run: |
+        echo branch=${{ steps.info.outputs.branch }}
+        echo commit=${{ steps.info.outputs.commit }}
+        echo date=${{ steps.info.outputs.date }}
+        echo date_version=${{ steps.info.outputs.date_version }}
+        echo copyright=${{ steps.info.outputs.copyright }}
+    
     - name: Restore dotnet core (${{ matrix.dotnet }})
       run: dotnet restore --verbosity ${VERBOSITY}
     
