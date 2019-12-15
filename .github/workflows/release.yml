@@ -72,7 +72,7 @@ jobs:
         zip .builds/package-symbols.zip -r .builds/artifacts/*.snupkg
 
     - name: Upload release asset
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@v1.0.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
