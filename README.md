@@ -2,8 +2,7 @@
 
 [![NuGet Version](https://img.shields.io/nuget/vpre/Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/Backblaze.Agent)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/Backblaze.Agent)
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fmicrocompiler%2Fbackblaze%2Fbadge&style=flat-square)](https://actions-badge.atrox.dev/microcompiler/backblaze/goto)
-[![Build Status](https://github.com/microcompiler/backblaze/workflows/.github/workflows/actions.yml/badge.svg)]()
+[![Build Status](https://img.shields.io/github/workflow/status/microcompiler/backblaze/Actions%20CI?style=flat-square)](https://github.com/microcompiler/backblaze/actions)
 [![Code Quality](https://img.shields.io/codacy/grade/9af3e637b4fe400b80a63561f316bb14.svg?style=flat-square)](https://app.codacy.com/manual/microcompiler/backblaze/dashboard)
 
 The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaze B2 Cloud Storage API](https://www.backblaze.com/b2/cloud-storage.html). Backblaze B2 Cloud Storage provides the cheapest cloud storage available on the internet. Backblaze B2 Cloud Storage is ¼ of the price of other storage providers. Give it a try as the first 10 GB of storage is free.
