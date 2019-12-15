@@ -67,7 +67,7 @@ jobs:
         path: .builds/artifacts
     
     - name: Create release asset
-      run: zip .builds/packages.zip .builds/artifacts/*.*nupkg
+      run: zip .builds/packages.zip -j .builds/artifacts/*.*nupkg
       
     - name: Upload release asset
       uses: actions/upload-release-asset@v1.0.1
