@@ -71,9 +71,10 @@ jobs:
       
     - name: Upload release asset
       uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        github_token: ${{ secrets.GITHUB_TOKEN }}
         asset_path: .builds/packages.zip
         asset_name: Packages.zip
         asset_content_type: application/zip
