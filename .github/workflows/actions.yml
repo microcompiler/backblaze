@@ -41,40 +41,40 @@ jobs:
         echo build=${{ steps.info.outputs.build }}
         echo copyright=${{ steps.info.outputs.copyright }}
 
-    - name: Setup dotnet core (${{ matrix.dotnet }})
+    - name: Setup dotnet (${{ matrix.dotnet }})
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
       
-    - name: Display dotnet core (${{ matrix.dotnet }})
+    - name: Display dotnet (${{ matrix.dotnet }})
       run: dotnet --info
     
-    - name: Restore dotnet core (${{ matrix.dotnet }})
+    - name: Restore dotnet (${{ matrix.dotnet }})
       run: dotnet restore --verbosity ${VERBOSITY}
     
-    - name: Build dotnet core (${{ matrix.dotnet }})
+    - name: Build dotnet (${{ matrix.dotnet }})
       run: >-
         dotnet build -p:Version=${{ steps.info.outputs.build }} -p:Copyright=${{ steps.info.outputs.copyright }}
         --no-restore
         --verbosity ${VERBOSITY}
         --configuration ${CONFIGURATION} 
       
-    # - name: Run dotnet core tests (${{ matrix.dotnet }})
-    #   run: >-
-    #     dotnet test
-    #     --no-restore 
-    #     --no-build 
-    #     --verbosity ${VERBOSITY} 
-    #     --configuration ${CONFIGURATION} 
-    #     --results-directory artifacts 
-    #     --logger:trx
-    #   env:
-    #     Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
-    #     Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
+    - name: Test dotnet (${{ matrix.dotnet }})
+      run: >-
+        dotnet test
+        --no-restore 
+        --no-build 
+        --verbosity ${VERBOSITY} 
+        --configuration ${CONFIGURATION} 
+        --results-directory artifacts 
+        --logger:trx
+      env:
+        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
+        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
         
-    - name: Pack dotnet core (${{ matrix.dotnet }})
+    - name: Pack dotnet (${{ matrix.dotnet }})
       run: >- 
-        dotnet pack -p:PackageVersion=${{ steps.info.outputs.build }}
+        dotnet pack -p:PackageVersion=${{ steps.info.outputs.build }} -p:Copyright=${{ steps.info.outputs.copyright }}
         --include-symbols 
         --no-restore 
         --no-build 
