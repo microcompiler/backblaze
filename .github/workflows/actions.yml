@@ -54,7 +54,7 @@ jobs:
     
     - name: Build dotnet core (${{ matrix.dotnet }})
       run: >-
-        dotnet build -p:Version=${{ steps.info.outputs.build }} -p:Copyright=${{ steps.info.outputs.copyright }}
+        dotnet build -p:Version="${{ steps.info.outputs.build }}" -p:Copyright="${{ steps.info.outputs.copyright }}"
         --no-restore
         --verbosity ${VERBOSITY}
         --configuration ${CONFIGURATION} 
@@ -74,7 +74,7 @@ jobs:
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
       run: >- 
-        dotnet pack -p:PackageVersion=${{ steps.info.outputs.build }}
+        dotnet pack -p:PackageVersion="${{ steps.info.outputs.build }}"
         --include-symbols 
         --no-restore 
         --no-build 
