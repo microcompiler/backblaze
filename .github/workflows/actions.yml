@@ -48,6 +48,7 @@ jobs:
         echo "##[set-output name=version;]$(echo 1.0.0.$(date +%Y%m%d%H%M%S))"
         echo "##[set-output name=head;]$(echo $(git rev-list --count HEAD))"
         echo "##[set-output name=commits;]$(echo $(git rev-list --count HEAD))"
+        echo "##[set-output name=build;]$(echo 1.0.0-build-$(git rev-list --count HEAD))"
 
       id: info
     
@@ -61,14 +62,14 @@ jobs:
         echo version=${{ steps.info.outputs.version }}
         echo head=${{ steps.info.outputs.head }}
         echo commits=${{ steps.info.outputs.commits }}
+        echo commits=${{ steps.info.outputs.build }}
     
     - name: Restore dotnet core (${{ matrix.dotnet }})
       run: dotnet restore --verbosity ${VERBOSITY}
     
     - name: Build dotnet core (${{ matrix.dotnet }})
       run: >-
-        dotnet build
-        --version-suffix build-${{ steps.info.outputs.commits }}
+        dotnet build -p:Version=${{ steps.info.outputs.build }}
         --no-restore
         --verbosity ${VERBOSITY}
         --configuration ${CONFIGURATION} 
@@ -88,7 +89,7 @@ jobs:
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
       run: >- 
-        dotnet pack
+        dotnet pack -p:Version=${{ steps.info.outputs.build }} -p:PackageVersion=v${{ steps.info.outputs.build }}
         --include-symbols 
         --no-restore 
         --no-build 
