@@ -44,8 +44,9 @@ jobs:
         echo "##[set-output name=commit;]$(echo ${GITHUB_SHA:0:7})"
         echo "##[set-output name=date;]$(echo $(date -u --iso-8601=seconds))"
         echo "##[set-output name=date_version;]$(echo $(date -u +%Y%m%d.%H%M%S))"
-        echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Sevenate)"
-        echo "##[set-output name=suffix;]$(echo -pre-release.$(date +%Y%m%d%H%M%S))"
+        echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved."
+        echo "##[set-output name=version;]$(echo 1.0.0.$(date +%Y%m%d%H%M%S))"
+        echo "##[set-output name=head;]$(echo $(git rev-list --count HEAD))"
       id: info
     
     - name: Print variables
@@ -55,15 +56,15 @@ jobs:
         echo date=${{ steps.info.outputs.date }}
         echo date_version=${{ steps.info.outputs.date_version }}
         echo copyright=${{ steps.info.outputs.copyright }}
-        echo suffix=${{ steps.info.outputs.suffix }}
+        echo version=${{ steps.info.outputs.version }}
+        echo head=${{ steps.info.outputs.head }}
     
     - name: Restore dotnet core (${{ matrix.dotnet }})
       run: dotnet restore --verbosity ${VERBOSITY}
     
     - name: Build dotnet core (${{ matrix.dotnet }})
       run: >-
-        dotnet build
-        --version-suffix ${{ steps.info.outputs.suffix }}
+        dotnet build -p:Version==${{ steps.info.outputs.version }}
         --no-restore
         --verbosity ${VERBOSITY}
         --configuration ${CONFIGURATION} 
@@ -83,8 +84,7 @@ jobs:
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
       run: >- 
-        dotnet pack
-        --version-suffix ${{ steps.info.outputs.suffix }}
+        dotnet pack -p:Version==${{ steps.info.outputs.version }}
         --include-symbols 
         --no-restore 
         --no-build 
