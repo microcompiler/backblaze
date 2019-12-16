@@ -87,10 +87,10 @@ jobs:
 
 #    - name: Publish package to github
 #      run: |
-#        nuget sources Add -Name GitHub -Source "https://nuget.pkg.github.com/xxred/index.json" -UserName microcompiler -Password ${{secrets.GITHUB_TOKEN}}
-#        nuget push artifacts/*.nupkg -Source GitHub
+#      nuget source Add -Name "GitHub" -Source "https://nuget.pkg.github.com/microcompiler/index.json" -UserName microcompiler -Password ${{secrets.GITHUB_TOKEN}}
+#      nuget push artifacts/*.nupkg -Source "GitHub"
 
 #    - name: Publish package to nuget
 #      run: |
-#        nuget sources Add -Name NuGet -Source "https://int.nugettest.org"
-#        nuget push artifacts/*.*nupkg -Source NuGet
+#        nuget sources Add -Name "NuGet" -Source "https://int.nugettest.org"
+#        nuget push artifacts/*.*nupkg -Source "NuGet"

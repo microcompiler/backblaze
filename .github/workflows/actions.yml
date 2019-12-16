@@ -45,7 +45,7 @@ jobs:
         echo "##[set-output name=date;]$(echo $(date -u --iso-8601=seconds))"
         echo "##[set-output name=date_version;]$(echo $(date -u +%Y%m%d.%H%M%S))"
         echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Sevenate)"
-        echo "##[set-output name=suffix;]$(echo build+$(date +%Y%m%d%H%M%S))"
+        echo "##[set-output name=suffix;]$(echo -pre-release.$(date +%Y%m%d%H%M%S))"
       id: info
     
     - name: Print variables
