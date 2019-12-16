@@ -64,7 +64,7 @@ jobs:
     
     - name: Build dotnet core (${{ matrix.dotnet }})
       run: >-
-        dotnet build -p:Version==${{ steps.info.outputs.version }}
+        dotnet build -p:Version==${{ steps.info.outputs.head }}
         --no-restore
         --verbosity ${VERBOSITY}
         --configuration ${CONFIGURATION} 
@@ -84,7 +84,7 @@ jobs:
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
       run: >- 
-        dotnet pack -p:Version==${{ steps.info.outputs.version }}
+        dotnet pack -p:Version==${{ steps.info.outputs.head }}
         --include-symbols 
         --no-restore 
         --no-build 
