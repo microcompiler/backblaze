@@ -44,7 +44,7 @@ jobs:
         echo "##[set-output name=commit;]$(echo ${GITHUB_SHA:0:7})"
         echo "##[set-output name=date;]$(echo $(date -u --iso-8601=seconds))"
         echo "##[set-output name=date_version;]$(echo $(date -u +%Y%m%d.%H%M%S))"
-        echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved."
+        echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)"
         echo "##[set-output name=version;]$(echo 1.0.0.$(date +%Y%m%d%H%M%S))"
         echo "##[set-output name=head;]$(echo $(git rev-list --count HEAD))"
       id: info
