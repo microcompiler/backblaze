@@ -29,7 +29,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
-    
+
+    - name: Extract build and copyright information into variables
+      id: info
+      run: |
+        echo "##[set-output name=build;]$(echo 1.0.0-beta.$(git rev-list --count HEAD))"
+        echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)"
+
+    - name: Show build information
+      run: |
+        echo build=${{ steps.info.outputs.build }}
+        echo copyright=${{ steps.info.outputs.copyright }}
+
     - name: Setup dotnet core (${{ matrix.dotnet }})
       uses: actions/setup-dotnet@v1
       with:
@@ -37,39 +48,13 @@ jobs:
       
     - name: Display dotnet core (${{ matrix.dotnet }})
       run: dotnet --info
-
-    - name: Extract branch name, short SHA, date etc. into variables
-      run: |
-        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        echo "##[set-output name=commit;]$(echo ${GITHUB_SHA:0:7})"
-        echo "##[set-output name=date;]$(echo $(date -u --iso-8601=seconds))"
-        echo "##[set-output name=date_version;]$(echo $(date -u +%Y%m%d.%H%M%S))"
-        echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)"
-        echo "##[set-output name=version;]$(echo 1.0.0.$(date +%Y%m%d%H%M%S))"
-        echo "##[set-output name=head;]$(echo $(git rev-list --count HEAD))"
-        echo "##[set-output name=commits;]$(echo $(git rev-list --count HEAD))"
-        echo "##[set-output name=build;]$(echo 1.0.0-prerelease.$(git rev-list --count HEAD))"
-
-      id: info
-    
-    - name: Print variables
-      run: |
-        echo branch=${{ steps.info.outputs.branch }}
-        echo commit=${{ steps.info.outputs.commit }}
-        echo date=${{ steps.info.outputs.date }}
-        echo date_version=${{ steps.info.outputs.date_version }}
-        echo copyright=${{ steps.info.outputs.copyright }}
-        echo version=${{ steps.info.outputs.version }}
-        echo head=${{ steps.info.outputs.head }}
-        echo commits=${{ steps.info.outputs.commits }}
-        echo commits=${{ steps.info.outputs.build }}
     
     - name: Restore dotnet core (${{ matrix.dotnet }})
       run: dotnet restore --verbosity ${VERBOSITY}
     
     - name: Build dotnet core (${{ matrix.dotnet }})
       run: >-
-        dotnet build -p:Version=${{ steps.info.outputs.build }}
+        dotnet build -p:Version=${{ steps.info.outputs.build }} -p:Copyright=${{ steps.info.outputs.copyright }}
         --no-restore
         --verbosity ${VERBOSITY}
         --configuration ${CONFIGURATION} 
