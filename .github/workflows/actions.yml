@@ -89,7 +89,7 @@ jobs:
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
       run: >- 
-        dotnet pack 
+        dotnet pack -p:PackageVersion=${{ steps.info.outputs.build }}
         --include-symbols 
         --no-restore 
         --no-build 
