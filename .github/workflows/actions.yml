@@ -48,7 +48,7 @@ jobs:
         echo "##[set-output name=version;]$(echo 1.0.0.$(date +%Y%m%d%H%M%S))"
         echo "##[set-output name=head;]$(echo $(git rev-list --count HEAD))"
         echo "##[set-output name=commits;]$(echo $(git rev-list --count HEAD))"
-        echo "##[set-output name=build;]$(echo 1.0.0-build-$(git rev-list --count HEAD))"
+        echo "##[set-output name=build;]$(echo 1.0.0-prerelease.$(git rev-list --count HEAD))"
 
       id: info
     
@@ -89,7 +89,7 @@ jobs:
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
       run: >- 
-        dotnet pack -p:Version=${{ steps.info.outputs.build }} -p:PackageVersion=${{ steps.info.outputs.build }}
+        dotnet pack 
         --include-symbols 
         --no-restore 
         --no-build 
