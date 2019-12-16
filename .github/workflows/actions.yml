@@ -47,6 +47,7 @@ jobs:
         echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)"
         echo "##[set-output name=version;]$(echo 1.0.0.$(date +%Y%m%d%H%M%S))"
         echo "##[set-output name=head;]$(echo $(git rev-list --count HEAD))"
+        echo "##[set-output name=commits;]$(echo 1.0.0.$(git rev-list --count HEAD))"
       id: info
     
     - name: Print variables
@@ -58,13 +59,14 @@ jobs:
         echo copyright=${{ steps.info.outputs.copyright }}
         echo version=${{ steps.info.outputs.version }}
         echo head=${{ steps.info.outputs.head }}
+        echo commits=${{ steps.info.outputs.commits }}
     
     - name: Restore dotnet core (${{ matrix.dotnet }})
       run: dotnet restore --verbosity ${VERBOSITY}
     
     - name: Build dotnet core (${{ matrix.dotnet }})
       run: >-
-        dotnet build -p:Version==${{ steps.info.outputs.head }}
+        dotnet build -p:Version=${{ steps.info.outputs.commits }}
         --no-restore
         --verbosity ${VERBOSITY}
         --configuration ${CONFIGURATION} 
@@ -84,7 +86,8 @@ jobs:
         
     - name: Pack dotnet core (${{ matrix.dotnet }})
       run: >- 
-        dotnet pack -p:Version==${{ steps.info.outputs.head }}
+        dotnet pack -p:Version=${{ steps.info.outputs.commits }}
+        --version-suffix "build"
         --include-symbols 
         --no-restore 
         --no-build 
