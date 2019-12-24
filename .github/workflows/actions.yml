@@ -66,7 +66,7 @@ jobs:
         --no-build 
         --verbosity ${VERBOSITY} 
         --configuration ${CONFIGURATION} 
-        --results-directory artifacts 
+        --results-directory .builds/artifacts 
         --logger:trx
       env:
         Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}

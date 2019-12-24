@@ -51,4 +51,10 @@
     <ProjectReference Include="..\..\src\Agent\Backblaze.Agent.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
