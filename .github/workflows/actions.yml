@@ -33,7 +33,7 @@ jobs:
     - name: Extract build and copyright information into variables
       id: info
       run: |
-        echo "##[set-output name=build;]$(echo 1.0.0-beta.$(git rev-list --count HEAD))"
+        echo "##[set-output name=build;]$(echo 1.0.0-pre.build.$(git rev-list --count HEAD))"
         echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)"
 
     - name: Show build information
