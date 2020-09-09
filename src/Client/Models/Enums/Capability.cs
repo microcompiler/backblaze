@@ -24,6 +24,11 @@
         /// Allows the client to list the buckets in the account.
         /// </summary>
         ListBuckets,
+        
+        /// <summary>
+        /// Allows the client to read bucket information
+        /// </summary>
+        ReadBuckets,
 
         /// <summary>
         /// Allows the client to create new buckets in the account and update the bucket type, bucket info, and lifecycle rules.
