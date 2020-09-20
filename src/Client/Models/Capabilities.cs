@@ -33,6 +33,7 @@ namespace Bytewizer.Backblaze.Models
                 Capability.WriteKeys,
                 Capability.DeleteKeys,
                 Capability.ListBuckets,
+                Capability.ReadBuckets,
                 Capability.WriteBuckets,
                 Capability.DeleteBuckets,
                 Capability.ListFiles,
@@ -52,6 +53,7 @@ namespace Bytewizer.Backblaze.Models
             {
                 Capability.ListKeys,
                 Capability.ListBuckets,
+                Capability.ReadBuckets,
                 Capability.ListFiles,
                 Capability.ReadFiles,
             };
@@ -65,6 +67,7 @@ namespace Bytewizer.Backblaze.Models
             return new Capabilities
             {
                 Capability.ListBuckets,
+                Capability.ReadBuckets,
                 Capability.ListFiles,
                 Capability.ReadFiles,
                 Capability.ShareFiles,
