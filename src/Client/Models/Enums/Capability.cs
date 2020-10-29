@@ -1,4 +1,4 @@
-﻿namespace Bytewizer.Backblaze.Models
+namespace Bytewizer.Backblaze.Models
 {
     /// <summary>
     /// Specifies capabilities associated with an appication key.
@@ -41,6 +41,24 @@
         DeleteBuckets,
 
         /// <summary>
+        /// Lets clients see whether a bucket has File Lock enabled.
+        /// Also allows clients to see the default lock mode and period (if configured) on a bucket that has File Lock enabled.
+        /// </summary>
+        ReadBucketRetentions,
+
+        /// <summary>
+        /// Lets clients create a bucket that has File Lock enabled.
+        /// Also allows clients to update the default lock mode and period on a bucket that has File Lock enabled.
+        /// </summary>
+        WriteBucketRetentions,
+
+        /// <summary>
+        /// Lets the client list the names and IDs of all buckets in the account, even with application keys that are restricted to a bucket.
+        /// There are not currently any APIs that list just bucket names and IDs.
+        /// </summary>
+        ListAllBucketNames,
+
+        /// <summary>
         /// Allows the client to list files and their metadata.
         /// </summary>
         ListFiles,
@@ -63,6 +81,32 @@
         /// <summary>
         /// Allows client to delete files.
         /// </summary>
-        DeleteFiles
+        DeleteFiles,
+
+        /// <summary>
+        /// Lets clients update the File Lock settings (mode and expiration) on a file.
+        /// These files must be located in a bucket that has File Lock enabled.
+        /// </summary>
+        WriteFileRetentions,
+        /// <summary>
+        /// Lets clients see the File Lock settings (mode and expiration) on a file.
+        /// These files must be located in a bucket that has File Lock enabled.
+        /// </summary>
+        ReadFileRetentions,
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        ReadFileLegalHolds,
+        /// <summary>
+        /// 
+        /// </summary>
+        WriteFileLegalHolds,
+
+        /// <summary>
+        /// Lets clients delete governance mode-locked files. Also allows governance mode expiration to be shortened and to switch governance mode to compliance mode.
+        /// Used in these APIs:
+        /// </summary>
+        BypassGovernance
     }
 }
