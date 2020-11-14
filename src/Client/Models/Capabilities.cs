@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -34,13 +34,21 @@ namespace Bytewizer.Backblaze.Models
                 Capability.DeleteKeys,
                 Capability.ListBuckets,
                 Capability.ReadBuckets,
+                Capability.ListAllBucketNames,
+                Capability.ReadBucketRetentions,
+                Capability.WriteBucketRetentions,
                 Capability.WriteBuckets,
                 Capability.DeleteBuckets,
                 Capability.ListFiles,
                 Capability.ReadFiles,
                 Capability.ShareFiles,
                 Capability.WriteFiles,
-                Capability.DeleteFiles 
+                Capability.DeleteFiles,
+                Capability.WriteFileRetentions,
+                Capability.ReadFileRetentions,
+                Capability.ReadFileLegalHolds,
+                Capability.WriteFileLegalHolds,
+                Capability.BypassGovernance
             };
         }
 
@@ -54,8 +62,12 @@ namespace Bytewizer.Backblaze.Models
                 Capability.ListKeys,
                 Capability.ListBuckets,
                 Capability.ReadBuckets,
+                Capability.ListAllBucketNames,
+                Capability.ReadBucketRetentions,
                 Capability.ListFiles,
                 Capability.ReadFiles,
+                Capability.ReadFileRetentions,
+                Capability.ReadFileLegalHolds,
             };
         }
 
@@ -73,6 +85,9 @@ namespace Bytewizer.Backblaze.Models
                 Capability.ShareFiles,
                 Capability.WriteFiles,
                 Capability.DeleteFiles,
+                Capability.ListAllBucketNames,
+                Capability.ReadBucketRetentions,
+                Capability.WriteBucketRetentions,
             };
         }
 
