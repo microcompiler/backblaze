@@ -252,6 +252,10 @@ The following test mode options are available to verify that your code correctly
 | expire_some_account_authorization_tokens | Random account authorization tokens expire. |
 | force_cap_exceeded |Cap exceeded conditions are forced. |
 
+## Integration Tests
+
+You will need an **key_id** and an **application_key** to configure Backblaze Test Agent [settings.json](https://github.com/microcompiler/backblaze/blob/master/test/Integration/settings.json) file.
+
 ## Disclaimer
 
 All source, documentation, instructions and products of this project are provided as-is without warranty. No liability is accepted for any damages, data loss or costs incurred by its use.

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
@@ -12,7 +12,7 @@ namespace Backblaze.Tests.Integration
 {
     public class BucketsTest : BaseFixture
     {
-        private static readonly string _bucketName = $"{Guid.NewGuid().ToString()}";
+        private static readonly string _bucketName = $"{Guid.NewGuid()}";
         private static string _bucketId;
 
         public BucketsTest(StorageClientFixture fixture) 

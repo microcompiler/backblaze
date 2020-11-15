@@ -33,7 +33,6 @@ namespace Bytewizer.Backblaze.Models
                 Capability.WriteKeys,
                 Capability.DeleteKeys,
                 Capability.ListBuckets,
-                Capability.ReadBuckets,
                 Capability.ListAllBucketNames,
                 Capability.ReadBucketRetentions,
                 Capability.WriteBucketRetentions,
@@ -46,8 +45,6 @@ namespace Bytewizer.Backblaze.Models
                 Capability.DeleteFiles,
                 Capability.WriteFileRetentions,
                 Capability.ReadFileRetentions,
-                Capability.ReadFileLegalHolds,
-                Capability.WriteFileLegalHolds,
                 Capability.BypassGovernance
             };
         }
@@ -60,14 +57,12 @@ namespace Bytewizer.Backblaze.Models
             return new Capabilities
             {
                 Capability.ListKeys,
-                Capability.ListBuckets,
-                Capability.ReadBuckets,
                 Capability.ListAllBucketNames,
-                Capability.ReadBucketRetentions,
+                Capability.ListBuckets,
                 Capability.ListFiles,
                 Capability.ReadFiles,
+                Capability.ReadBucketRetentions,
                 Capability.ReadFileRetentions,
-                Capability.ReadFileLegalHolds,
             };
         }
 
@@ -78,14 +73,13 @@ namespace Bytewizer.Backblaze.Models
         {
             return new Capabilities
             {
+                Capability.ListAllBucketNames,
                 Capability.ListBuckets,
-                Capability.ReadBuckets,
                 Capability.ListFiles,
                 Capability.ReadFiles,
                 Capability.ShareFiles,
                 Capability.WriteFiles,
                 Capability.DeleteFiles,
-                Capability.ListAllBucketNames,
                 Capability.ReadBucketRetentions,
                 Capability.WriteBucketRetentions,
             };

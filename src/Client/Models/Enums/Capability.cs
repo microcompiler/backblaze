@@ -21,14 +21,20 @@ namespace Bytewizer.Backblaze.Models
         DeleteKeys,
 
         /// <summary>
+        /// Allows the client to read bucket information.
+        /// </summary>
+        ReadBuckets,
+
+        /// <summary>
         /// Allows the client to list the buckets in the account.
         /// </summary>
         ListBuckets,
-        
+
         /// <summary>
-        /// Allows the client to read bucket information
+        /// Lets the client list the names and IDs of all buckets in the account, even with application keys that are restricted to a bucket.
+        /// There are not currently any APIs that list just bucket names and IDs.
         /// </summary>
-        ReadBuckets,
+        ListAllBucketNames,
 
         /// <summary>
         /// Allows the client to create new buckets in the account and update the bucket type, bucket info, and lifecycle rules.
@@ -51,12 +57,6 @@ namespace Bytewizer.Backblaze.Models
         /// Also allows clients to update the default lock mode and period on a bucket that has File Lock enabled.
         /// </summary>
         WriteBucketRetentions,
-
-        /// <summary>
-        /// Lets the client list the names and IDs of all buckets in the account, even with application keys that are restricted to a bucket.
-        /// There are not currently any APIs that list just bucket names and IDs.
-        /// </summary>
-        ListAllBucketNames,
 
         /// <summary>
         /// Allows the client to list files and their metadata.
@@ -84,29 +84,31 @@ namespace Bytewizer.Backblaze.Models
         DeleteFiles,
 
         /// <summary>
-        /// Lets clients update the File Lock settings (mode and expiration) on a file.
-        /// These files must be located in a bucket that has File Lock enabled.
-        /// </summary>
-        WriteFileRetentions,
-        /// <summary>
         /// Lets clients see the File Lock settings (mode and expiration) on a file.
         /// These files must be located in a bucket that has File Lock enabled.
         /// </summary>
         ReadFileRetentions,
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        ReadFileLegalHolds,
-        /// <summary>
-        /// 
-        /// </summary>
-        WriteFileLegalHolds,
 
+        /// <summary>
+        /// Lets clients update the File Lock settings (mode and expiration) on a file.
+        /// These files must be located in a bucket that has File Lock enabled.
+        /// </summary>
+        WriteFileRetentions,
+        
         /// <summary>
         /// Lets clients delete governance mode-locked files. Also allows governance mode expiration to be shortened and to switch governance mode to compliance mode.
         /// Used in these APIs:
         /// </summary>
-        BypassGovernance
+        BypassGovernance,
+
+        /// <summary>
+        /// Lets client read file legal holds.
+        /// </summary>
+        ReadFileLegalHolds,
+
+        /// <summary>
+        /// Lets client write file legal holds.
+        /// </summary>
+        WriteFileLegalHolds,
     }
 }
