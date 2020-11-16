@@ -2,8 +2,7 @@ name: Actions CI
 
 on:
   push:
-    branches:
-    - master
+    branches: [ master, main ]
     paths: 
       - '**'
       - '!.editorconfig'
@@ -11,20 +10,19 @@ on:
       - '!.gitignore'
       - '!*.md'
       - '!LICENSE'
-
 env:
+  VERBOSITY: 'Minimal'
+  CONFIGURATION: 'Release'
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  CONFIGURATION: 'Release'
-  VERBOSITY:  'Minimal'
 
 jobs: 
   Build:
-    name: Build on ${{ matrix.dotnet }}    
+    name: Build on .NET Core ${{ matrix.dotnet }}    
     runs-on: [ubuntu-latest]
     strategy:
       matrix:
-        dotnet: ['3.1.100']
+        dotnet: ['3.1.402']
     
     steps:
     - name: Checkout
@@ -33,7 +31,7 @@ jobs:
     - name: Extract build and copyright information into variables
       id: info
       run: |
-        echo "##[set-output name=build;]$(echo prebuild.$(git rev-list --count HEAD))"
+        echo "##[set-output name=build;]$(echo $(git rev-list --count HEAD))"
         echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)"
 
     - name: Show build information
@@ -41,51 +39,36 @@ jobs:
         echo build=${{ steps.info.outputs.build }}
         echo copyright=${{ steps.info.outputs.copyright }}
 
-    - name: Setup dotnet (${{ matrix.dotnet }})
+    - name: Setup .NET Core 
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
       
-    - name: Display dotnet (${{ matrix.dotnet }})
+    - name: Show .NET Core information
       run: dotnet --info
-    
-    - name: Restore dotnet (${{ matrix.dotnet }})
-      run: dotnet restore --verbosity ${VERBOSITY}
-    
-    - name: Build dotnet (${{ matrix.dotnet }})
+            
+    - name: Build and test project
       run: >-
-        dotnet build -p:Copyright="${{ steps.info.outputs.copyright }}"
-        --version-suffix ${{ steps.info.outputs.build }}
-        --no-restore
-        --verbosity ${VERBOSITY}
-        --configuration ${CONFIGURATION} 
-      
-    - name: Test dotnet (${{ matrix.dotnet }})
-      run: >-
-        dotnet test
-        --no-restore 
-        --no-build 
-        --verbosity ${VERBOSITY} 
+        dotnet test -p:BuildNumber="${{ steps.info.outputs.build }}" -p:Copyright="${{ steps.info.outputs.copyright }}"
+        --verbosity ${VERBOSITY}  
         --configuration ${CONFIGURATION} 
         --results-directory .builds/artifacts 
         --logger:trx
       env:
         Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
-        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}
-        
-    - name: Pack dotnet (${{ matrix.dotnet }})
+        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}   
+
+    - name: Build and pack project
       run: >- 
-        dotnet pack -p:Copyright="${{ steps.info.outputs.copyright }}"
-        --version-suffix ${{ steps.info.outputs.build }}
-        --include-symbols 
-        --no-restore 
-        --no-build 
-        --verbosity ${VERBOSITY} 
-        --configuration ${CONFIGURATION} 
+        dotnet pack -p:BuildNumber="${{ steps.info.outputs.build }}" -p:Copyright="${{ steps.info.outputs.copyright }}"
+        --version-suffix prebuild.${{ steps.info.outputs.build }}
+        --verbosity ${VERBOSITY}
+        --configuration ${CONFIGURATION}
+        --include-symbols
         --output .builds/artifacts
-    
+         
     - name: Upload build artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: Build
+        name: Build Package
         path: .builds/artifacts

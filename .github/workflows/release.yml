@@ -1,27 +1,38 @@
-name: Publish Release
+name: Release CI
 
 on:
   release:
       types: [published]
 
 env:
+  VERBOSITY: 'Minimal'
+  CONFIGURATION: 'Release'
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  CONFIGURATION: "Release"
-  VERBOSITY:  "Minimal" 
-  
-jobs:
-  Release:
-    name: Release on ${{ matrix.os }}
+
+jobs: 
+  Build:
+    name: Release Build on .NET Core ${{ matrix.dotnet }}
     runs-on: [ubuntu-latest]
     strategy:
       matrix:
-        dotnet: ['3.1.100']
-
+        dotnet: ['3.1.402']
+    
     steps:
     - name: Checkout
       uses: actions/checkout@v1
-      
+
+    - name: Extract build and copyright information into variables
+      id: info
+      run: |
+        echo "##[set-output name=build;]$(echo $(git rev-list --count HEAD))"
+        echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)"
+
+    - name: Show build information
+      run: |
+        echo build=${{ steps.info.outputs.build }}
+        echo copyright=${{ steps.info.outputs.copyright }}
+
     - name: Show release event information
       run: |
         echo "release.name        = ${{ github.event.release.name }}"
@@ -31,41 +42,39 @@ jobs:
         echo "release.tag_name    = ${{ github.event.release.tag_name }}"
         echo "release.draft       = ${{ github.event.release.draft }}"
         echo "release.prerelease  = ${{ github.event.release.prerelease }}"
-        
-    - name: Setup dotnet core (${{ matrix.dotnet }})
+
+    - name: Setup .NET Core 
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
-    
-    - name: Display dotnet core (${{ matrix.dotnet }})
-      run: dotnet --info
-
-    - name: Restore dotnet core (${{ matrix.dotnet }})
-      run: dotnet restore --verbosity ${VERBOSITY}
-    
-    - name: Build dotnet core (${{ matrix.dotnet }})
-      run: >-
-        dotnet build -p:Version=${GITHUB_REF##*/v} 
-        --no-restore
-        --verbosity ${VERBOSITY}
-        --configuration ${CONFIGURATION} 
-        
-    - name: Pack dotnet core (${{ matrix.dotnet }})
-      run: >- 
-        dotnet pack -p:PackageVersion=${GITHUB_REF##*/v}
-        --include-symbols 
-        --no-restore 
-        --no-build 
-        --verbosity ${VERBOSITY} 
-        --configuration ${CONFIGURATION} 
-        --output .builds/artifacts
       
+    - name: Show .NET Core information
+      run: dotnet --info
+            
+    - name: Build and test project
+      run: >-
+        dotnet test -p:Version=${GITHUB_REF##*/v} -p:BuildNumber="${{ steps.info.outputs.build }}" -p:Copyright="${{ steps.info.outputs.copyright }}"
+        --verbosity ${VERBOSITY}  
+        --configuration ${CONFIGURATION} 
+
+      env:
+        Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
+        Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}   
+
+    - name: Build and release project
+      run: >- 
+        dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:BuildNumber="${{ steps.info.outputs.build }}" -p:Copyright="${{ steps.info.outputs.copyright }}"
+        --verbosity ${VERBOSITY}
+        --configuration ${CONFIGURATION}
+        --include-symbols
+        --output .builds/artifacts
+         
     - name: Upload release artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: Release
+        name: Release Package
         path: .builds/artifacts
-    
+
     - name: Create release asset
       run: zip .builds/packages.zip -j .builds/artifacts/*.*nupkg
       
@@ -76,21 +85,15 @@ jobs:
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: .builds/packages.zip
-        asset_name: Packages.zip
+        asset_name: Nuget.zip
         asset_content_type: application/zip
     
-    - name: Setup nuget
-      uses: nuget/setup-nuget@v1
-      with:
-        nuget-api-key: ${{ secrets.NUGET_API_KEY }}
-        nuget-version: 'latest' 
-
-#    - name: Publish package to github
-#      run: |
-#      nuget source Add -Name "GitHub" -Source "https://nuget.pkg.github.com/microcompiler/index.json" -UserName microcompiler -Password ${{secrets.GITHUB_TOKEN}}
-#      nuget push artifacts/*.nupkg -Source "GitHub"
+    - name: Publish package to github.com
+      run: |      
+        dotnet nuget add source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -n github -u microcompiler -p ${{secrets.PACKAGE_AUTH_TOKEN}} --store-password-in-clear-text
+        dotnet nuget push .builds/artifacts/*.*nupkg --source "github" --skip-duplicate
 
 #    - name: Publish package to nuget
 #      run: |
 #        nuget sources Add -Name "NuGet" -Source "https://int.nugettest.org"
-#        nuget push artifacts/*.*nupkg -Source "NuGet"
+#        nuget push .builds/*.*nupkg -Source "NuGet"

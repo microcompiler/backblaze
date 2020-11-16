@@ -3,26 +3,37 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageId>Backblaze.Agent</PackageId>
     <Authors>Microcompiler</Authors>
     <Company>Bytewizer Inc.</Company>
-    <Product>Backblaze B2 Client</Product>
+    <Product>Backblaze B2 Cloud Storage</Product>
     <LangVersion>7.1</LangVersion>
     <RootNamespace>Bytewizer.Backblaze</RootNamespace>
     <VersionPrefix>1.0.0</VersionPrefix>
+    <Version Condition=" '$(Version)' == '' and '$(VersionSuffix)' != '' ">$(VersionPrefix)-$(VersionSuffix)</Version>
+    <Version Condition=" '$(Version)' == '' ">$(VersionPrefix)</Version>
+    <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
+    <AssemblyVersion>$(VersionPrefix).$(BuildNumber)</AssemblyVersion>
+    <AssemblyName>Backblaze.Agent</AssemblyName>
+    <FileVersion>$(VersionPrefix).$(BuildNumber)</FileVersion>
+    <PackageId>$(AssemblyName)</PackageId>
     <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage.</Description>
     <Copyright>(c) 0000 Bytewizer.  All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
     <RepositoryUrl>https://github.com/microcompiler/backblaze</RepositoryUrl>
     <PackageTags>backblaze, b2, cloud-storage, api, csharp, storage-pod</PackageTags>
-    <AssemblyName>Backblaze.Agent</AssemblyName>
     <RepositoryType></RepositoryType>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>logo.png</PackageIcon>
     <NoWarn>NU5105</NoWarn>
-    <Version>0.9.3</Version>
+  </PropertyGroup>
+
+  <!-- Github Properties -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

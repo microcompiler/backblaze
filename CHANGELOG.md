@@ -1,10 +1,14 @@
 # Change Log
 
-## 0.9.3
+## 0.9.4 - November 15, 2020
+
+*  Added 'listAllBucketNames' application key capability name
+*  Allow project to load with any version of dotnet 3.1
+
+## 0.9.3 - January 25, 2020
+
 *   Added suport for github actions for both CI and release builds
 *   Added BucketFilter enum type to bucket requests
-*   Change log
-*   Change log again
 
 ## 0.9.2 - November 3, 2019
 
