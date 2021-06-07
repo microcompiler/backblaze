@@ -94,7 +94,7 @@ namespace Bytewizer.Backblaze.Models
         /// These files must be located in a bucket that has File Lock enabled.
         /// </summary>
         WriteFileRetentions,
-        
+
         /// <summary>
         /// Lets clients delete governance mode-locked files. Also allows governance mode expiration to be shortened and to switch governance mode to compliance mode.
         /// Used in these APIs:
@@ -110,5 +110,15 @@ namespace Bytewizer.Backblaze.Models
         /// Lets client write file legal holds.
         /// </summary>
         WriteFileLegalHolds,
+
+        /// <summary>
+        /// Permission to read default bucket encryption settings.
+        /// </summary>
+        ReadBucketEncryption,
+
+        /// <summary>
+        /// Permission to write default bucket encryption settings.
+        /// </summary>
+        WriteBucketEncryption,
     }
 }
