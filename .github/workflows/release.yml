@@ -92,4 +92,4 @@ jobs:
         
     - name: Publish package to nuget
       run: |
-        dotnet nuget push .builds/artifacts/**/*.nupkg -k ${{secrets.NUGET_API_KEY}} --skip-duplicate
+        dotnet nuget push .builds/artifacts/**/*.nupkg -s nuget.org -k ${{secrets.NUGET_API_KEY}} --skip-duplicate
