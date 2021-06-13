@@ -7,8 +7,9 @@ on:
 env:
   VERBOSITY: 'Minimal'
   CONFIGURATION: 'Release'
-  DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
 jobs: 
   Build:
@@ -27,12 +28,10 @@ jobs:
       run: |
         echo "##[set-output name=build;]$(echo $(git rev-list --count HEAD))"
         echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)"
-
     - name: Show build information
       run: |
         echo build=${{ steps.info.outputs.build }}
         echo copyright=${{ steps.info.outputs.copyright }}
-
     - name: Show release event information
       run: |
         echo "release.name        = ${{ github.event.release.name }}"
@@ -42,12 +41,11 @@ jobs:
         echo "release.tag_name    = ${{ github.event.release.tag_name }}"
         echo "release.draft       = ${{ github.event.release.draft }}"
         echo "release.prerelease  = ${{ github.event.release.prerelease }}"
-
     - name: Setup .NET Core 
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet }}
-      
+    
     - name: Show .NET Core information
       run: dotnet --info
             
@@ -56,7 +54,6 @@ jobs:
         dotnet test -p:Version=${GITHUB_REF##*/v} -p:BuildNumber="${{ steps.info.outputs.build }}" -p:Copyright="${{ steps.info.outputs.copyright }}"
         --verbosity ${VERBOSITY}  
         --configuration ${CONFIGURATION} 
-
       env:
         Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
         Agent__KeyId: ${{ secrets.AGENT_KEY_ID }}   
@@ -90,10 +87,10 @@ jobs:
     
     - name: Publish package to github.com
       run: |      
-        dotnet nuget add source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -n github -u microcompiler -p ${{secrets.PACKAGE_AUTH_TOKEN}} --store-password-in-clear-text
-        dotnet nuget push .builds/artifacts/*.*nupkg --source "github" --skip-duplicate
-
-#    - name: Publish package to nuget
-#      run: |
-#        nuget sources Add -Name "NuGet" -Source "https://int.nugettest.org"
-#        nuget push .builds/*.*nupkg -Source "NuGet"
+        dotnet nuget add source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -n github
+        dotnet nuget push .builds/artifacts/**/*.nupkg -s github -k ${{secrets.PACKAGE_API_KEY}} --skip-duplicate
+        
+    - name: Publish package to nuget
+      run: |
+        dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget 
+        dotnet nuget push .builds/artifacts/**/*.nupkg -s nuget -k ${{secrets.NUGET_API_KEY}} --skip-duplicate

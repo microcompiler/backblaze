@@ -20,7 +20,7 @@
     <AssemblyName>Backblaze.Agent</AssemblyName>
     <FileVersion>$(VersionPrefix).$(BuildNumber)</FileVersion>
     <PackageId>$(AssemblyName)</PackageId>
-    <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage.</Description>
+    <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage supporting dependency injection, caching and logging.</Description>
     <Copyright>(c) 0000 Bytewizer.  All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
     <RepositoryUrl>https://github.com/microcompiler/backblaze</RepositoryUrl>

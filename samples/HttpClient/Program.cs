@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -16,7 +16,7 @@ namespace Bytewizer.HttpClient.Sample
 
         private static BackblazeClient Client;
 
-        static async Task Main(string[] args)
+        static async Task Main()
         {
             try
             {

@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.0 - June 13, 2021
+*  Added 'ReadBucketEncryption' and 'WriteBucketEncryption' application key capability name
+
 ## 0.9.4 - November 15, 2020
 
 *  Added 'listAllBucketNames' application key capability name

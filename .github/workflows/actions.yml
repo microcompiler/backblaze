@@ -33,12 +33,10 @@ jobs:
       run: |
         echo "##[set-output name=build;]$(echo $(git rev-list --count HEAD))"
         echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)"
-
     - name: Show build information
       run: |
         echo build=${{ steps.info.outputs.build }}
         echo copyright=${{ steps.info.outputs.copyright }}
-
     - name: Setup .NET Core 
       uses: actions/setup-dotnet@v1
       with:
