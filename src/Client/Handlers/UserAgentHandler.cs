@@ -115,7 +115,7 @@ namespace Bytewizer.Backblaze.Handlers
                 .Where(x => x.AttributeType == type)
                 .Select(x => x.ConstructorArguments.FirstOrDefault())
                 .FirstOrDefault();
-            return attribute == null ? string.Empty : attribute.Value.ToString();
+            return attribute.Value?.ToString() ?? string.Empty;
         }
     }
 }
