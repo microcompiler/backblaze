@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using Microsoft.Extensions.Configuration;
 
@@ -67,13 +67,13 @@ namespace Microsoft.Extensions.DependencyInjection
             options.Validate();
             services.AddSingleton(options);
 
-            services.AddTransient<UserAgentHandler>();
+            //services.AddTransient<UserAgentHandler>();
             services.AddTransient<HttpErrorHandler>();
             services.AddHttpClient<IApiClient, ApiClient>(client =>
             {
                 client.Timeout = TimeSpan.FromSeconds(options.Timeout);
             })
-            .AddHttpMessageHandler<UserAgentHandler>()
+            //.AddHttpMessageHandler<UserAgentHandler>()
             .AddHttpMessageHandler<HttpErrorHandler>()
             .SetHandlerLifetime(TimeSpan.FromSeconds(options.HandlerLifetime));
 
