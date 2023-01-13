@@ -120,5 +120,15 @@ namespace Bytewizer.Backblaze.Models
         /// Permission to write default bucket encryption settings.
         /// </summary>
         WriteBucketEncryption,
+
+        /// <summary>
+        /// Permission to 
+        /// </summary>
+        ReadBucketReplications,
+
+        /// <summary>
+        /// Permission to 
+        /// </summary>
+        WriteBucketReplications
     }
 }
