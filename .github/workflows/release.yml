@@ -65,16 +65,7 @@ jobs:
         --configuration ${CONFIGURATION}
         --include-symbols
         --output .builds/artifacts
-         
-    - name: Upload release artifacts
-      uses: actions/upload-artifact@v1
-      with:
-        name: Release Package
-        path: .builds/artifacts
-
-    - name: Create release asset
-      run: zip .builds/packages.zip -j .builds/artifacts/*.*nupkg
-    
+             
     - name: Publish package to github.com
       run: |      
         dotnet nuget add source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -n github
