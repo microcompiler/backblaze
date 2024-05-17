@@ -186,7 +186,25 @@ namespace Bytewizer.Backblaze.Client
         Task<IApiResults<UploadFileResponse>> UploadAsync(string bucketId, string fileName, string localPath, IProgress<ICopyProgress> progress, CancellationToken cancel);
 
         /// <summary>
-        /// Downloads a file by bucket and file name from Backblaze B2 Cloud Storage. 
+        /// Uploads a file by bucket id and filename to Backblaze B2 Cloud Storage, with the file content and attributes supplied explicitly by the caller.
+        /// </summary>
+        /// <param name="bucketId">The bucket id you want to upload to.</param>
+        /// <param name="fileName">The name of the file to upload.</param>
+        /// <param name="content">A stream from which the content to upload for the file can be read.</param>
+        /// <param name="lastModified">The DateTime to register as the file's last-modified date/time.</param>
+        /// <param name="isReadOnly">True if the file should be marked read-only.</param>
+        /// <param name="isHidden">True if the file should be marked hidden.</param>
+        /// <param name="isArchive">True if the file should be marked for archiving.</param>
+        /// <param name="isCompressed">True if the file should be marked compressed.</param>
+        /// <param name="progress">A progress action which fires every time the write buffer is cycled.</param>
+        /// <param name="cancel">The cancellation token to cancel operation.</param>
+        /// <returns></returns>
+        Task<IApiResults<UploadFileResponse>> UploadAsync
+            (string bucketId, string fileName, Stream content, DateTime lastModified, bool isReadOnly, bool isHidden, bool isArchive, bool isCompressed,
+            IProgress<ICopyProgress> progress, CancellationToken cancel);
+
+        /// <summary>
+        /// Downloads a file by bucket and file name from Backblaze B2 Cloud Storage.
         /// </summary>
         /// <param name="bucketName">The name of the bucket to download from.</param>
         /// <param name="fileName">The name of the file to download.</param>

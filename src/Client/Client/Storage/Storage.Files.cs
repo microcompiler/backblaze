@@ -271,45 +271,56 @@ namespace Bytewizer.Backblaze.Client
         /// <exception cref="CapExceededExecption">Thrown when a cap is exceeded or an account in bad standing.</exception>
         /// <exception cref="InvalidHashException">Thrown when a checksum hash is not valid.</exception>
         /// <exception cref="ApiException">Thrown when an error occurs during client operation.</exception>
-        async Task<IApiResults<UploadFileResponse>> IStorageFiles.UploadAsync
+        Task<IApiResults<UploadFileResponse>> IStorageFiles.UploadAsync
             (string bucketId, string fileName, string localPath, IProgress<ICopyProgress> progress, CancellationToken cancel)
         {
             using (var content = File.OpenRead(localPath))
             {
-                var fileInfo = new Models.FileInfo();
-
-                // get last modified date
                 DateTime lastModified = File.GetLastWriteTime(localPath);
 
-                // check whether a file is read only
                 var isReadOnly = ((File.GetAttributes(localPath) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly);
-                fileInfo.Add("src_file_readonly", isReadOnly.ToString().ToLower());
-
-                // check whether a file is hidden
                 var isHidden = ((File.GetAttributes(localPath) & FileAttributes.Hidden) == FileAttributes.Hidden);
-                fileInfo.Add("src_file_hidden", isHidden.ToString().ToLower());
-
-                // check whether a file has archive attribute
                 var isArchive = ((File.GetAttributes(localPath) & FileAttributes.Archive) == FileAttributes.Archive);
-                fileInfo.Add("src_file_archive", isArchive.ToString().ToLower());
-
-                // check whether a file has compressed attribute
                 var isCompressed = ((File.GetAttributes(localPath) & FileAttributes.Compressed) == FileAttributes.Compressed);
-                fileInfo.Add("src_file_compressed", isCompressed.ToString().ToLower());
 
-                var request = new UploadFileByBucketIdRequest(bucketId, fileName) { LastModified = lastModified, FileInfo = fileInfo };
-                var results = await _client.UploadAsync(request, content, progress, cancel);
-                if (results.IsSuccessStatusCode)
-                {
-                    _logger.LogInformation($"Successfully uploaded '{localPath}' file to '{bucketId}' bucket id");
-                }
-                else
-                {
-                    _logger.LogError($"Failed uploading '{localPath}' file with error: {results.Error?.Message}");
-                }
-
-                return results;
+                return ((IStorageFiles)this).UploadAsync(
+                    bucketId,
+                    fileName,
+                    content,
+                    lastModified,
+                    isReadOnly,
+                    isHidden,
+                    isArchive,
+                    isCompressed,
+                    progress,
+                    cancel);
             }
+        }
+
+        async Task<IApiResults<UploadFileResponse>> IStorageFiles.UploadAsync
+            (string bucketId, string fileName, Stream content, DateTime lastModified, bool isReadOnly, bool isHidden, bool isArchive, bool isCompressed,
+            IProgress<ICopyProgress> progress, CancellationToken cancel)
+        {
+            var fileInfo = new Models.FileInfo();
+
+            fileInfo.Add("src_file_readonly", isReadOnly ? "true" : "false");
+            fileInfo.Add("src_file_hidden", isHidden ? "true" : "false");
+            fileInfo.Add("src_file_archive", isArchive ? "true" : "false");
+            fileInfo.Add("src_file_compressed", isCompressed ? "true" : "false");
+
+            var request = new UploadFileByBucketIdRequest(bucketId, fileName) { LastModified = lastModified, FileInfo = fileInfo };
+            var results = await _client.UploadAsync(request, content, progress, cancel);
+
+            if (results.IsSuccessStatusCode)
+            {
+                _logger.LogInformation($"Successfully uploaded in-memory file to '{bucketId}' bucket id with filename '{fileName}'");
+            }
+            else
+            {
+                _logger.LogError($"Failed uploading in-memory file '{fileName}' with error: {results.Error?.Message}");
+            }
+
+            return results;
         }
 
         /// <summary>
