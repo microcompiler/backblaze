@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Bytewizer.Backblaze.Models;
+using Bytewizer.Backblaze.Utility;
 
 namespace Bytewizer.Backblaze.Extensions
 {
@@ -37,17 +38,18 @@ namespace Bytewizer.Backblaze.Extensions
             int bytesRead;
 
             var totalTime = new System.Diagnostics.Stopwatch();
-            var singleTime = new System.Diagnostics.Stopwatch();
             totalTime.Start();
-            singleTime.Start();
+
+            var speedCalculator = new SpeedCalculator();
+
+            speedCalculator.AddSample(0);
 
             while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancel).ConfigureAwait(false)) != 0)
             {
                 await destination.WriteAsync(buffer, 0, bytesRead, cancel).ConfigureAwait(false);
                 totalBytesRead += bytesRead;
-                long singleTicks = Math.Max(1, singleTime.ElapsedTicks);
-                progressReport?.Report(new CopyProgress(totalTime.Elapsed, bytesRead * TimeSpan.TicksPerSecond / singleTicks, totalBytesRead, expectedTotalBytes));
-                singleTime.Restart();
+                speedCalculator.AddSample(totalBytesRead);
+                progressReport?.Report(new CopyProgress(totalTime.Elapsed, speedCalculator.CalculateBytesPerSecond(), totalBytesRead, expectedTotalBytes));
 
                 if (cancel.IsCancellationRequested) { break; }
             }

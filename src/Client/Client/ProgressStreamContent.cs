@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 
 using Bytewizer.Backblaze.Models;
+using Bytewizer.Backblaze.Utility;
 
 namespace Bytewizer.Backblaze.Client
 {
@@ -67,14 +68,16 @@ namespace Bytewizer.Backblaze.Client
             return Task.Run(() =>
             {
                 var totalTime = new System.Diagnostics.Stopwatch();
-                var singleTime = new System.Diagnostics.Stopwatch();
                 totalTime.Start();
-                singleTime.Start();
 
                 var buffer = new byte[_bufferSize];
                 long streamLength = _content.CanSeek ? _content.Length : 0;
                 long size = _expectedContentLength > 0 ? _expectedContentLength : streamLength;
                 long uploaded = 0;
+
+                var speedCalculator = new SpeedCalculator();
+
+                speedCalculator.AddSample(0);
 
                 while (true)
                 {
@@ -84,10 +87,9 @@ namespace Bytewizer.Backblaze.Client
 
                     stream.Write(buffer, 0, length);
 
-                    long singleElapsed = Math.Max(1, singleTime.ElapsedTicks);
-                    singleTime.Restart();
+                    speedCalculator.AddSample(uploaded);
 
-                    _progressReport?.Report(new CopyProgress(totalTime.Elapsed, length * TimeSpan.TicksPerSecond / singleElapsed, uploaded, size));
+                    _progressReport?.Report(new CopyProgress(totalTime.Elapsed, speedCalculator.CalculateBytesPerSecond(), uploaded, size));
                 }
             });
         }
