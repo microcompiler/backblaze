@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageId>DQD.Backblaze.Agent.Autofac</PackageId>
+    <Authors>logiclrd</Authors>
+    <Product>Backblaze B2 Cloud Storage</Product>
+    <LangVersion>7.1</LangVersion>
+    <RootNamespace>Bytewizer.Backblaze</RootNamespace>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <Version Condition=" '$(Version)' == '' and '$(VersionSuffix)' != '' ">$(VersionPrefix)-$(VersionSuffix)</Version>
+    <Version Condition=" '$(Version)' == '' ">$(VersionPrefix)</Version>
+    <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
+    <AssemblyVersion>$(VersionPrefix).$(BuildNumber)</AssemblyVersion>
+    <AssemblyName>DQD.Backblaze.Agent.Autofac</AssemblyName>
+    <FileVersion>$(VersionPrefix).$(BuildNumber)</FileVersion>
+    <PackageId>$(AssemblyName)</PackageId>
+    <Description>Autofac integration for Backblaze.Client.</Description>
+    <Copyright>(c) 0000 Delta Q Development.  All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/logiclrd/DQD.Backblaze</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/logiclrd/DQD.Backblaze</RepositoryUrl>
+    <PackageTags>backblaze, b2, cloud-storage, api, csharp, storage-pod</PackageTags>
+    <RepositoryType></RepositoryType>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <NoWarn>NU5105</NoWarn>
+  </PropertyGroup>
+
+  <!-- Github Properties -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.md" Link="LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\images\logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Client\Backblaze.Client.csproj" />
+  </ItemGroup>
+
+</Project>

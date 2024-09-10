@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Client", "src\Cli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Agent", "src\Agent\Backblaze.Agent.csproj", "{16C706DB-F611-4231-B061-F4B08DC8AAC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backblaze.Agent.Autofac", "src\Agent.Autofac\Backblaze.Agent.Autofac.csproj", "{FB6CB27C-5529-424D-8570-B69BA35C8FC1}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backblaze.Tests.Unit", "test\Unit\Backblaze.Tests.Unit.csproj", "{6B57FB13-7D72-40D2-AE16-650A7B4990EC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9A70FFC5-6F45-48F6-8165-185D39517638}"
@@ -22,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backblaze.Tests.Integration", "test\Integration\Backblaze.Tests.Integration.csproj", "{A49A8C77-70CC-4ED7-83AE-ADAC6A36D036}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6926CC64-2E92-4E58-BE15-6F9CA4EF16B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +41,10 @@ Global
 		{16C706DB-F611-4231-B061-F4B08DC8AAC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16C706DB-F611-4231-B061-F4B08DC8AAC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16C706DB-F611-4231-B061-F4B08DC8AAC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB6CB27C-5529-424D-8570-B69BA35C8FC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB6CB27C-5529-424D-8570-B69BA35C8FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB6CB27C-5529-424D-8570-B69BA35C8FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB6CB27C-5529-424D-8570-B69BA35C8FC1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6B57FB13-7D72-40D2-AE16-650A7B4990EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6B57FB13-7D72-40D2-AE16-650A7B4990EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B57FB13-7D72-40D2-AE16-650A7B4990EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +59,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9A70FFC5-6F45-48F6-8165-185D39517638} = {B89C1FC0-7893-4D07-8D41-9E22A8D51D48}
+		{FB6CB27C-5529-424D-8570-B69BA35C8FC1} = {6926CC64-2E92-4E58-BE15-6F9CA4EF16B0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DAA59421-E9E6-427B-942E-F64F5F490239}
