@@ -28,6 +28,8 @@ namespace Bytewizer.Backblaze.Client
             try
             {
                 // Initialize components
+                logger ??= NullLoggerFactory.Instance;
+
                 _client = new ApiClient(client, options, logger.CreateLogger<ApiClient>(), cache);
                 _logger = logger.CreateLogger<Storage>();
             }
