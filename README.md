@@ -1,7 +1,7 @@
 # Backblaze Agent for .NET Core
 
-[![NuGet Version](https://img.shields.io/nuget/vpre/Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/Backblaze.Agent)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/Backblaze.Agent)
+[![NuGet Version](https://img.shields.io/nuget/vpre/DQD.Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/DQD.Backblaze.Agent)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/DQD.Backblaze.Agent.svg?style=flat-square)](https://www.nuget.org/packages/DQD.Backblaze.Agent)
 
 The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaze B2 Cloud Storage API](https://www.backblaze.com/b2/cloud-storage.html). Backblaze B2 Cloud Storage provides the cheapest cloud storage available on the internet. Backblaze B2 Cloud Storage is ¼ of the price of other storage providers. Give it a try as the first 10 GB of storage is free.
 
@@ -14,21 +14,25 @@ The Backblaze Agent (client) for .NET Core is an implementation of the [Backblaz
  - Large file support with low memory allocation and IProgress status.
  - Native support of task based programming model (async/await).
 
-For feature requests and bug reports, please [open an issue on GitHub](https://github.com/microcompiler/backblaze/issues/new).
+For feature requests and bug reports, please [open an issue on GitHub](https://github.com/logiclrd/DQD.Backblaze/issues/new).
+
+## Divergence
+
+This library was originally being developed as [microcompiler.backblaze](https://github.com/microcompiler/backblaze), but that development effort appears to have been abandoned and the team members seem to be unreachable. If they resume activity in the future and merge my changes upstream, then I intend to shutter this fork. Until then, this fork allows me to proceed with my development efforts with another project that consumes this library.
 
 ## Installation via .NET CLI
 
-To install Backblaze.Agent run the following command:
+To install DQD.Backblaze.Agent run the following command:
 
 ```bash
-> dotnet add package Backblaze.Agent
+> dotnet add package DQD.Backblaze.Agent
 ```
 
 ## Getting Started
 
 *Work in Progress!* Whilst we encourage users to play with the samples and test programs, this project has not yet reached a stable state.
 
-You will need an **key_id** and an **application_key** to configure Backblaze Agent. You can obtain these from the [Backblaze B2 Cloud Storage](https://www.backblaze.com/b2/cloud-storage.html) portal. See the [Sample Project](https://github.com/microcompiler/backblaze/tree/master/samples ) for an example of how to use this packages.
+You will need an **key_id** and an **application_key** to configure Backblaze Agent. You can obtain these from the [Backblaze B2 Cloud Storage](https://www.backblaze.com/b2/cloud-storage.html) portal. See the [Sample Project](https://github.com/logiclrd/DQD.Backblaze/tree/main/samples ) for an example of how to use this packages.
 
 ### Adding Backblaze Agent to Services
 
@@ -212,7 +216,7 @@ services.AddBackblazeAgent(options =>
 });
 ```
 
-The following table describes the [Agent Options](https://github.com/microcompiler/backblaze/blob/master/src/Client/Client/IClientOptions.cs) available:
+The following table describes the [Agent Options](https://github.com/logiclrd/DQD.Backblaze/blob/main/src/Client/Client/IClientOptions.cs) available:
 
 | Option Name | Default | Description |
 | ----------- | ------- | ----------- |
@@ -252,7 +256,7 @@ The following test mode options are available to verify that your code correctly
 
 ## Integration Tests
 
-You will need an **key_id** and an **application_key** to configure Backblaze Test Agent [settings.json](https://github.com/microcompiler/backblaze/blob/master/test/Integration/settings.json) file.
+You will need an **key_id** and an **application_key** to configure Backblaze Test Agent [settings.json](https://github.com/logiclrd/DQD.Backblaze/blob/main/test/Integration/settings.json) file.
 
 ## Disclaimer
 
@@ -260,9 +264,9 @@ All source, documentation, instructions and products of this project are provide
 
 ## Branches
 
-**master** - This is the branch containing the latest release - no contributions should be made directly to this branch.
+**main** - This is the branch containing the latest release - no contributions should be made directly to this branch.
 
-**develop** - This is the development branch to which contributions should be proposed by contributors as pull requests. This development branch will periodically be merged to the master branch, and be released to [NuGet Gallery](https://www.nuget.org).
+**develop** - This is the development branch to which contributions should be proposed by contributors as pull requests. This development branch will periodically be merged to the main branch, and be released to [NuGet Gallery](https://www.nuget.org).
 
 ## Contributions
 
