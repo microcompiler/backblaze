@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using Newtonsoft.Json;
@@ -9,18 +10,13 @@ namespace Bytewizer.Backblaze.Models
     /// Represents information related to an allowed authorization.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay, nq}")]
-    public class Allowed
+    public class AllowedRaw
     {
         /// <summary>
         /// Gets or sets a list of <see cref="Capability"/> allowed.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public Capabilities Capabilities { get; set; }
-
-        /// <summary>
-        /// Gets or sets a list of capabilities that couldn't be parsed into <see cref="Capability"/> values.
-        /// </summary>
-        public List<string> UnknownCapabilities { get; set; }
+        public List<string> Capabilities { get; set; }
 
         /// <summary>
         /// Gets or sets restricted access only to this bucket id.
@@ -45,17 +41,37 @@ namespace Bytewizer.Backblaze.Models
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay
         {
-            get
+            get { return $"{{{nameof(Capabilities)}: {string.Join(", ", Capabilities)}, {nameof(NamePrefix)}: {NamePrefix}}}"; }
+        }
+
+        /// <summary>
+        /// Translates this <see cref="AllowedRaw"/> instance to an instance of <see cref="Allowed"/>,
+        /// parsing capabilities into the <see cref="Allowed.Capabilities"/> and
+        /// <see cref="Allowed.UnknownCapabilities"/> properties.
+        /// </summary>
+        /// <returns>An instance of <see cref="Allowed"/>.</returns>
+        public Allowed ParseCapabilities()
+        {
+            Allowed parsed = new Allowed();
+
+            parsed.BucketId = this.BucketId;
+            parsed.BucketName = this.BucketName;
+            parsed.NamePrefix = this.NamePrefix;
+
+            foreach (string capabilityName in this.Capabilities)
             {
-                string unknownCapabilitiesString = "";
-
-                if ((this.UnknownCapabilities != null) && (this.UnknownCapabilities.Count > 0))
+                if (Enum.TryParse<Capability>(capabilityName, out var parsedCapability))
                 {
-                    unknownCapabilitiesString = " (+ " + string.Join(", ", UnknownCapabilities) + ")";
+                    parsed.Capabilities.Add(parsedCapability);
                 }
-
-                return $"{{{nameof(Capabilities)}: {string.Join(", ", Capabilities)}{unknownCapabilitiesString}, {nameof(NamePrefix)}: {NamePrefix}}}";
+                else
+                {
+                    parsed.UnknownCapabilities ??= new List<string>();
+                    parsed.UnknownCapabilities.Add(capabilityName);
+                }
             }
+
+            return parsed;
         }
     }
 }
