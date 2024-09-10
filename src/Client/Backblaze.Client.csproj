@@ -6,7 +6,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageId>Backblaze.Client</PackageId>
+    <PackageId>DQD.Backblaze.Client</PackageId>
     <Authors>Microcompiler</Authors>
     <Company>Bytewizer Inc.</Company>
     <Product>Backblaze B2 Cloud Storage</Product>
@@ -17,20 +17,21 @@
     <Version Condition=" '$(Version)' == '' ">$(VersionPrefix)</Version>
     <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
     <AssemblyVersion>$(VersionPrefix).$(BuildNumber)</AssemblyVersion>
-    <AssemblyName>Backblaze.Client</AssemblyName>
+    <AssemblyName>DQD.Backblaze.Client</AssemblyName>
     <FileVersion>$(VersionPrefix).$(BuildNumber)</FileVersion>
     <PackageId>$(AssemblyName)</PackageId>
     <Description>Backblaze.Client is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage.</Description>
     <Copyright>(c) 0000 Bytewizer.  All rights reserved.</Copyright>
-    <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/microcompiler/backblaze</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/logiclrd/DQD.Backblaze</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/logiclrd/DQD.Backblaze</RepositoryUrl>
     <PackageTags>backblaze, b2, cloud-storage, api, csharp, storage-pod</PackageTags>
     <RepositoryType></RepositoryType>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <NoWarn>NU5105</NoWarn>
   </PropertyGroup>
-  
+
   <!-- Github Properties -->
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
@@ -59,6 +60,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

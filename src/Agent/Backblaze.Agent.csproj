@@ -6,7 +6,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageId>Backblaze.Agent</PackageId>
+    <PackageId>DQD.Backblaze.Agent</PackageId>
     <Authors>Microcompiler</Authors>
     <Company>Bytewizer Inc.</Company>
     <Product>Backblaze B2 Cloud Storage</Product>
@@ -17,17 +17,18 @@
     <Version Condition=" '$(Version)' == '' ">$(VersionPrefix)</Version>
     <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
     <AssemblyVersion>$(VersionPrefix).$(BuildNumber)</AssemblyVersion>
-    <AssemblyName>Backblaze.Agent</AssemblyName>
+    <AssemblyName>DQD.Backblaze.Agent</AssemblyName>
     <FileVersion>$(VersionPrefix).$(BuildNumber)</FileVersion>
     <PackageId>$(AssemblyName)</PackageId>
     <Description>Backblaze.Agent is a high-performance .NET Core implementation of the Backblaze B2 Cloud Storage supporting dependency injection, caching and logging.</Description>
     <Copyright>(c) 0000 Bytewizer.  All rights reserved.</Copyright>
-    <PackageProjectUrl>https://github.com/microcompiler/backblaze</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/microcompiler/backblaze</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/logiclrd/DQD.Backblaze</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/logiclrd/DQD.Backblaze</RepositoryUrl>
     <PackageTags>backblaze, b2, cloud-storage, api, csharp, storage-pod</PackageTags>
     <RepositoryType></RepositoryType>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <NoWarn>NU5105</NoWarn>
   </PropertyGroup>
 
@@ -49,6 +50,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
