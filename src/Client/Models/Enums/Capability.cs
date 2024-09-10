@@ -122,13 +122,23 @@ namespace Bytewizer.Backblaze.Models
         WriteBucketEncryption,
 
         /// <summary>
-        /// Permission to 
+        /// Permission to read bucket replication information.
         /// </summary>
         ReadBucketReplications,
 
         /// <summary>
-        /// Permission to 
+        /// Permission to write bucket replication information.
         /// </summary>
-        WriteBucketReplications
+        WriteBucketReplications,
+
+        /// <summary>
+        /// Permission to read the event notification rules for a bucket.
+        /// </summary>
+        ReadBucketNotifications,
+
+        /// <summary>
+        /// Permission to write event notification rule information for a bucket.
+        /// </summary>
+        WriteBucketNotifications,
     }
 }
