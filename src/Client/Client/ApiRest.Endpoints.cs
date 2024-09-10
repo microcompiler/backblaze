@@ -329,8 +329,13 @@ namespace Bytewizer.Backblaze.Client
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            string fileName = request.FileName;
+
+            if (fileName.StartsWith("/"))
+                fileName = fileName.Substring(1);
+
             var httpRequest = new HttpRequestMessage
-                (HttpMethod.Get, $"{AccountInfo.DownloadUrl}file/{request.BucketName}/{request.FileName}");
+                (HttpMethod.Get, $"{AccountInfo.DownloadUrl}file/{request.BucketName}/{fileName.ToUrlEncode()}");
 
             httpRequest.Headers.SetAuthorization(request.AuthorizationToken, AuthToken.Authorization);
             httpRequest.Headers.SetRange(request.Range);
