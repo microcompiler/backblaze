@@ -1,6 +1,18 @@
 # Change Log
 
+## 1.1.0 - October 6, 2024
+
+* Updated project files to dotnet 8.0
+* Added new Capability enum values ReadBucketNotifications and WriteBucketNotifications
+* Improve speed calculation
+* Add support for uploading without actually having a physical file
+
+## 1.0.1 - January 12, 2023
+
+* Fix missing enum values
+
 ## 1.0.0 - June 13, 2021
+
 *  Added 'ReadBucketEncryption' and 'WriteBucketEncryption' application key capability name
 
 ## 0.9.4 - November 15, 2020
