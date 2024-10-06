@@ -26,12 +26,12 @@ jobs:
     - name: Extract build and copyright information into variables
       id: info
       run: |
-        echo "##[set-output name=build;]$(echo $(git rev-list --count HEAD))"
-        echo "##[set-output name=copyright;]$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)"
+        echo "BUILD=$(date +'%Y%m%d')-${{ github.run_number }}" >> $GITHUB_ENV
+        echo "COPYRIGHT=$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)" >> $GITHUB_ENV
     - name: Show build information
       run: |
-        echo build=${{ steps.info.outputs.build }}
-        echo copyright=${{ steps.info.outputs.copyright }}
+        echo BUILD=${{ env.BUILD }}
+        echo COPYRIGHT=${{ env.COPYRIGHT }}
     - name: Show release event information
       run: |
         echo "release.name        = ${{ github.event.release.name }}"
@@ -51,7 +51,7 @@ jobs:
             
     - name: Build and test project
       run: >-
-        dotnet test -p:Version=${GITHUB_REF##*/v} -p:BuildNumber="${{ steps.info.outputs.build }}" -p:Copyright="${{ steps.info.outputs.copyright }}"
+        dotnet test -p:Version=${GITHUB_REF##*/v} -p:BuildNumber="${{ env.BUILD }}" -p:Copyright="${{ env.COPYRIGHT }}"
         --verbosity ${VERBOSITY}  
         --configuration ${CONFIGURATION} 
       env:
@@ -60,7 +60,7 @@ jobs:
 
     - name: Build and release project
       run: >- 
-        dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:BuildNumber="${{ steps.info.outputs.build }}" -p:Copyright="${{ steps.info.outputs.copyright }}"
+        dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:BuildNumber="${{ env.BUILD }}" -p:Copyright="${{ env.COPYRIGHT }}"
         --verbosity ${VERBOSITY}
         --configuration ${CONFIGURATION}
         --include-symbols
