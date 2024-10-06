@@ -31,7 +31,7 @@ jobs:
     - name: Extract build and copyright information into variables
       id: info
       run: |
-        echo "BUILD=$(date +'%Y%m%d')${{ github.run_number }}" >> $GITHUB_ENV
+        echo "BUILD=${{ github.run_number }}" >> $GITHUB_ENV
         echo "COPYRIGHT=$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)" >> $GITHUB_ENV
 
     - name: Show build information
@@ -62,9 +62,9 @@ jobs:
     - name: Build and test project
       run: >-
         dotnet test -p:BuildNumber="${{ env.BUILD }}" -p:Copyright="${{ env.COPYRIGHT }}"
-        --verbosity ${VERBOSITY}  
-        --configuration ${CONFIGURATION} 
-        --results-directory .builds/artifacts 
+        --verbosity ${{ env.VERBOSITY }}  
+        --configuration ${{ env.CONFIGURATION }} 
+        --results-directory ./builds/artifacts 
         --logger:trx
       env:
         Agent__ApplicationKey: ${{ secrets.AGENT_APPLICATION_KEY }}
@@ -73,14 +73,15 @@ jobs:
     - name: Build and pack project
       run: >- 
         dotnet pack -p:BuildNumber="${{ env.BUILD }}" -p:Copyright="${{ env.COPYRIGHT }}"
-        --version-suffix prebuild.${{ env.BUILD }}
-        --verbosity ${VERBOSITY}
-        --configuration ${CONFIGURATION}
+        --version-suffix preview.${{ env.BUILD }}
+        --verbosity ${{ env.VERBOSITY }}
+        --configuration ${{ env.CONFIGURATION }}
         --include-symbols
-        --output .builds/artifacts
+        --output ./builds/artifacts
          
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Build Package
-        path: .builds/artifacts
+        name: preview.${{ env.BUILD }}
+        path: ./builds/artifacts
+        if-no-files-found: error
