@@ -26,7 +26,7 @@ jobs:
     - name: Extract build and copyright information into variables
       id: info
       run: |
-        echo "BUILD=$(date +'%Y%m%d')${{ github.run_number }}" >> $GITHUB_ENV
+        echo "BUILD=${{ github.run_number }}" >> $GITHUB_ENV
         echo "COPYRIGHT=$(echo © $(date -u +%Y) Bytewizer.  All rights reserved.)" >> $GITHUB_ENV
     - name: Show build information
       run: |
