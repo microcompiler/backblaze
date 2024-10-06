@@ -27,6 +27,7 @@
     <PackageTags>backblaze, b2, cloud-storage, api, csharp, storage-pod</PackageTags>
     <RepositoryType></RepositoryType>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>logo.png</PackageIcon>
     <NoWarn>NU5105</NoWarn>
   </PropertyGroup>
@@ -46,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
     <None Include="..\..\LICENSE.md" Link="LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
