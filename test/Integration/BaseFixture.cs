@@ -15,7 +15,7 @@ using Xunit;
 namespace Backblaze.Tests.Integration
 {
     [TestCaseOrderer("Backblaze.Tests.Integration.PriorityOrderer", "Backblaze.Tests.Integration")]
-    public abstract class BaseFixture 
+    public abstract class BaseFixture : IClassFixture<StorageClientFixture>
     {
         public IServiceProvider Services { get; }
         public IConfiguration Config { get; }
