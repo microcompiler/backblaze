@@ -12,7 +12,7 @@
     <Product>Backblaze B2 Cloud Storage</Product>
     <LangVersion>7.1</LangVersion>
     <RootNamespace>Bytewizer.Backblaze</RootNamespace>
-    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionPrefix>1.1.0</VersionPrefix>
     <Version Condition=" '$(Version)' == '' and '$(VersionSuffix)' != '' ">$(VersionPrefix)-$(VersionSuffix)</Version>
     <Version Condition=" '$(Version)' == '' ">$(VersionPrefix)</Version>
     <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>

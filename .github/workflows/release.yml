@@ -61,16 +61,16 @@ jobs:
     - name: Build and release project
       run: >- 
         dotnet pack -p:PackageVersion=${GITHUB_REF##*/v} -p:BuildNumber="${{ env.BUILD }}" -p:Copyright="${{ env.COPYRIGHT }}"
-        --verbosity ${VERBOSITY}
-        --configuration ${CONFIGURATION}
+        --verbosity ${{ env.VERBOSITY }}
+        --configuration ${{ env.CONFIGURATION }}
         --include-symbols
-        --output .builds/artifacts
+        --output ./builds/artifacts
              
     - name: Publish package to github.com
       run: |      
         dotnet nuget add source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -n github
-        dotnet nuget push .builds/artifacts/**/*.nupkg -s github -k ${{secrets.PACKAGE_API_KEY}} --skip-duplicate
+        dotnet nuget push ./builds/artifacts/**/*.nupkg -s github -k ${{secrets.PACKAGE_API_KEY}} --skip-duplicate
         
     - name: Publish package to nuget
       run: |
-        dotnet nuget push .builds/artifacts/**/*.nupkg -s nuget.org -k ${{secrets.NUGET_API_KEY}} --skip-duplicate
+        dotnet nuget push ./builds/artifacts/**/*.nupkg -s nuget.org -k ${{secrets.NUGET_API_KEY}} --skip-duplicate
