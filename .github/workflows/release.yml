@@ -71,6 +71,6 @@ jobs:
         dotnet nuget add source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -n github
         dotnet nuget push ./builds/artifacts/**/*.nupkg -s github -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
         
-    - name: Publish package to nuget
+    - name: Publish package to nuget.org
       run: |
         dotnet nuget push ./builds/artifacts/**/*.nupkg -s nuget.org -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate

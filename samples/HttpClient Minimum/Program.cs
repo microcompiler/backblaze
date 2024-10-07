@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using Bytewizer.Backblaze.Client;
@@ -22,14 +22,13 @@ namespace Bytewizer.Backblaze.Samples
                 foreach (var bucket in buckets)
                     Console.WriteLine($"Bucket Name: {bucket.BucketName} - Type: {bucket.BucketType}");
 
-                foreach (var filepath in Directory.GetFiles(@"c:\my\directory"))
+                foreach (var filepath in Directory.GetFiles(@"c:\backblaze"))
                 {
                     using (var stream = File.OpenRead(filepath)) { 
                         var results = Client.UploadAsync(buckets.ToList().First().BucketId, new FileInfo(filepath).Name, stream).GetAwaiter().GetResult();
                         Console.WriteLine(results.Response.FileName);
                     }
                 }
-
             }
             catch (Exception ex)
             {

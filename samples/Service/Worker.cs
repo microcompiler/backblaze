@@ -26,7 +26,7 @@ namespace Backblaze.Service
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                foreach (var filePath in Directory.GetFiles(@"c:\my\directory"))
+                foreach (var filePath in Directory.GetFiles(@"c:\backblaze"))
                 {
                     using var stream = File.OpenRead(filePath);
                         var results = await _client.UploadAsync("ce6194ce5c3f2f746ce20d1b", new FileInfo(filePath).Name, stream);
