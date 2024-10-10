@@ -20,138 +20,141 @@ using FluentAssertions;
 
 using Bytewizer.Backblaze.Models;
 
-public class ApiClientFixture
+namespace Backblaze.Tests.Unit
 {
-    [Fact]
-    public async Task AuthorizeAccountAync_should_parse_capabilities()
+    public class ApiClientFixture
     {
-        // Arrange
-        var faker = new Faker();
-
-        var dummyKeyId = faker.Random.Hash();
-        var dummyApplicationKey = faker.Random.Hash();
-        var dummyAccountId = faker.Random.Hash();
-        var dummyAuthorizationToken = faker.Random.Hash();
-        var dummyApiUrl = new Uri(faker.Internet.Url());
-        var dummyDownloadUrl = new Uri(faker.Internet.Url());
-        var dummyCapabilities = faker.PickRandom(Enum.GetValues(typeof(Capability)).OfType<Capability>(), 5).ToList();
-        var dummyCapabilityStrings = dummyCapabilities.Select(c => c.ToString()).ToList();
-
-        var mockHttpClient = new HttpClient();
-
-        var clientOptions = new ClientOptions();
-
-        clientOptions.RequestMaxParallel = 1;
-        clientOptions.DownloadMaxParallel = 1;
-        clientOptions.UploadMaxParallel = 1;
-        clientOptions.TestMode = "";
-
-        var mockLogger = Substitute.For<ILogger<ApiRest>>();
-
-        var mockMemoryCache = Substitute.For<IMemoryCache>();
-
-        using (var testServer = new TestServer())
+        [Fact]
+        public async Task AuthorizeAccountAync_should_parse_capabilities()
         {
-            testServer
-                .When("/b2_authorize_account")
-                .Then(
-                    new AuthorizeAccountResponseRaw()
-                    {
-                        AccountId = dummyAccountId,
-                        AuthorizationToken = dummyAuthorizationToken,
-                        ApiUrl = dummyApiUrl,
-                        DownloadUrl = dummyDownloadUrl,
-                        Allowed =
-                            new AllowedRaw()
-                            {
-                                Capabilities = dummyCapabilityStrings
-                            }
-                    });
+            // Arrange
+            var faker = new Faker();
 
-            var sut = new ApiClient(mockHttpClient, clientOptions, mockLogger, mockMemoryCache);
+            var dummyKeyId = faker.Random.Hash();
+            var dummyApplicationKey = faker.Random.Hash();
+            var dummyAccountId = faker.Random.Hash();
+            var dummyAuthorizationToken = faker.Random.Hash();
+            var dummyApiUrl = new Uri(faker.Internet.Url());
+            var dummyDownloadUrl = new Uri(faker.Internet.Url());
+            var dummyCapabilities = faker.PickRandom(Enum.GetValues(typeof(Capability)).OfType<Capability>(), 5).ToList();
+            var dummyCapabilityStrings = dummyCapabilities.Select(c => c.ToString()).ToList();
 
-            sut.AccountInfo.AuthUrl = testServer.BaseUrl;
+            var mockHttpClient = new HttpClient();
 
-            // Act
-            var result = await sut.AuthorizeAccountAync(dummyKeyId, dummyApplicationKey, CancellationToken.None);
+            var clientOptions = new ClientOptions();
 
-            // Assert
-            result.IsSuccessStatusCode.Should().BeTrue();
-            result.Response.Should().NotBeNull();
-            result.Response.Allowed.Should().NotBeNull();
-            result.Response.Allowed.Capabilities.Should().BeEquivalentTo(dummyCapabilities);
-            result.Response.Allowed.UnknownCapabilities.Should().BeEmpty();
-        }
-    }
+            clientOptions.RequestMaxParallel = 1;
+            clientOptions.DownloadMaxParallel = 1;
+            clientOptions.UploadMaxParallel = 1;
+            clientOptions.TestMode = "";
 
-    [Fact]
-    public async Task AuthorizeAccountAync_should_parse_unknown_capabilities()
-    {
-        // Arrange
-        var faker = new Faker();
+            var mockLogger = Substitute.For<ILogger<ApiRest>>();
 
-        var dummyKeyId = faker.Random.Hash();
-        var dummyApplicationKey = faker.Random.Hash();
-        var dummyAccountId = faker.Random.Hash();
-        var dummyAuthorizationToken = faker.Random.Hash();
-        var dummyApiUrl = new Uri(faker.Internet.Url());
-        var dummyDownloadUrl = new Uri(faker.Internet.Url());
-        var dummyCapabilities = faker.PickRandom(Enum.GetValues(typeof(Capability)).OfType<Capability>(), 5).ToList();
-        var dummyCapabilityStrings = dummyCapabilities.Select(c => c.ToString()).ToList();
+            var mockMemoryCache = Substitute.For<IMemoryCache>();
 
-        var unknownDummyCapabilities =
-            new[]
+            using (var testServer = new TestServer())
             {
-                "UnknownCapability1",
-                "UnknownCapability2",
-            };
+                testServer
+                    .When("/b2_authorize_account")
+                    .Then(
+                        new AuthorizeAccountResponseRaw()
+                        {
+                            AccountId = dummyAccountId,
+                            AuthorizationToken = dummyAuthorizationToken,
+                            ApiUrl = dummyApiUrl,
+                            DownloadUrl = dummyDownloadUrl,
+                            Allowed =
+                                new AllowedRaw()
+                                {
+                                    Capabilities = dummyCapabilityStrings
+                                }
+                        });
 
-        dummyCapabilityStrings.AddRange(unknownDummyCapabilities);
+                var sut = new ApiClient(mockHttpClient, clientOptions, mockLogger, mockMemoryCache);
 
-        var mockHttpClient = new HttpClient();
+                sut.AccountInfo.AuthUrl = testServer.BaseUrl;
 
-        var clientOptions = new ClientOptions();
+                // Act
+                var result = await sut.AuthorizeAccountAync(dummyKeyId, dummyApplicationKey, CancellationToken.None);
 
-        clientOptions.RequestMaxParallel = 1;
-        clientOptions.DownloadMaxParallel = 1;
-        clientOptions.UploadMaxParallel = 1;
-        clientOptions.TestMode = "";
+                // Assert
+                result.IsSuccessStatusCode.Should().BeTrue();
+                result.Response.Should().NotBeNull();
+                result.Response.Allowed.Should().NotBeNull();
+                result.Response.Allowed.Capabilities.Should().BeEquivalentTo(dummyCapabilities);
+                result.Response.Allowed.UnknownCapabilities.Should().BeEmpty();
+            }
+        }
 
-        var mockLogger = Substitute.For<ILogger<ApiRest>>();
-
-        var mockMemoryCache = Substitute.For<IMemoryCache>();
-
-        using (var testServer = new TestServer())
+        [Fact]
+        public async Task AuthorizeAccountAync_should_parse_unknown_capabilities()
         {
-            testServer
-                .When("/b2_authorize_account")
-                .Then(
-                    new AuthorizeAccountResponseRaw()
-                    {
-                        AccountId = dummyAccountId,
-                        AuthorizationToken = dummyAuthorizationToken,
-                        ApiUrl = dummyApiUrl,
-                        DownloadUrl = dummyDownloadUrl,
-                        Allowed =
-                            new AllowedRaw()
-                            {
-                                Capabilities = dummyCapabilityStrings
-                            }
-                    });
+            // Arrange
+            var faker = new Faker();
 
-            var sut = new ApiClient(mockHttpClient, clientOptions, mockLogger, mockMemoryCache);
+            var dummyKeyId = faker.Random.Hash();
+            var dummyApplicationKey = faker.Random.Hash();
+            var dummyAccountId = faker.Random.Hash();
+            var dummyAuthorizationToken = faker.Random.Hash();
+            var dummyApiUrl = new Uri(faker.Internet.Url());
+            var dummyDownloadUrl = new Uri(faker.Internet.Url());
+            var dummyCapabilities = faker.PickRandom(Enum.GetValues(typeof(Capability)).OfType<Capability>(), 5).ToList();
+            var dummyCapabilityStrings = dummyCapabilities.Select(c => c.ToString()).ToList();
 
-            sut.AccountInfo.AuthUrl = testServer.BaseUrl;
+            var unknownDummyCapabilities =
+                new[]
+                {
+                    "UnknownCapability1",
+                    "UnknownCapability2",
+                };
 
-            // Act
-            var result = await sut.AuthorizeAccountAync(dummyKeyId, dummyApplicationKey, CancellationToken.None);
+            dummyCapabilityStrings.AddRange(unknownDummyCapabilities);
 
-            // Assert
-            result.IsSuccessStatusCode.Should().BeTrue();
-            result.Response.Should().NotBeNull();
-            result.Response.Allowed.Should().NotBeNull();
-            result.Response.Allowed.Capabilities.Should().BeEquivalentTo(dummyCapabilities);
-            result.Response.Allowed.UnknownCapabilities.Should().BeEquivalentTo(unknownDummyCapabilities);
+            var mockHttpClient = new HttpClient();
+
+            var clientOptions = new ClientOptions();
+
+            clientOptions.RequestMaxParallel = 1;
+            clientOptions.DownloadMaxParallel = 1;
+            clientOptions.UploadMaxParallel = 1;
+            clientOptions.TestMode = "";
+
+            var mockLogger = Substitute.For<ILogger<ApiRest>>();
+
+            var mockMemoryCache = Substitute.For<IMemoryCache>();
+
+            using (var testServer = new TestServer())
+            {
+                testServer
+                    .When("/b2_authorize_account")
+                    .Then(
+                        new AuthorizeAccountResponseRaw()
+                        {
+                            AccountId = dummyAccountId,
+                            AuthorizationToken = dummyAuthorizationToken,
+                            ApiUrl = dummyApiUrl,
+                            DownloadUrl = dummyDownloadUrl,
+                            Allowed =
+                                new AllowedRaw()
+                                {
+                                    Capabilities = dummyCapabilityStrings
+                                }
+                        });
+
+                var sut = new ApiClient(mockHttpClient, clientOptions, mockLogger, mockMemoryCache);
+
+                sut.AccountInfo.AuthUrl = testServer.BaseUrl;
+
+                // Act
+                var result = await sut.AuthorizeAccountAync(dummyKeyId, dummyApplicationKey, CancellationToken.None);
+
+                // Assert
+                result.IsSuccessStatusCode.Should().BeTrue();
+                result.Response.Should().NotBeNull();
+                result.Response.Allowed.Should().NotBeNull();
+                result.Response.Allowed.Capabilities.Should().BeEquivalentTo(dummyCapabilities);
+                result.Response.Allowed.UnknownCapabilities.Should().BeEquivalentTo(unknownDummyCapabilities);
+            }
         }
     }
 }
