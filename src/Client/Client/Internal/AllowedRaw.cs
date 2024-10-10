@@ -60,17 +60,15 @@ namespace Bytewizer.Backblaze.Client.Internal
             parsed.BucketName = this.BucketName;
             parsed.NamePrefix = this.NamePrefix;
 
+            parsed.Capabilities = new Capabilities();
+            parsed.UnknownCapabilities = new List<string>();
+
             foreach (string capabilityName in this.Capabilities)
             {
                 if (Enum.TryParse<Capability>(capabilityName, out var parsedCapability))
-                {
                     parsed.Capabilities.Add(parsedCapability);
-                }
                 else
-                {
-                    parsed.UnknownCapabilities ??= new List<string>();
                     parsed.UnknownCapabilities.Add(capabilityName);
-                }
             }
 
             return parsed;
