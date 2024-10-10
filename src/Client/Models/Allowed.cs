@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 using Newtonsoft.Json;
 
@@ -15,6 +16,11 @@ namespace Bytewizer.Backblaze.Models
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public Capabilities Capabilities { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of capabilities that couldn't be parsed into <see cref="Capability"/> values.
+        /// </summary>
+        public List<string> UnknownCapabilities { get; set; }
 
         /// <summary>
         /// Gets or sets restricted access only to this bucket id.
@@ -39,7 +45,17 @@ namespace Bytewizer.Backblaze.Models
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay
         {
-            get { return $"{{{nameof(Capabilities)}: {string.Join(", ", Capabilities)}, {nameof(NamePrefix)}: {NamePrefix}}}"; }
+            get
+            {
+                string unknownCapabilitiesString = "";
+
+                if ((this.UnknownCapabilities != null) && (this.UnknownCapabilities.Count > 0))
+                {
+                    unknownCapabilitiesString = " (+ " + string.Join(", ", UnknownCapabilities) + ")";
+                }
+
+                return $"{{{nameof(Capabilities)}: {string.Join(", ", Capabilities)}{unknownCapabilitiesString}, {nameof(NamePrefix)}: {NamePrefix}}}";
+            }
         }
     }
 }
