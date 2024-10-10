@@ -102,8 +102,8 @@ public class ApiClientFixture
         var unknownDummyCapabilities =
             new[]
             {
-                faker.Random.Words(3),
-                faker.Random.Words(3),
+                "UnknownCapability1",
+                "UnknownCapability2",
             };
 
         dummyCapabilityStrings.AddRange(unknownDummyCapabilities);
