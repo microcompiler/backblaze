@@ -140,5 +140,15 @@ namespace Bytewizer.Backblaze.Models
         /// Permission to write event notification rule information for a bucket.
         /// </summary>
         WriteBucketNotifications,
+
+        /// <summary>
+        /// Permission to read bucket logging information.
+        /// </summary>
+        ReadBucketLogging,
+
+        /// <summary>
+        /// Permission to write bucket logging information.
+        /// </summary>
+        WriteBucketLogging
     }
 }
