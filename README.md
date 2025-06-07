@@ -136,17 +136,19 @@ class Program
 {
   private static IStorageClient Client;
 
-  static void Main(string[] args)
+  static async Task Main(string[] args)
   {
     try
     {
       Client = new BackblazeClient();
       Client.Connect("[key_id]", "[application_key]");
 
-      var buckets = Client.Buckets.GetAsync().GetAwaiter().GetResult();
+      var buckets = await Client.Buckets.GetAsync();
 
       foreach (var bucket in buckets)
-        Console.WriteLine($"Bucket Name: {bucket.BucketName} - Type: {bucket.BucketType}");
+      {
+          Console.WriteLine($"Bucket Name: {bucket.BucketName} - Type: {bucket.BucketType}");
+      }
     }
     catch (Exception ex)
     {
