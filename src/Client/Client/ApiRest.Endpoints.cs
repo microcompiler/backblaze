@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Bytewizer.Backblaze.Models;
 using Bytewizer.Backblaze.Extensions;
 
+using Bytewizer.Backblaze.Client.Internal;
+
 namespace Bytewizer.Backblaze.Client
 {
     public abstract partial class ApiRest : DisposableObject
@@ -47,7 +49,9 @@ namespace Bytewizer.Backblaze.Client
             using (var results = await _policy.InvokeClient.ExecuteAsync(async () =>
                 { return await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false); }))
             {
-                return await HandleResponseAsync<AuthorizeAccountResponse>(results).ConfigureAwait(false);
+                var rawResult = await HandleResponseAsync<AuthorizeAccountResponseRaw>(results).ConfigureAwait(false);
+
+                return new ApiResults<AuthorizeAccountResponse>(rawResult.HttpResponse, rawResult.Response.ToAuthorizedAccountResponse());
             }
 
         }
